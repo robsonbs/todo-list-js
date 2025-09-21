@@ -1,0 +1,834 @@
+/* ========== VARIÁVEIS CSS (CUSTOM PROPERTIES) ========== */
+/* 
+  Variáveis CSS permitem reutilizar valores e facilitar manutenção
+  Definidas uma vez, podem ser usadas em qualquer lugar com var(--nome)
+*/
+:root {
+  /* Cores azuis - usadas para elementos principais */
+  --blue-dark: #1E6F9F;
+  /* Azul escuro para botões */
+  --blue     : #4EA8DE;
+  /* Azul claro para hover */
+
+  /* Cores roxas - usadas para elementos de destaque */
+  --purple-dark: #5E60CE;
+  /* Roxo escuro para checkbox marcado */
+  --purple     : #8284FA;
+  /* Roxo claro para texto de concluídas */
+
+  /* Escala de cinzas - do mais escuro ao mais claro */
+  --gray-700: #0D0D0D;
+  /* Quase preto - header */
+  --gray-600: #1A1A1A;
+  /* Fundo principal */
+  --gray-500: #262626;
+  /* Elementos de entrada */
+  --gray-400: #333333;
+  /* Bordas */
+  --gray-300: #808080;
+  /* Texto secundário */
+  --gray-200: #D9D9D9;
+  /* Texto claro */
+  --gray-100: #F2F2F2;
+  /* Texto principal */
+
+  /* Cores especiais */
+  --red  : #E25858;
+  /* Vermelho para exclusão */
+  --white: #FFF;
+  /* Branco puro */
+}
+
+/* ========== RESET E CONFIGURAÇÕES BÁSICAS ========== */
+/* 
+  Remove margens e paddings padrão do navegador
+  Define box-sizing para facilitar cálculos de tamanho
+*/
+* {
+  margin    : 0;
+  /* Remove margem padrão */
+  padding   : 0;
+  /* Remove padding padrão */
+  box-sizing: border-box;
+  /* Inclui padding e border no tamanho total */
+}
+
+/* ========== ESTILO DO CORPO DA PÁGINA ========== */
+body {
+  background            : var(--gray-600);
+  /* Cor de fundo escura */
+  color                 : var(--gray-300);
+  /* Cor do texto padrão */
+  -webkit-font-smoothing: antialiased;
+  /* Suaviza fontes no Mac/iOS */
+  min-height            : 100vh;
+  /* Altura mínima da tela toda */
+}
+
+/* ========== TIPOGRAFIA E FONTES ========== */
+/* Define a fonte padrão para toda a aplicação */
+body,
+input,
+button {
+  font-family: Inter, sans-serif;
+  /* Fonte moderna e legível */
+  font-weight: 400;
+  /* Peso normal */
+  font-size  : 1rem;
+  /* 16px - tamanho base */
+}
+
+/* Títulos e textos em negrito */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong {
+  font-weight: 700;
+  /* Negrito */
+}
+
+/* ========== ELEMENTOS INTERATIVOS ========== */
+/* Remove estilos padrão e melhora interação */
+button {
+  cursor: pointer;
+  /* Mostra que é clicável */
+}
+
+/* Remove outline padrão ao focar elementos */
+input:focus,
+button:focus {
+  outline       : 2px solid var(--purple-dark);
+  /* Outline personalizado para acessibilidade */
+  outline-offset: 2px;
+  /* Espaço entre elemento e outline */
+}
+
+/* ========== BARRA DE ROLAGEM PERSONALIZADA ========== */
+/* Estiliza a barra de rolagem para combinar com o design */
+::-webkit-scrollbar {
+  width: 8px;
+  /* Largura da barra */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-600);
+  /* Cor do trilho */
+}
+
+::-webkit-scrollbar-thumb {
+  background   : var(--gray-500);
+  /* Cor do "polegar" */
+  border-radius: 8px;
+  /* Bordas arredondadas */
+}
+
+/* ========== CABEÇALHO DA PÁGINA ========== */
+/* 
+  Header principal com título centralizado
+  Usa flexbox para centralização perfeita
+*/
+#header {
+  background     : var(--gray-700);
+  /* Fundo escuro */
+  display        : flex;
+  /* Flexbox para layout */
+  justify-content: center;
+  /* Centraliza horizontalmente */
+  align-items    : center;
+  /* Centraliza verticalmente */
+  padding        : 4rem 0;
+  /* Espaçamento interno */
+  width          : 100%;
+  /* Largura total */
+  height         : 12.5rem;
+  /* Altura fixa (200px) */
+}
+
+/* Estilo do título principal */
+#header h1 {
+  color      : var(--white);
+  /* Texto branco */
+  font-size  : 2.5rem;
+  /* Tamanho grande */
+  display    : flex;
+  /* Flexbox para ícone + texto */
+  align-items: center;
+  /* Alinha verticalmente */
+  gap        : 0.5rem;
+  /* Espaço entre ícone e texto */
+}
+
+/* Estilo do ícone no título */
+.logo-icon {
+  font-size: 2rem;
+  /* Tamanho do emoji */
+  display  : inline-block;
+}
+
+/* ========== FORMULÁRIO DE NOVA TAREFA ========== */
+/* 
+  Formulário posicionado sobre o header
+  Margin negativo cria sobreposição visual
+*/
+#todo-form {
+  display        : flex;
+  /* Layout horizontal */
+  justify-content: center;
+  /* Centraliza o conjunto */
+  align-items    : center;
+  /* Alinha verticalmente */
+  gap            : 0.5rem;
+  /* Espaço entre elementos (8px) */
+  margin-top     : -1.5rem;
+  /* Sobe sobre o header (-24px) */
+  padding        : 0 1rem;
+  /* Padding lateral para mobile */
+}
+
+/* Campo de entrada de texto */
+#todo-input {
+  background   : var(--gray-500);
+  /* Fundo cinza médio */
+  color        : var(--gray-100);
+  /* Texto claro */
+  border       : 1px solid var(--gray-700);
+  /* Borda escura */
+  border-radius: 8px;
+  /* Bordas arredondadas */
+  padding      : 1rem;
+  /* Espaçamento interno (16px) */
+  font-weight  : 400;
+  /* Peso normal */
+  font-size    : 16px;
+  /* Tamanho para evitar zoom no mobile */
+  line-height  : 140%;
+  /* Altura da linha (melhor legibilidade) */
+  width        : 100%;
+  /* Largura responsiva */
+  max-width    : 38rem;
+  /* Largura máxima (608px) */
+  height       : 3.375rem;
+  /* Altura fixa (54px) */
+  flex         : 1;
+  /* Cresce para ocupar espaço disponível */
+}
+
+/* Estado de foco do input - destaca quando selecionado */
+#todo-input:focus {
+  border-color: var(--purple-dark);
+  /* Borda roxa quando focado */
+}
+
+/* Placeholder do input */
+#todo-input::placeholder {
+  color: var(--gray-300);
+  /* Cor mais suave para o placeholder */
+}
+
+/* Botão de criar tarefa */
+#todo-form button {
+  background     : var(--blue-dark);
+  /* Fundo azul escuro */
+  color          : var(--white);
+  /* Texto branco */
+  border         : 0;
+  /* Remove borda padrão */
+  border-radius  : 8px;
+  /* Bordas arredondadas */
+  cursor         : pointer;
+  /* Cursor de clique */
+  display        : flex;
+  /* Flexbox para ícone + texto */
+  justify-content: center;
+  /* Centraliza conteúdo */
+  align-items    : center;
+  /* Alinha verticalmente */
+  gap            : 0.5rem;
+  /* Espaço entre ícone e texto */
+  font-weight    : 700;
+  /* Texto em negrito */
+  font-size      : 14px;
+  /* Tamanho menor */
+  line-height    : 140%;
+  /* Altura da linha */
+  min-width      : 5.625rem;
+  /* Largura mínima (90px) */
+  height         : 3.25rem;
+  /* Altura fixa (52px) */
+  padding        : 0 1rem;
+  /* Padding interno */
+  flex-shrink    : 0;
+  /* Não encolhe */
+}
+
+/* Efeito hover no botão - muda cor ao passar mouse */
+#todo-form button:hover {
+  background: var(--blue);
+  /* Azul mais claro */
+  transition: background-color 0.2s ease;
+  /* Transição suave */
+}
+
+/* Efeito de foco no botão */
+#todo-form button:focus {
+  background: var(--blue);
+}
+
+/* ========== CONTAINER PRINCIPAL DAS TAREFAS ========== */
+/* 
+  Container que abriga os contadores e a lista de tarefas
+  Centralizado e com largura máxima
+*/
+.tarefas-container {
+  width          : 100%;
+  /* Largura total */
+  max-width      : 46rem;
+  /* Largura máxima (736px) */
+  min-height     : 18rem;
+  /* Altura mínima (288px) */
+  margin         : 4rem auto;
+  /* Centraliza horizontalmente */
+  padding        : 0 1rem;
+  /* Padding para mobile */
+  display        : flex;
+  /* Flexbox para layout */
+  flex-direction : column;
+  /* Layout vertical */
+  justify-content: flex-start;
+  /* Alinha ao topo */
+  align-items    : center;
+  /* Centraliza horizontalmente */
+}
+
+/* ========== CABEÇALHO DOS CONTADORES ========== */
+/* 
+  Área com contadores de tarefas criadas e concluídas
+  Layout horizontal com justificação entre elementos
+*/
+.tarefas-header {
+  display        : flex;
+  /* Layout horizontal */
+  align-items    : center;
+  /* Alinha verticalmente */
+  justify-content: space-between;
+  /* Espaça elementos nas extremidades */
+  width          : 100%;
+  /* Largura total */
+  margin-bottom  : 1.5rem;
+  /* Espaço abaixo */
+}
+
+/* Estilo dos contadores (números em badge) */
+.tarefas-header p {
+  background   : var(--gray-400);
+  /* Fundo cinza médio */
+  border-radius: 999px;
+  /* Totalmente arredondado */
+  padding      : 0.125rem 0.5rem;
+  /* Padding compacto */
+  font-weight  : 700;
+  /* Negrito */
+  font-size    : 12px;
+  /* Tamanho pequeno */
+  line-height  : 15px;
+  /* Altura da linha */
+  color        : var(--gray-200);
+  /* Texto claro */
+  min-width    : 1.5rem;
+  /* Largura mínima */
+  text-align   : center;
+  /* Centraliza texto */
+}
+
+/* ========== CONTADOR DE TAREFAS CRIADAS ========== */
+.tarefas-criadas {
+  display    : flex;
+  /* Layout horizontal */
+  align-items: center;
+  /* Alinha verticalmente */
+  gap        : 0.5rem;
+  /* Espaço entre elementos */
+}
+
+/* Texto do contador de criadas */
+.tarefas-criadas span {
+  font-weight: 700;
+  /* Negrito */
+  font-size  : 14px;
+  /* Tamanho pequeno */
+  line-height: 17px;
+  /* Altura da linha */
+  color      : var(--blue);
+  /* Cor azul */
+}
+
+/* ========== CONTADOR DE TAREFAS CONCLUÍDAS ========== */
+.tarefas-concluidas {
+  display    : flex;
+  /* Layout horizontal */
+  align-items: center;
+  /* Alinha verticalmente */
+  gap        : 0.5rem;
+  /* Espaço entre elementos */
+}
+
+/* Texto do contador de concluídas */
+.tarefas-concluidas span {
+  font-weight: 700;
+  /* Negrito */
+  font-size  : 14px;
+  /* Tamanho pequeno */
+  line-height: 17px;
+  /* Altura da linha */
+  color      : var(--purple);
+  /* Cor roxa */
+}
+
+/* ========== CONTAINER DA LISTA DE TAREFAS ========== */
+/* 
+  Área onde as tarefas são exibidas
+  Com borda superior e cantos arredondados
+*/
+.tarefas-box {
+  border-top    : 1px solid var(--gray-400);
+  /* Borda superior */
+  border-radius : 8px;
+  /* Cantos arredondados */
+  width         : 100%;
+  /* Largura total */
+  display       : flex;
+  /* Flexbox para layout */
+  flex-direction: column;
+  /* Layout vertical */
+  gap           : 0.75rem;
+  /* Espaço entre tarefas */
+  padding-top   : 1.5rem;
+  /* Espaço no topo */
+}
+
+/* ========== ESTADO VAZIO DA LISTA ========== */
+/* 
+  Mensagem e ícone exibidos quando não há tarefas
+  Centralizado vertical e horizontalmente
+*/
+.tarefas-empty {
+  padding        : 4rem 1rem;
+  /* Padding generoso */
+  width          : 100%;
+  /* Largura total */
+  display        : flex;
+  /* Flexbox para layout */
+  flex-direction : column;
+  /* Layout vertical */
+  justify-content: center;
+  /* Centraliza verticalmente */
+  align-items    : center;
+  /* Centraliza horizontalmente */
+  text-align     : center;
+  /* Texto centralizado */
+  gap            : 1rem;
+  /* Espaço entre elementos */
+}
+
+/* Ícone do estado vazio */
+.tarefas-empty svg {
+  color: var(--gray-400);
+  /* Cor acinzentada para o ícone */
+}
+
+/* Título do estado vazio */
+.tarefas-empty span {
+  font-weight: 700;
+  /* Negrito */
+  font-size  : 16px;
+  /* Tamanho médio */
+  line-height: 140%;
+  /* Altura da linha */
+  color      : var(--gray-300);
+  /* Cor acinzentada */
+}
+
+/* Subtítulo do estado vazio */
+.tarefas-empty p {
+  color      : var(--gray-300);
+  /* Cor acinzentada */
+  font-size  : 14px;
+  /* Tamanho menor */
+  line-height: 140%;
+  /* Altura da linha */
+}
+
+/* ========== ITEM INDIVIDUAL DE TAREFA ========== */
+/* 
+  Cada tarefa é exibida como um card
+  Com checkbox, texto e botão de exclusão
+*/
+.tarefa {
+  width          : 100%;
+  /* Largura total */
+  min-height     : 4.5rem;
+  /* Altura mínima (72px) */
+  padding        : 1rem;
+  /* Padding interno */
+  display        : flex;
+  /* Layout horizontal */
+  justify-content: space-between;
+  /* Distribui elementos */
+  align-items    : center;
+  /* Alinha ao centro */
+  gap            : 0.75rem;
+  /* Espaço entre elementos */
+  background     : var(--gray-500);
+  /* Fundo cinza médio */
+  border         : 1px solid var(--gray-400);
+  /* Borda sutil */
+  box-shadow     : 0 2px 8px rgba(0, 0, 0, 0.06);
+  /* Sombra suave */
+  border-radius  : 8px;
+  /* Cantos arredondados */
+}
+
+/* ========== CHECKBOX DA TAREFA ========== */
+/* 
+  Checkbox customizado com estilo próprio
+  Remove aparência padrão e adiciona visual personalizado
+*/
+.tarefa input[type="checkbox"] {
+  width             : 1.5rem;
+  /* Largura (24px) */
+  height            : 1.5rem;
+  /* Altura (24px) */
+  margin-top        : 0.125rem;
+  /* Pequeno ajuste de alinhamento */
+  appearance        : none;
+  /* Remove aparência padrão */
+  -webkit-appearance: none;
+  /* Remove aparência padrão no WebKit */
+  background        : transparent;
+  /* Fundo transparente */
+  border            : 2px solid var(--blue);
+  /* Borda azul */
+  border-radius     : 50%;
+  /* Formato circular */
+  cursor            : pointer;
+  /* Cursor de clique */
+  transition        : all 0.2s ease;
+  /* Transição suave */
+  flex-shrink       : 0;
+  /* Não encolhe */
+  position          : relative;
+  /* Para posicionar o checkmark */
+}
+
+/* Estado hover do checkbox */
+.tarefa input[type="checkbox"]:hover {
+  background  : var(--blue-dark);
+  /* Fundo azul escuro no hover */
+  border-color: var(--blue-dark);
+  /* Borda azul escuro */
+}
+
+/* Estado checked do checkbox */
+.tarefa input[type="checkbox"]:checked {
+  background  : var(--purple-dark);
+  /* Fundo roxo quando marcado */
+  border-color: var(--purple-dark);
+  /* Borda roxa */
+}
+
+/* Checkmark (✓) quando marcado */
+.tarefa input[type="checkbox"]:checked::after {
+  content    : '✓';
+  /* Símbolo de check */
+  color      : var(--white);
+  /* Cor branca */
+  position   : absolute;
+  /* Posicionamento absoluto */
+  top        : 50%;
+  /* Centro vertical */
+  left       : 50%;
+  /* Centro horizontal */
+  transform  : translate(-50%, -50%);
+  /* Centraliza perfeitamente */
+  font-size  : 12px;
+  /* Tamanho do símbolo */
+  font-weight: bold;
+  /* Negrito */
+}
+
+/* Estado hover do checkbox marcado */
+.tarefa input[type="checkbox"]:checked:hover {
+  background  : var(--purple);
+  /* Roxo mais claro no hover */
+  border-color: var(--purple);
+}
+
+/* ========== TEXTO DA TAREFA ========== */
+/* 
+  Texto principal da tarefa
+  Muda aparência quando tarefa está completa
+*/
+.tarefa span {
+  font-weight: 400;
+  /* Peso normal */
+  font-size  : 14px;
+  /* Tamanho médio */
+  line-height: 140%;
+  /* Altura da linha */
+  color      : var(--gray-100);
+  /* Texto claro */
+  flex       : 1;
+  /* Ocupa espaço disponível */
+  word-wrap  : break-word;
+  /* Quebra palavras longas */
+  margin-top : 0.125rem;
+  /* Pequeno ajuste de alinhamento */
+}
+
+/* Estilo do texto quando tarefa está completa */
+.tarefa input[type="checkbox"]:checked+span {
+  color          : var(--gray-300);
+  /* Texto mais apagado */
+  text-decoration: line-through;
+  /* Riscado */
+}
+
+/* ========== BOTÃO DE EXCLUSÃO ========== */
+/* 
+  Botão para deletar tarefa
+  Ícone de lixeira que muda cor no hover
+*/
+.tarefa button {
+  background   : transparent;
+  /* Fundo transparente */
+  border       : 0;
+  /* Sem borda */
+  color        : var(--gray-300);
+  /* Cor acinzentada */
+  cursor       : pointer;
+  /* Cursor de clique */
+  padding      : 0.5rem;
+  /* Padding para área de clique */
+  border-radius: 4px;
+  /* Cantos ligeiramente arredondados */
+  line-height  : 0;
+  /* Remove espaçamento de linha */
+  flex-shrink  : 0;
+  /* Não encolhe */
+  transition   : color 0.2s ease;
+  /* Transição suave da cor */
+}
+
+/* Estado hover do botão de exclusão */
+.tarefa button:hover {
+  color: var(--red);
+  /* Vermelho no hover */
+}
+
+/* Estado de foco do botão de exclusão */
+.tarefa button:focus {
+  color: var(--red);
+}
+
+/* ========== RESPONSIVIDADE ========== */
+/* 
+  Ajustes para telas menores (tablets e celulares)
+  Media queries para diferentes tamanhos de tela
+*/
+
+/* Tablets e telas médias */
+@media (max-width: 768px) {
+
+  /* Ajustes no formulário */
+  #todo-form {
+    flex-direction: column;
+    /* Layout vertical em telas pequenas */
+    gap           : 1rem;
+    /* Maior espaço entre elementos */
+    padding       : 0 1rem;
+    /* Padding lateral */
+  }
+
+  #todo-input {
+    width    : 100%;
+    /* Largura total */
+    max-width: none;
+    /* Remove largura máxima */
+  }
+
+  #todo-form button {
+    width: 100%;
+    /* Botão ocupa largura total */
+  }
+
+  /* Ajustes no header das tarefas */
+  .tarefas-header {
+    flex-direction: column;
+    /* Layout vertical */
+    gap           : 1rem;
+    /* Espaço entre contadores */
+    align-items   : center;
+    /* Centraliza elementos */
+  }
+
+  /* Ajustes nas tarefas */
+  .tarefa {
+    padding: 0.75rem;
+    /* Padding menor */
+  }
+
+  .tarefa span {
+    font-size: 16px;
+    /* Texto maior para mobile */
+  }
+}
+
+/* Celulares */
+@media (max-width: 480px) {
+
+  /* Header menor */
+  header {
+    height : 10rem;
+    /* Altura menor */
+    padding: 3rem 0;
+    /* Padding menor */
+  }
+
+  header h1 {
+    font-size: 2rem;
+    /* Título menor */
+  }
+
+  /* Container com menos margem */
+  .tarefas-container {
+    margin: 2rem auto;
+    /* Margem menor */
+  }
+
+  /* Estado vazio mais compacto */
+  .tarefas-empty {
+    padding: 2rem 1rem;
+    /* Padding menor */
+  }
+}
+
+/* ========== MODO ESCURO APRIMORADO ========== */
+/* 
+  Ajustes adicionais para melhor contraste
+  em tema escuro (já é o padrão)
+*/
+
+/* Melhor contraste para texto */
+.tarefa span,
+.tarefas-empty span {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  /* Sombra sutil no texto */
+}
+
+/* Melhor destaque para elementos interativos */
+button:hover,
+input:hover {
+  transform : translateY(-1px);
+  /* Pequeno movimento no hover */
+  transition: transform 0.2s ease;
+  /* Transição suave */
+}
+
+/* Reset do transform para elementos focados */
+button:focus,
+input:focus {
+  transform: none;
+}
+
+/* ========== MODO DE EDIÇÃO DE TAREFAS ========== */
+/* 
+  Estilos específicos para a funcionalidade de edição
+  Aplicados quando o usuário clica duas vezes no texto
+*/
+
+/* Campo de entrada durante a edição */
+.campo-edicao {
+  /* Aparência integrada ao design existente */
+  background   : var(--gray-500) !important;
+  color        : var(--gray-100) !important;
+  border       : 2px solid var(--purple-dark) !important;
+  border-radius: 4px !important;
+
+  /* Tipografia consistente com o resto da aplicação */
+  font-family: inherit !important;
+  font-size  : 14px !important;
+  font-weight: 400 !important;
+  line-height: 140% !important;
+
+  /* Layout que se adapta ao container */
+  padding: 4px 8px !important;
+  width  : 100% !important;
+  margin : 0 !important;
+
+  /* Comportamento suave e responsivo */
+  outline   : none !important;
+  transition: border-color 0.2s ease !important;
+}
+
+/* Estado de foco do campo de edição */
+.campo-edicao:focus {
+  border-color: var(--purple) !important;
+  box-shadow  : 0 0 0 2px rgba(130, 132, 250, 0.2) !important;
+}
+
+/* Indicação visual de que o texto é editável */
+.tarefa span {
+  /* Aparência padrão */
+  cursor       : text;
+  padding      : 2px 4px;
+  border-radius: 4px;
+  transition   : background 0.2s ease;
+
+  /* Dica visual para o usuário */
+  position: relative;
+}
+
+/* Efeito hover no texto da tarefa */
+.tarefa span:hover {
+  background: rgba(130, 132, 250, 0.1);
+  /* Fundo sutil roxo indicando interatividade */
+}
+
+/* Tooltip explicativo (opcional) */
+.tarefa span:hover::after {
+  content      : "Clique duas vezes para editar";
+  position     : absolute;
+  bottom       : -25px;
+  left         : 0;
+  background   : var(--gray-700);
+  color        : var(--gray-100);
+  padding      : 4px 8px;
+  border-radius: 4px;
+  font-size    : 12px;
+  white-space  : nowrap;
+  z-index      : 1000;
+  opacity      : 0;
+  animation    : fadeIn 0.3s ease 0.5s forwards;
+  /* Aparece após 0.5s de hover */
+}
+
+/* Animação do tooltip */
+@keyframes fadeIn {
+  from {
+    opacity  : 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity  : 1;
+    transform: translateY(0);
+  }
+}
+
+/* Remove tooltip quando não está em hover */
+.tarefa span:not(:hover)::after {
+  display: none;
+}

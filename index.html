@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <!-- ========== INÍCIO DO CABEÇALHO DA PÁGINA ========== -->
+  <head>
+    <!-- 
+      CHARSET: Define como o navegador deve interpretar os caracteres especiais
+      UTF-8 suporta todos os idiomas, incluindo acentos em português
+    -->
+    <meta charset="UTF-8" />
+
+    <!-- 
+      PRECONNECT: Inicia conexão com servidores das fontes antes de precisar
+      Isso acelera o carregamento da página melhorando a performance
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- 
+      VIEWPORT: Fundamental para design responsivo em celulares e tablets
+      width=device-width: a largura da página = largura da tela do dispositivo
+      initial-scale=1.0: não aplica zoom inicial
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 
+      FONTE GOOGLE: Importa a fonte Inter que é moderna e legível
+      Pesos: 400 (normal), 600 (semi-bold), 700 (bold)
+      display=swap: mostra texto com fonte padrão até a Inter carregar
+    -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- 
+      TÍTULO: Aparece na aba do navegador e nos favoritos
+      Importante para SEO e experiência do usuário
+    -->
+    <title>Lista de Tarefas - TODO List</title>
+
+    <!-- 
+      CSS: Link para nosso arquivo de estilos
+      O CSS controla toda a aparência visual da página
+    -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <!-- ========== INÍCIO DO CORPO DA PÁGINA ========== -->
+  <body>
+    <!-- 
+      CONTAINER PRINCIPAL: Organiza todo o conteúdo da aplicação
+      É como uma "caixa" que engloba tudo que é visível na página
+    -->
+    <div class="container">
+      <!-- 
+        CABEÇALHO: Área do título principal da aplicação
+        role="banner": informa aos leitores de tela que é o cabeçalho principal
+        Semantic HTML: <header> é mais descritivo que <div>
+      -->
+      <header id="header" role="banner">
+        <h1>
+          <!-- 
+            ÍCONE + TÍTULO: O emoji é decorativo, o texto é o conteúdo principal
+            O emoji ajuda iniciantes a entender que é sobre tarefas/listas
+          -->
+          <span class="logo-icon">📝</span>
+          TODO List
+        </h1>
+      </header>
+
+      <!-- 
+        FORMULÁRIO: Onde o usuário digita e cria novas tarefas
+        role="search": semanticamente identifica como área de entrada de dados
+        aria-label: descreve o propósito para pessoas que usam leitores de tela
+      -->
+      <form id="todo-form" role="search" aria-label="Adicionar nova tarefa">
+        <!-- 
+          CAMPO DE TEXTO: Onde o usuário digita a nova tarefa
+          type="text": define que é um campo de texto simples
+          id="todo-input": identificador único usado pelo CSS e JavaScript
+          required: impede envio de formulário vazio
+          autocomplete="off": evita sugestões automáticas do navegador
+        -->
+        <input
+          type="text"
+          id="todo-input"
+          name="nova-tarefa"
+          placeholder="Adicione uma nova tarefa"
+          aria-label="Digite o texto da nova tarefa"
+          required
+          autocomplete="off"
+        />
+
+        <!-- 
+          BOTÃO DE CRIAR: Submete o formulário criando uma nova tarefa
+          type="button": evita reload da página (controlado via JavaScript)
+          aria-label: descrição específica para acessibilidade
+          aria-hidden="true": o emoji é apenas decorativo, não informativo
+        -->
+        <button type="button" id="btn-criar" aria-label="Criar nova tarefa">
+          <span aria-hidden="true">➕</span>
+          Criar
+        </button>
+      </form>
+
+      <!-- 
+        ÁREA PRINCIPAL: Container onde ficam os contadores e a lista de tarefas
+        role="main": indica o conteúdo principal da página para acessibilidade
+        Aqui é onde toda a "ação" da aplicação acontece
+      -->
+      <main class="tarefas-container" role="main">
+        <!-- 
+          CONTADORES: Mostram estatísticas das tarefas (quantas criadas/concluídas)
+          aria-live="polite": informa mudanças aos leitores de tela sem interromper
+          Estes números são atualizados automaticamente pelo JavaScript
+        -->
+        <header class="tarefas-header" aria-live="polite">
+          <!-- 
+            CONTADOR DE TAREFAS CRIADAS: Mostra total de tarefas adicionadas
+            O JavaScript irá atualizar o conteúdo do elemento com id="contador-criadas"
+          -->
+          <div class="tarefas-criadas">
+            <span>Tarefas criadas</span>
+            <p id="contador-criadas" aria-label="Número de tarefas criadas">
+              0
+            </p>
+          </div>
+
+          <!-- 
+            CONTADOR DE TAREFAS CONCLUÍDAS: Mostra quantas foram completadas
+            Formato: "X de Y" (exemplo: "2 de 5")
+            O JavaScript atualizará este contador automaticamente
+          -->
+          <div class="tarefas-concluidas">
+            <span>Concluídas</span>
+            <p
+              id="contador-concluidas"
+              aria-label="Número de tarefas concluídas"
+            >
+              0 de 0
+            </p>
+          </div>
+        </header>
+
+        <!-- 
+          LISTA DE TAREFAS: Container onde cada tarefa individual aparecerá
+          role="list": informa aos leitores de tela que é uma lista
+          aria-label: descreve o propósito da lista
+          
+          IMPORTANTE: Este container começa vazio!
+          O JavaScript irá adicionar as tarefas aqui dinamicamente
+        -->
+        <section class="tarefas-box" role="list" aria-label="Lista de tarefas">
+          <!-- As tarefas aparecerão aqui dinamicamente via JavaScript -->
+        </section>
+      </main>
+    </div>
+
+    <!-- 
+      JAVASCRIPT: Carregado no final para garantir que o HTML esteja pronto
+      Quando o navegador chega aqui, todos os elementos HTML já foram criados
+      O JavaScript é o responsável por toda a interatividade da aplicação
+    -->
+    <script src="scripts.js"></script>
+  </body>
+</html>

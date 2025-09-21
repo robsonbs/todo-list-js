@@ -1,0 +1,730 @@
+/* ========================================
+   GUIA CSS PARA INICIANTES
+   Este arquivo foi criado especificamente para 
+   facilitar o aprendizado de CSS para iniciantes
+======================================== */
+
+/* ========== 1. CONFIGURAÇÃO INICIAL ========== */
+/* 
+  VARIÁVEIS CSS: Como "caixinhas" que guardam valores
+  Definimos uma vez e reutilizamos em todo o código
+  Facilita mudanças: altera em um lugar, muda em todos
+*/
+:root {
+  /* CORES PRINCIPAIS */
+  --cor-azul-escuro: #1E6F9F;
+  /* Botões principais */
+  --cor-azul-claro : #4EA8DE;
+  /* Efeitos hover */
+  --cor-roxo-escuro: #5E60CE;
+  /* Checkbox marcado */
+  --cor-roxo-claro : #8284FA;
+  /* Texto roxo */
+
+  /* TONS DE CINZA (do mais escuro ao mais claro) */
+  --cor-fundo-header    : #0D0D0D;
+  /* Header muito escuro */
+  --cor-fundo-principal : #1A1A1A;
+  /* Fundo da página */
+  --cor-fundo-elemento  : #262626;
+  /* Fundo de campos */
+  --cor-borda           : #333333;
+  /* Bordas */
+  --cor-texto-secundario: #808080;
+  /* Texto menos importante */
+  --cor-texto-claro     : #D9D9D9;
+  /* Texto normal */
+  --cor-texto-principal : #F2F2F2;
+  /* Texto importante */
+
+  /* CORES ESPECIAIS */
+  --cor-vermelha: #E25858;
+  /* Para deletar */
+  --cor-branca  : #FFF;
+  /* Branco puro */
+}
+
+/* RESET BÁSICO: Remove estilos padrão do navegador */
+* {
+  margin    : 0;
+  /* Remove margens padrão */
+  padding   : 0;
+  /* Remove espaçamentos padrão */
+  box-sizing: border-box;
+  /* Inclui borda no tamanho total */
+}
+
+/* ========== 2. CONFIGURAÇÃO DA PÁGINA ========== */
+
+/* CORPO DA PÁGINA */
+body {
+  /* Aparência */
+  background: var(--cor-fundo-principal);
+  color     : var(--cor-texto-secundario);
+
+  /* Tipografia */
+  font-family: Inter, Arial, sans-serif;
+  font-size  : 16px;
+  /* Tamanho base - 1rem = 16px */
+  line-height: 1.5;
+  /* Espaçamento entre linhas */
+
+  /* Layout */
+  min-height: 100vh;
+  /* Altura mínima = tela toda */
+
+  /* Suavização de fonte (melhor em telas de alta resolução) */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ELEMENTOS INTERATIVOS */
+button {
+  cursor     : pointer;
+  /* Mostra que é clicável */
+  font-family: inherit;
+  /* Herda a fonte do body */
+}
+
+input {
+  font-family: inherit;
+  /* Herda a fonte do body */
+}
+
+/* FOCO: Destaque quando elemento está selecionado */
+input:focus,
+button:focus {
+  outline       : 2px solid var(--cor-roxo-escuro);
+  outline-offset: 2px;
+}
+
+/* ========== 3. CABEÇALHO (HEADER) ========== */
+
+/* CONTAINER DO CABEÇALHO */
+#header {
+  /* Aparência */
+  background: var(--cor-fundo-header);
+
+  /* Layout com Flexbox */
+  display        : flex;
+  /* Ativa flexbox */
+  justify-content: center;
+  /* Centraliza horizontalmente */
+  align-items    : center;
+  /* Centraliza verticalmente */
+
+  /* Dimensões */
+  width  : 100%;
+  /* Largura total */
+  height : 200px;
+  /* Altura fixa */
+  padding: 64px 0;
+  /* Espaçamento interno */
+}
+
+/* TÍTULO PRINCIPAL */
+#header h1 {
+  /* Aparência */
+  color      : var(--cor-branca);
+  font-size  : 40px;
+  /* Tamanho grande */
+  font-weight: 700;
+  /* Negrito */
+
+  /* Layout */
+  display    : flex;
+  align-items: center;
+  gap        : 8px;
+  /* Espaço entre ícone e texto */
+}
+
+/* ÍCONE DO LOGO */
+.logo-icon {
+  font-size: 32px;
+  /* Tamanho do emoji */
+}
+
+/* ========== 4. FORMULÁRIO DE NOVA TAREFA ========== */
+
+/* CONTAINER DO FORMULÁRIO */
+#todo-form {
+  /* Layout */
+  display        : flex;
+  justify-content: center;
+  align-items    : center;
+  gap            : 8px;
+  /* Espaço entre input e botão */
+
+  /* Posicionamento */
+  margin-top: -24px;
+  /* Sobe para "invadir" o header */
+  padding   : 0 16px;
+  /* Espaçamento lateral */
+}
+
+/* CAMPO DE ENTRADA DE TEXTO */
+#todo-input {
+  /* Aparência */
+  background   : var(--cor-fundo-elemento);
+  color        : var(--cor-texto-principal);
+  border       : 1px solid var(--cor-fundo-header);
+  border-radius: 8px;
+  /* Cantos arredondados */
+
+  /* Tipografia */
+  font-size  : 16px;
+  /* Evita zoom no mobile */
+  font-weight: 400;
+  /* Peso normal */
+
+  /* Dimensões */
+  padding  : 16px;
+  /* Espaçamento interno */
+  width    : 100%;
+  /* Largura responsiva */
+  max-width: 608px;
+  /* Largura máxima */
+  height   : 54px;
+  /* Altura fixa */
+
+  /* Flexbox */
+  flex: 1;
+  /* Cresce para ocupar espaço */
+}
+
+/* PLACEHOLDER DO INPUT */
+#todo-input::placeholder {
+  color: var(--cor-texto-secundario);
+}
+
+/* ESTADO DE FOCO DO INPUT */
+#todo-input:focus {
+  border-color: var(--cor-roxo-escuro);
+}
+
+/* BOTÃO DE CRIAR TAREFA */
+#todo-form button {
+  /* Aparência */
+  background   : var(--cor-azul-escuro);
+  color        : var(--cor-branca);
+  border       : none;
+  /* Remove borda padrão */
+  border-radius: 8px;
+
+  /* Tipografia */
+  font-size  : 14px;
+  font-weight: 700;
+  /* Negrito */
+
+  /* Layout */
+  display        : flex;
+  justify-content: center;
+  align-items    : center;
+  gap            : 8px;
+  /* Espaço entre ícone e texto */
+
+  /* Dimensões */
+  min-width: 90px;
+  /* Largura mínima */
+  height   : 52px;
+  /* Altura fixa */
+  padding  : 0 16px;
+  /* Espaçamento interno */
+
+  /* Flexbox */
+  flex-shrink: 0;
+  /* Não encolhe */
+}
+
+/* EFEITO HOVER NO BOTÃO */
+#todo-form button:hover {
+  background: var(--cor-azul-claro);
+  transition: background-color 0.2s ease;
+}
+
+/* ========== 5. CONTAINER DAS TAREFAS ========== */
+
+/* CONTAINER PRINCIPAL */
+.tarefas-container {
+  /* Layout */
+  display       : flex;
+  flex-direction: column;
+  /* Layout vertical */
+  align-items   : center;
+
+  /* Dimensões */
+  width     : 100%;
+  max-width : 736px;
+  /* Largura máxima */
+  min-height: 288px;
+  /* Altura mínima */
+
+  /* Posicionamento */
+  margin : 64px auto;
+  /* Centraliza horizontalmente */
+  padding: 0 16px;
+  /* Espaçamento lateral */
+}
+
+/* ========== 6. CONTADORES DE TAREFAS ========== */
+
+/* HEADER DOS CONTADORES */
+.tarefas-header {
+  /* Layout */
+  display        : flex;
+  justify-content: space-between;
+  /* Extremidades */
+  align-items    : center;
+
+  /* Dimensões */
+  width        : 100%;
+  margin-bottom: 24px;
+  /* Espaço abaixo */
+}
+
+/* CONTAINER DE CADA CONTADOR */
+.tarefas-criadas,
+.tarefas-concluidas {
+  /* Layout */
+  display    : flex;
+  align-items: center;
+  gap        : 8px;
+  /* Espaço entre texto e número */
+}
+
+/* TEXTO DOS CONTADORES */
+.tarefas-criadas span {
+  color      : var(--cor-azul-claro);
+  font-weight: 700;
+  font-size  : 14px;
+}
+
+.tarefas-concluidas span {
+  color      : var(--cor-roxo-claro);
+  font-weight: 700;
+  font-size  : 14px;
+}
+
+/* NÚMEROS DOS CONTADORES */
+.tarefas-header p {
+  /* Aparência */
+  background   : var(--cor-borda);
+  color        : var(--cor-texto-claro);
+  border-radius: 999px;
+  /* Totalmente arredondado */
+
+  /* Tipografia */
+  font-weight: 700;
+  font-size  : 12px;
+  text-align : center;
+
+  /* Dimensões */
+  padding  : 2px 8px;
+  /* Espaçamento interno */
+  min-width: 24px;
+  /* Largura mínima */
+}
+
+/* ========== 7. LISTA DE TAREFAS ========== */
+
+/* CONTAINER DA LISTA */
+.tarefas-box {
+  /* Aparência */
+  border-top   : 1px solid var(--cor-borda);
+  border-radius: 8px;
+
+  /* Layout */
+  display       : flex;
+  flex-direction: column;
+  gap           : 12px;
+  /* Espaço entre tarefas */
+
+  /* Dimensões */
+  width      : 100%;
+  padding-top: 24px;
+  /* Espaço no topo */
+}
+
+/* ========== 8. ESTADO VAZIO ========== */
+
+/* MENSAGEM QUANDO NÃO HÁ TAREFAS */
+.tarefas-empty {
+  /* Layout */
+  display        : flex;
+  flex-direction : column;
+  justify-content: center;
+  align-items    : center;
+  text-align     : center;
+  gap            : 16px;
+  /* Espaço entre elementos */
+
+  /* Dimensões */
+  width  : 100%;
+  padding: 64px 16px;
+  /* Espaçamento generoso */
+}
+
+/* ÍCONE DO ESTADO VAZIO */
+.tarefas-empty svg {
+  color: var(--cor-borda);
+}
+
+/* TÍTULO DO ESTADO VAZIO */
+.tarefas-empty span {
+  color      : var(--cor-texto-secundario);
+  font-weight: 700;
+  font-size  : 16px;
+}
+
+/* SUBTÍTULO DO ESTADO VAZIO */
+.tarefas-empty p {
+  color    : var(--cor-texto-secundario);
+  font-size: 14px;
+}
+
+/* ========== 9. TAREFAS INDIVIDUAIS ========== */
+
+/* CONTAINER DE CADA TAREFA */
+.tarefa {
+  /* Aparência */
+  background   : var(--cor-fundo-elemento);
+  border       : 1px solid var(--cor-borda);
+  border-radius: 8px;
+  box-shadow   : 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  /* Layout */
+  display        : flex;
+  justify-content: space-between;
+  align-items    : center;
+  gap            : 12px;
+  /* Espaço entre elementos */
+
+  /* Dimensões */
+  width     : 100%;
+  min-height: 72px;
+  /* Altura mínima */
+  padding   : 16px;
+  /* Espaçamento interno */
+}
+
+/* ========== 10. CHECKBOX PERSONALIZADO ========== */
+
+/* ESTILO DO CHECKBOX */
+.tarefa input[type="checkbox"] {
+  /* Remove aparência padrão */
+  appearance        : none;
+  -webkit-appearance: none;
+
+  /* Aparência personalizada */
+  background   : transparent;
+  border       : 2px solid var(--cor-azul-claro);
+  border-radius: 50%;
+  /* Formato circular */
+
+  /* Dimensões */
+  width : 24px;
+  height: 24px;
+
+  /* Layout */
+  flex-shrink: 0;
+  /* Não encolhe */
+  margin-top : 2px;
+  /* Ajuste de alinhamento */
+
+  /* Interação */
+  cursor    : pointer;
+  transition: all 0.2s ease;
+  position  : relative;
+  /* Para posicionar o checkmark */
+}
+
+/* HOVER NO CHECKBOX */
+.tarefa input[type="checkbox"]:hover {
+  background  : var(--cor-azul-escuro);
+  border-color: var(--cor-azul-escuro);
+}
+
+/* CHECKBOX MARCADO */
+.tarefa input[type="checkbox"]:checked {
+  background  : var(--cor-roxo-escuro);
+  border-color: var(--cor-roxo-escuro);
+}
+
+/* SÍMBOLO DE CHECK (✓) */
+.tarefa input[type="checkbox"]:checked::after {
+  content: '✓';
+  color  : var(--cor-branca);
+
+  /* Posicionamento centralizado */
+  position : absolute;
+  top      : 50%;
+  left     : 50%;
+  transform: translate(-50%, -50%);
+
+  /* Tipografia */
+  font-size  : 12px;
+  font-weight: bold;
+}
+
+/* ========== 11. TEXTO DA TAREFA ========== */
+
+/* TEXTO NORMAL */
+.tarefa span {
+  /* Tipografia */
+  color      : var(--cor-texto-principal);
+  font-size  : 14px;
+  font-weight: 400;
+  line-height: 1.4;
+
+  /* Layout */
+  flex      : 1;
+  /* Ocupa espaço disponível */
+  word-wrap : break-word;
+  /* Quebra palavras longas */
+  margin-top: 2px;
+  /* Ajuste de alinhamento */
+}
+
+/* TEXTO QUANDO TAREFA ESTÁ COMPLETA */
+.tarefa input[type="checkbox"]:checked+span {
+  color          : var(--cor-texto-secundario);
+  text-decoration: line-through;
+  /* Texto riscado */
+}
+
+/* ========== 12. BOTÃO DE DELETAR ========== */
+
+/* BOTÃO DE EXCLUSÃO */
+.tarefa button {
+  /* Aparência */
+  background: transparent;
+  border    : none;
+  color     : var(--cor-texto-secundario);
+
+  /* Layout */
+  padding      : 8px;
+  /* Área de clique */
+  border-radius: 4px;
+  flex-shrink  : 0;
+  /* Não encolhe */
+  line-height  : 0;
+  /* Remove espaçamento */
+
+  /* Interação */
+  cursor    : pointer;
+  transition: color 0.2s ease;
+}
+
+/* HOVER NO BOTÃO DE DELETAR */
+.tarefa button:hover {
+  color: var(--cor-vermelha);
+}
+
+/* ========== 13. RESPONSIVIDADE ========== */
+
+/* TABLETS (até 768px) */
+@media (max-width: 768px) {
+
+  /* Formulário empilhado */
+  #todo-form {
+    flex-direction: column;
+    /* Layout vertical */
+    gap           : 16px;
+  }
+
+  #todo-input {
+    max-width: none;
+    /* Remove limite de largura */
+  }
+
+  #todo-form button {
+    width: 100%;
+    /* Botão largura total */
+  }
+
+  /* Contadores empilhados */
+  .tarefas-header {
+    flex-direction: column;
+    gap           : 16px;
+    align-items   : center;
+  }
+
+  /* Tarefas mais compactas */
+  .tarefa {
+    padding: 12px;
+  }
+
+  .tarefa span {
+    font-size: 16px;
+    /* Texto maior no mobile */
+  }
+}
+
+/* CELULARES (até 480px) */
+@media (max-width: 480px) {
+
+  /* Header menor */
+  #header {
+    height : 160px;
+    padding: 48px 0;
+  }
+
+  #header h1 {
+    font-size: 32px;
+    /* Título menor */
+  }
+
+  /* Container com menos espaço */
+  .tarefas-container {
+    margin: 32px auto;
+  }
+
+  /* Estado vazio mais compacto */
+  .tarefas-empty {
+    padding: 32px 16px;
+  }
+}
+
+/* ========== 14. MELHORIAS VISUAIS ========== */
+
+/* SOMBRA SUTIL NO TEXTO */
+.tarefa span,
+.tarefas-empty span {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ANIMAÇÃO SUTIL NO HOVER */
+button:hover,
+input:hover {
+  transform : translateY(-1px);
+  /* Pequeno movimento para cima */
+  transition: transform 0.2s ease;
+}
+
+/* RESET DA ANIMAÇÃO NO FOCO */
+button:focus,
+input:focus {
+  transform: none;
+}
+
+/* ========== 15. CUSTOMIZAÇÃO DA BARRA DE ROLAGEM ========== */
+
+/* BARRA DE ROLAGEM PERSONALIZADA (apenas no Chrome/Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cor-fundo-principal);
+}
+
+::-webkit-scrollbar-thumb {
+  background   : var(--cor-fundo-elemento);
+  border-radius: 8px;
+}
+
+/* ========== 16. FUNCIONALIDADE DE EDIÇÃO ========== */
+/* 
+  Estilos para a nova funcionalidade de editar tarefas
+  Estes estilos são aplicados quando o usuário clica duas vezes no texto
+*/
+
+/* CAMPO DE EDIÇÃO */
+.campo-edicao {
+  /* Aparência integrada ao design */
+  background   : var(--cor-fundo-elemento) !important;
+  color        : var(--cor-texto-principal) !important;
+  border       : 2px solid var(--cor-roxo-escuro) !important;
+  border-radius: 4px !important;
+
+  /* Tipografia consistente */
+  font-family: inherit !important;
+  font-size  : 14px !important;
+  font-weight: 400 !important;
+  line-height: 140% !important;
+
+  /* Layout */
+  padding: 4px 8px !important;
+  width  : 100% !important;
+  margin : 0 !important;
+
+  /* Comportamento */
+  outline   : none !important;
+  transition: border-color 0.2s ease !important;
+}
+
+/* FOCO NO CAMPO DE EDIÇÃO */
+.campo-edicao:focus {
+  border-color: var(--cor-roxo-claro) !important;
+  box-shadow  : 0 0 0 2px rgba(130, 132, 250, 0.2) !important;
+}
+
+/* INDICAÇÃO VISUAL DE QUE O TEXTO É EDITÁVEL */
+.tarefa span {
+  /* Cursor de texto */
+  cursor       : text;
+  padding      : 2px 4px;
+  border-radius: 4px;
+  transition   : background 0.2s ease;
+  position     : relative;
+}
+
+/* EFEITO HOVER NO TEXTO DA TAREFA */
+.tarefa span:hover {
+  background: rgba(130, 132, 250, 0.1);
+  /* Fundo roxo sutil indicando que é interativo */
+}
+
+/* TOOLTIP EXPLICATIVO */
+.tarefa span:hover::after {
+  content      : "Clique duas vezes para editar";
+  position     : absolute;
+  bottom       : -25px;
+  left         : 0;
+  background   : var(--cor-fundo-header);
+  color        : var(--cor-texto-claro);
+  padding      : 4px 8px;
+  border-radius: 4px;
+  font-size    : 12px;
+  white-space  : nowrap;
+  z-index      : 1000;
+  opacity      : 0;
+  animation    : aparecerTooltip 0.3s ease 0.5s forwards;
+  /* Aparece após 0.5s de hover */
+}
+
+/* ANIMAÇÃO DO TOOLTIP */
+@keyframes aparecerTooltip {
+  from {
+    opacity  : 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity  : 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   FIM DO ARQUIVO CSS
+   
+   RESUMO DO QUE APRENDEMOS:
+   1. Variáveis CSS para reutilização
+   2. Flexbox para layouts responsivos
+   3. Estados interativos (:hover, :focus)
+   4. Media queries para responsividade
+   5. Customização de elementos nativos
+   6. Hierarquia visual com cores e tipografia
+   7. Animações sutis para melhor UX
+   8. Acessibilidade com foco visível
+   9. NOVO: Pseudo-elementos (::after)
+   10. NOVO: Animações CSS (@keyframes)
+   11. NOVO: Tooltips CSS puros
+   12. NOVO: Estados de edição inline
+   
+   A nova funcionalidade de edição demonstra:
+   - Como integrar estilos dinamicamente
+   - Como criar feedback visual avançado
+   - Como usar !important quando necessário
+   - Como criar tooltips sem JavaScript
+======================================== */
