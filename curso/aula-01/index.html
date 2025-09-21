@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 1 - Primeiros Passos no JavaScript</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .exercicio {
+        background: #f0f8ff;
+        padding: 15px;
+        border-left: 4px solid #007acc;
+        margin: 20px 0;
+      }
+      .codigo {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: "Courier New", monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎓 Aula 1: Fundamentos e Estrutura</h1>
+
+    <h2>📚 O que aprenderemos hoje:</h2>
+    <ul>
+      <li>O que é JavaScript e para que serve</li>
+      <li>Variáveis e tipos de dados</li>
+      <li>Nossa primeira função</li>
+      <li>Como usar o console do navegador</li>
+    </ul>
+
+    <div class="exercicio">
+      <h3>🧪 Exercício 1: Variáveis Básicas</h3>
+      <p>Abra o console do navegador (F12) e teste estes códigos:</p>
+      <div class="codigo">
+        let nome = "Seu Nome Aqui";<br />
+        let idade = 25;<br />
+        let estudante = true;<br />
+        console.log("Olá, " + nome + "!");
+      </div>
+    </div>
+
+    <div class="exercicio">
+      <h3>🧪 Exercício 2: Primeira Função</h3>
+      <p>Copie este código no console:</p>
+      <div class="codigo">
+        function saudar(nome) {<br />
+        &nbsp;&nbsp;return "Olá, " + nome + "! Bem-vindo ao JavaScript!";<br />
+        }<br />
+        <br />
+        // Teste a função<br />
+        console.log(saudar("Maria"));
+      </div>
+    </div>
+
+    <button onclick="mostrarAlerta()">Clique para ver uma mensagem!</button>
+
+    <script>
+      // Esta é nossa primeira função JavaScript!
+      function mostrarAlerta() {
+        alert("Parabéns! Você executou sua primeira função JavaScript!");
+      }
+
+      // Função que será usada nos exercícios
+      function exemploConsole() {
+        console.log("Esta mensagem aparece no console!");
+        console.log("Tipo de dado string:", typeof "texto");
+        console.log("Tipo de dado número:", typeof 42);
+        console.log("Tipo de dado boolean:", typeof true);
+      }
+
+      // Execute automaticamente quando a página carregar
+      console.log(
+        "🚀 Aula 1 carregada! Digite 'exemploConsole()' no console para ver exemplos."
+      );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,388 @@
+/* ========================================
+   CSS PARA TODO LIST - CURSO JAVASCRIPT
+   
+   Este arquivo contém todos os estilos
+   da nossa aplicação de lista de tarefas.
+======================================== */
+
+/* RESET E CONFIGURAÇÕES GERAIS */
+* {
+  margin    : 0;
+  padding   : 0;
+  box-sizing: border-box;
+}
+
+/* VARIÁVEIS CSS - Cores e valores reutilizáveis */
+:root {
+  --cor-primaria  : #2563eb;
+  --cor-secundaria: #1e40af;
+  --cor-sucesso   : #059669;
+  --cor-perigo    : #dc2626;
+  --cor-aviso     : #d97706;
+
+  --cor-fundo      : #f8fafc;
+  --cor-card       : #ffffff;
+  --cor-borda      : #e2e8f0;
+  --cor-texto      : #1e293b;
+  --cor-texto-claro: #64748b;
+
+  --espaco-pequeno: 8px;
+  --espaco-medio  : 16px;
+  --espaco-grande : 24px;
+  --raio-borda    : 8px;
+
+  --sombra-leve : 0 1px 3px rgba(0, 0, 0, 0.1);
+  --sombra-media: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* CONFIGURAÇÃO DO BODY */
+body {
+  font-family     : 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--cor-fundo);
+  color           : var(--cor-texto);
+  line-height     : 1.6;
+  min-height      : 100vh;
+  display         : flex;
+  flex-direction  : column;
+}
+
+/* CABEÇALHO */
+#header {
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria));
+  color     : white;
+  text-align: center;
+  padding   : var(--espaco-grande);
+  box-shadow: var(--sombra-media);
+}
+
+#header h1 {
+  font-size    : 2.5rem;
+  margin-bottom: var(--espaco-pequeno);
+  font-weight  : 700;
+}
+
+#header p {
+  font-size: 1.1rem;
+  opacity  : 0.9;
+}
+
+/* ÁREA PRINCIPAL */
+#main {
+  flex     : 1;
+  max-width: 800px;
+  margin   : 0 auto;
+  padding  : var(--espaco-grande);
+  width    : 100%;
+}
+
+/* SEÇÕES */
+section {
+  background   : var(--cor-card);
+  border-radius: var(--raio-borda);
+  padding      : var(--espaco-grande);
+  margin-bottom: var(--espaco-grande);
+  box-shadow   : var(--sombra-leve);
+  border       : 1px solid var(--cor-borda);
+}
+
+section h2 {
+  color        : var(--cor-primaria);
+  margin-bottom: var(--espaco-medio);
+  font-size    : 1.5rem;
+}
+
+/* FORMULÁRIO DE NOVA TAREFA */
+#formulario-tarefa {
+  display    : flex;
+  gap        : var(--espaco-medio);
+  align-items: center;
+}
+
+#input-nova-tarefa {
+  flex         : 1;
+  padding      : 12px 16px;
+  border       : 2px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  font-size    : 1rem;
+  transition   : border-color 0.3s ease;
+}
+
+#input-nova-tarefa:focus {
+  outline     : none;
+  border-color: var(--cor-primaria);
+  box-shadow  : 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+#botao-adicionar {
+  background   : var(--cor-primaria);
+  color        : white;
+  border       : none;
+  padding      : 12px 24px;
+  border-radius: var(--raio-borda);
+  font-size    : 1rem;
+  font-weight  : 600;
+  cursor       : pointer;
+  transition   : all 0.3s ease;
+  white-space  : nowrap;
+}
+
+#botao-adicionar:hover {
+  background: var(--cor-secundaria);
+  transform : translateY(-2px);
+  box-shadow: var(--sombra-media);
+}
+
+#botao-adicionar:active {
+  transform: translateY(0);
+}
+
+/* CONTADORES */
+#secao-contadores {
+  display        : flex;
+  justify-content: space-around;
+  align-items    : center;
+  text-align     : center;
+  padding        : var(--espaco-medio);
+}
+
+.contador {
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+  min-width     : 100px;
+}
+
+.numero {
+  font-size  : 2.5rem;
+  font-weight: 700;
+  color      : var(--cor-primaria);
+  display    : block;
+}
+
+.label {
+  font-size     : 0.9rem;
+  color         : var(--cor-texto-claro);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top    : 4px;
+}
+
+/* LISTA DE TAREFAS */
+#lista-tarefas {
+  list-style: none;
+}
+
+.tarefa {
+  display      : flex;
+  align-items  : center;
+  padding      : var(--espaco-medio);
+  border       : 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  margin-bottom: var(--espaco-pequeno);
+  background   : var(--cor-card);
+  transition   : all 0.3s ease;
+  gap          : var(--espaco-medio);
+}
+
+.tarefa:hover {
+  box-shadow: var(--sombra-media);
+  transform : translateY(-1px);
+}
+
+/* CHECKBOX DAS TAREFAS */
+.tarefa input[type="checkbox"] {
+  width       : 20px;
+  height      : 20px;
+  cursor      : pointer;
+  accent-color: var(--cor-sucesso);
+}
+
+/* TEXTO DAS TAREFAS */
+.texto-tarefa {
+  flex      : 1;
+  font-size : 1rem;
+  padding   : 4px 8px;
+  transition: all 0.3s ease;
+}
+
+/* TAREFA COMPLETA */
+.tarefa.completa .texto-tarefa {
+  text-decoration: line-through;
+  color          : var(--cor-texto-claro);
+  opacity        : 0.7;
+}
+
+.tarefa.completa {
+  background  : #f0fdf4;
+  border-color: var(--cor-sucesso);
+}
+
+/* BOTÃO DELETAR */
+.botao-deletar {
+  background   : var(--cor-perigo);
+  color        : white;
+  border       : none;
+  padding      : 8px 12px;
+  border-radius: var(--raio-borda);
+  cursor       : pointer;
+  font-size    : 0.9rem;
+  transition   : all 0.3s ease;
+  opacity      : 0.7;
+}
+
+.botao-deletar:hover {
+  opacity  : 1;
+  transform: scale(1.05);
+}
+
+/* LISTA VAZIA */
+.lista-vazia {
+  text-align: center;
+  padding   : var(--espaco-grande);
+  color     : var(--cor-texto-claro);
+}
+
+.lista-vazia p {
+  font-size    : 1.1rem;
+  margin-bottom: var(--espaco-pequeno);
+}
+
+.lista-vazia p:first-child {
+  font-size  : 1.3rem;
+  font-weight: 600;
+}
+
+/* RODAPÉ */
+#footer {
+  background: var(--cor-card);
+  border-top: 1px solid var(--cor-borda);
+  text-align: center;
+  padding   : var(--espaco-medio);
+  color     : var(--cor-texto-claro);
+  font-size : 0.9rem;
+}
+
+#footer p {
+  margin-bottom: 4px;
+}
+
+/* RESPONSIVIDADE - TABLET */
+@media (max-width: 768px) {
+  #header h1 {
+    font-size: 2rem;
+  }
+
+  #main {
+    padding: var(--espaco-medio);
+  }
+
+  #formulario-tarefa {
+    flex-direction: column;
+    align-items   : stretch;
+  }
+
+  #botao-adicionar {
+    width: 100%;
+  }
+
+  #secao-contadores {
+    flex-direction: column;
+    gap           : var(--espaco-medio);
+  }
+
+  .contador {
+    flex-direction : row;
+    justify-content: space-between;
+    width          : 100%;
+    max-width      : 200px;
+  }
+
+  .numero {
+    font-size: 2rem;
+  }
+}
+
+/* RESPONSIVIDADE - MOBILE */
+@media (max-width: 480px) {
+  #header {
+    padding: var(--espaco-medio);
+  }
+
+  #header h1 {
+    font-size: 1.8rem;
+  }
+
+  #main {
+    padding: var(--espaco-pequeno);
+  }
+
+  section {
+    padding: var(--espaco-medio);
+  }
+
+  .tarefa {
+    flex-direction: column;
+    align-items   : flex-start;
+    gap           : var(--espaco-pequeno);
+  }
+
+  .texto-tarefa {
+    width: 100%;
+  }
+
+  .botao-deletar {
+    align-self: flex-end;
+  }
+}
+
+/* ANIMAÇÕES */
+@keyframes aparecer {
+  from {
+    opacity  : 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity  : 1;
+    transform: translateY(0);
+  }
+}
+
+.tarefa {
+  animation: aparecer 0.3s ease;
+}
+
+/* ESTADOS DE FOCO E ACESSIBILIDADE */
+button:focus,
+input:focus {
+  outline       : 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+/* MODO ESCURO - Preparação para futuras aulas */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-fundo      : #0f172a;
+    --cor-card       : #1e293b;
+    --cor-borda      : #334155;
+    --cor-texto      : #f1f5f9;
+    --cor-texto-claro: #94a3b8;
+  }
+}
+
+/* CLASSES UTILITÁRIAS */
+.oculto {
+  display: none !important;
+}
+
+.visivel {
+  display: block !important;
+}
+
+.texto-centro {
+  text-align: center;
+}
+
+.margem-top {
+  margin-top: var(--espaco-medio);
+}

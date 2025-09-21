@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO List - Curso JavaScript</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- CABEÇALHO DA APLICAÇÃO -->
+    <header id="header">
+      <h1>📝 Minha Lista de Tarefas</h1>
+      <p>Aprendendo JavaScript na prática!</p>
+    </header>
+
+    <!-- SEÇÃO PRINCIPAL -->
+    <main id="main">
+      <!-- FORMULÁRIO PARA NOVA TAREFA -->
+      <section id="secao-nova-tarefa">
+        <h2>✨ Adicionar Nova Tarefa</h2>
+        <div id="formulario-tarefa">
+          <input
+            type="text"
+            id="input-nova-tarefa"
+            placeholder="Digite sua tarefa aqui..."
+            maxlength="100"
+            required
+          />
+          <button id="botao-adicionar" type="button">➕ Adicionar</button>
+        </div>
+      </section>
+
+      <!-- CONTADORES DE TAREFAS -->
+      <section id="secao-contadores">
+        <div class="contador">
+          <span class="numero" id="total-tarefas">0</span>
+          <span class="label">Total</span>
+        </div>
+        <div class="contador">
+          <span class="numero" id="tarefas-pendentes">0</span>
+          <span class="label">Pendentes</span>
+        </div>
+        <div class="contador">
+          <span class="numero" id="tarefas-completas">0</span>
+          <span class="label">Completas</span>
+        </div>
+      </section>
+
+      <!-- LISTA DE TAREFAS -->
+      <section id="secao-lista">
+        <h2>📋 Suas Tarefas</h2>
+        <ul id="lista-tarefas">
+          <!-- As tarefas serão inseridas aqui via JavaScript -->
+        </ul>
+
+        <!-- Mensagem quando não há tarefas -->
+        <div id="lista-vazia" class="lista-vazia">
+          <p>🎉 Nenhuma tarefa por aqui!</p>
+          <p>Que tal adicionar a primeira?</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer id="footer">
+      <p>💻 Desenvolvido durante o Curso de JavaScript</p>
+      <p>🚀 Versão: Template Base</p>
+    </footer>
+
+    <!-- SCRIPT JAVASCRIPT -->
+    <script src="script.js"></script>
+  </body>
+</html>
