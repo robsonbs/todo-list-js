@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Código Progressivo - Aula 2</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+
+      .container {
+        background: white;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .botao {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        transition: background 0.3s;
+      }
+
+      .botao:hover {
+        background: #0056b3;
+      }
+
+      .item-lista {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+      }
+
+      .item-lista button {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      .caixa-demo {
+        background: #f0f0f0;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .input-demo {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin: 5px;
+        font-size: 16px;
+      }
+
+      .contador-display {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center;
+        margin: 10px 0;
+      }
+
+      .destaque {
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        color: white;
+        font-weight: bold;
+        transform: scale(1.05);
+      }
+
+      .ativo {
+        border: 3px solid #28a745;
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+      }
+
+      .tema-escuro {
+        background: #2c3e50;
+        color: #ecf0f1;
+      }
+
+      .tema-claro {
+        background: #ecf0f1;
+        color: #2c3e50;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="titulo-principal">🌐 Código Progressivo - Aula 2</h1>
+    <p>Esta página é para testar o código que construiremos juntos na aula!</p>
+
+    <!-- SEÇÃO 1: DEMONSTRAÇÕES DE SELEÇÃO -->
+    <div class="container">
+      <h2>🎯 Seção 1: Selecionando Elementos</h2>
+      <h3 id="titulo-demonstracao">Título para demonstração</h3>
+      <p class="paragrafo">Primeiro parágrafo com classe</p>
+      <p class="paragrafo">Segundo parágrafo com classe</p>
+      <button class="botao" data-acao="salvar">Salvar</button>
+      <button class="botao" data-acao="cancelar">Cancelar</button>
+      <button class="botao" onclick="testarSeletores()">
+        🔍 Testar Seletores
+      </button>
+    </div>
+
+    <!-- SEÇÃO 2: MODIFICANDO CONTEÚDO -->
+    <div class="container">
+      <h2>✏️ Seção 2: Modificando Conteúdo</h2>
+      <div id="container-html">
+        <p>Este conteúdo será substituído...</p>
+      </div>
+      <img
+        id="imagem-exemplo"
+        src="https://via.placeholder.com/100"
+        alt="Imagem exemplo"
+      />
+      <div
+        id="demo-diferenca"
+        style="border: 1px solid #ccc; padding: 10px; margin: 10px 0"
+      >
+        Texto para demonstrar diferença
+      </div>
+      <div>
+        <button class="botao" onclick="demonstrarTextContent()">
+          📝 textContent
+        </button>
+        <button class="botao" onclick="demonstrarInnerHTML()">
+          🏷️ innerHTML
+        </button>
+        <button class="botao" onclick="demonstrarAtributos()">
+          ⚙️ Atributos
+        </button>
+        <button class="botao" onclick="demonstrarDiferenca()">
+          🔄 Diferença
+        </button>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 3: MODIFICANDO ESTILOS -->
+    <div class="container">
+      <h2>🎨 Seção 3: Modificando Estilos</h2>
+      <div id="caixa-estilo" class="caixa-demo">
+        Caixa para modificar estilos
+      </div>
+      <div id="elemento-classes" class="caixa-demo">
+        Elemento para trabalhar com classes
+      </div>
+      <div>
+        <button class="botao" onclick="mudarEstilosDiretos()">
+          🎨 Estilos Diretos
+        </button>
+        <button class="botao" onclick="demonstrarClasses()">✨ Classes</button>
+        <button class="botao" onclick="alternarTema()">🌓 Alternar Tema</button>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 4: EVENTOS -->
+    <div class="container">
+      <h2>🖱️ Seção 4: Eventos</h2>
+
+      <h3>Clique Simples:</h3>
+      <button id="botao-clique" class="botao">Clique em mim!</button>
+
+      <h3>Contador de Cliques:</h3>
+      <button id="botao-contador" class="botao">Clique para contar!</button>
+      <div class="contador-display" id="display-contador">0</div>
+
+      <h3>Eventos de Teclado:</h3>
+      <input
+        type="text"
+        id="campo-texto"
+        class="input-demo"
+        placeholder="Digite algo..."
+      />
+      <div id="display-texto">Você digitou:</div>
+
+      <h3>Eventos de Mouse:</h3>
+      <div id="caixa-mouse" class="caixa-demo">Passe o mouse aqui</div>
+    </div>
+
+    <!-- SEÇÃO 5: LISTA INTERATIVA -->
+    <div class="container">
+      <h2>📋 Seção 5: Lista Interativa</h2>
+      <div>
+        <input
+          type="text"
+          id="novo-item"
+          class="input-demo"
+          placeholder="Digite um novo item..."
+        />
+        <button id="botao-adicionar" class="botao">➕ Adicionar</button>
+      </div>
+      <div id="lista-interativa">
+        <!-- Itens da lista aparecerão aqui -->
+      </div>
+    </div>
+
+    <!-- SEÇÃO DE TESTES -->
+    <div class="container">
+      <h2>🧪 Seção de Testes</h2>
+      <p>Use os botões abaixo para testar funções específicas:</p>
+      <button class="botao" onclick="mostrarEstruturaDom()">
+        🌳 Estrutura DOM
+      </button>
+      <button class="botao" onclick="console.clear()">🧹 Limpar Console</button>
+      <div style="margin-top: 10px">
+        <small
+          >💡 Abra o console (F12) para ver os resultados dos testes!</small
+        >
+      </div>
+    </div>
+
+    <script src="codigo-progressivo.js"></script>
+  </body>
+</html>

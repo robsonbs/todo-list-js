@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 2 - DOM e Primeiras Interações</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #4a5568;
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #718096;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+      }
+
+      .secao {
+        background: #f8fafc;
+        border-left: 5px solid #4299e1;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .secao h2 {
+        color: #2d3748;
+        margin-top: 0;
+        font-size: 1.5rem;
+      }
+
+      .demo-area {
+        background: #edf2f7;
+        border: 2px dashed #cbd5e0;
+        padding: 20px;
+        margin: 15px 0;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .elemento-destaque {
+        background: linear-gradient(45deg, #ffd89b 0%, #19547b 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+        text-align: center;
+        font-weight: bold;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+      }
+
+      .elemento-destaque:hover {
+        transform: scale(1.05);
+      }
+
+      .botao {
+        background: #4299e1;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin: 5px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+      }
+
+      .botao:hover {
+        background: #3182ce;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .botao-secundario {
+        background: #38a169;
+      }
+
+      .botao-secundario:hover {
+        background: #2f855a;
+      }
+
+      .botao-perigo {
+        background: #e53e3e;
+      }
+
+      .botao-perigo:hover {
+        background: #c53030;
+      }
+
+      .input-demo {
+        padding: 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin: 5px;
+        transition: border-color 0.3s ease;
+      }
+
+      .input-demo:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+      }
+
+      .lista-demo {
+        list-style: none;
+        padding: 0;
+      }
+
+      .lista-demo li {
+        background: white;
+        margin: 8px 0;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .lista-demo li:hover {
+        background: #f7fafc;
+        transform: translateX(5px);
+      }
+
+      .console-output {
+        background: #1a202c;
+        color: #68d391;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        margin: 10px 0;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .codigo-exemplo {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        margin: 10px 0;
+        font-size: 0.9rem;
+        overflow-x: auto;
+      }
+
+      .alert-info {
+        background: #bee3f8;
+        border: 1px solid #90cdf4;
+        color: #2a69ac;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 10px 0;
+      }
+
+      .alert-success {
+        background: #c6f6d5;
+        border: 1px solid #9ae6b4;
+        color: #22543d;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 10px 0;
+      }
+
+      .exercicio-ativo {
+        border: 3px solid #4299e1;
+        background: #ebf8ff;
+      }
+
+      .progresso {
+        width: 100%;
+        height: 20px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 20px 0;
+      }
+
+      .progresso-barra {
+        height: 100%;
+        background: linear-gradient(90deg, #4299e1, #38a169);
+        width: 0%;
+        transition: width 0.5s ease;
+        border-radius: 10px;
+      }
+
+      .contador-demo {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #4299e1;
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🌐 Aula 2: DOM e Primeiras Interações</h1>
+      <p class="subtitle">
+        Conectando JavaScript com HTML - Dando vida às páginas web!
+      </p>
+
+      <!-- SEÇÃO 1: O QUE É DOM -->
+      <div class="secao">
+        <h2>📚 1. O que é DOM?</h2>
+        <p>
+          <strong>DOM</strong> significa <em>Document Object Model</em> (Modelo
+          de Objeto do Documento).
+        </p>
+        <p>É como o JavaScript "enxerga" e manipula o HTML da página.</p>
+
+        <div class="alert-info">
+          💡 <strong>Analogia:</strong> Se o HTML é uma árvore genealógica, o
+          DOM é como você navega entre os parentes: pais, filhos, irmãos!
+        </div>
+
+        <div class="demo-area" id="arvore-dom">
+          <h3>🌳 Visualização da Árvore DOM</h3>
+          <div style="text-align: left; font-family: monospace">
+            document<br />
+            └── html<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;├── head<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── title<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;└── body<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── h1<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── p<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── div
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: SELECIONANDO ELEMENTOS -->
+      <div class="secao">
+        <h2>🎯 2. Selecionando Elementos</h2>
+        <p>Antes de modificar elementos, precisamos "pegá-los" primeiro!</p>
+
+        <div class="codigo-exemplo">
+          // 1. Por ID (único) const titulo =
+          document.getElementById("meu-titulo"); // 2. Por classe (pode ter
+          vários) const botoes = document.getElementsByClassName("botao"); // 3.
+          Seletor CSS moderno (recomendado) const botao =
+          document.querySelector("#meu-botao"); const todosBotoes =
+          document.querySelectorAll(".botao");
+        </div>
+
+        <div class="demo-area">
+          <h3 id="titulo-demo">🎯 Título para Selecionar</h3>
+          <p class="paragrafo-demo">Parágrafo com classe especial</p>
+          <button class="botao-demo" data-id="1">Botão 1</button>
+          <button class="botao-demo" data-id="2">Botão 2</button>
+          <button class="botao-demo" data-id="3">Botão 3</button>
+
+          <div style="margin-top: 15px">
+            <button class="botao" onclick="demonstrarSelecao()">
+              🔍 Demonstrar Seleção
+            </button>
+          </div>
+        </div>
+
+        <div class="console-output" id="output-selecao">
+          Clique em "Demonstrar Seleção" para ver como funciona!
+        </div>
+      </div>
+
+      <!-- SEÇÃO 3: MODIFICANDO CONTEÚDO -->
+      <div class="secao">
+        <h2>✏️ 3. Modificando Conteúdo</h2>
+        <p>Agora vamos mudar o que está escrito nos elementos!</p>
+
+        <div class="codigo-exemplo">
+          // Mudando texto simples elemento.textContent = "Novo texto aqui"; //
+          Mudando HTML (com tags) elemento.innerHTML = "&lt;strong&gt;Texto em
+          negrito&lt;/strong&gt;"; // Mudando atributos
+          elemento.setAttribute("class", "nova-classe"); elemento.id =
+          "novo-id";
+        </div>
+
+        <div class="demo-area">
+          <h3 id="texto-mutavel">🔄 Texto que vai mudar</h3>
+          <p id="paragrafo-mutavel">Este parágrafo será modificado!</p>
+          <img
+            id="imagem-mutavel"
+            src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjMiIGZpbGw9IiM0Mjk5ZTEiLz4KPHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxMCIgeT0iMTAiPgo8cGF0aCBkPSJNMTUgNUwyMCAyMEwxMCAyMFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K"
+            alt="Ícone"
+            style="width: 50px; height: 50px"
+          />
+
+          <div style="margin-top: 15px">
+            <button class="botao" onclick="mudarTexto()">📝 Mudar Texto</button>
+            <button class="botao botao-secundario" onclick="mudarHTML()">
+              🏷️ Mudar HTML
+            </button>
+            <button class="botao botao-perigo" onclick="mudarAtributos()">
+              ⚙️ Mudar Atributos
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 4: MODIFICANDO ESTILOS -->
+      <div class="secao">
+        <h2>🎨 4. Modificando Estilos</h2>
+        <p>Vamos dar uma nova aparência aos elementos!</p>
+
+        <div class="codigo-exemplo">
+          // Mudando estilos diretamente elemento.style.color = "red";
+          elemento.style.backgroundColor = "yellow"; elemento.style.fontSize =
+          "20px"; // Trabalhando com classes CSS (recomendado)
+          elemento.classList.add("destaque");
+          elemento.classList.remove("antigo");
+          elemento.classList.toggle("ativo");
+        </div>
+
+        <div class="demo-area">
+          <div id="caixa-estilo" class="elemento-destaque">
+            🎨 Caixa para Modificar Estilos
+          </div>
+
+          <div style="margin-top: 15px">
+            <button class="botao" onclick="mudarCor()">🌈 Mudar Cor</button>
+            <button class="botao" onclick="mudarTamanho()">
+              📏 Mudar Tamanho
+            </button>
+            <button class="botao" onclick="adicionarClasse()">
+              ✨ Adicionar Efeito
+            </button>
+            <button class="botao botao-perigo" onclick="resetarEstilo()">
+              🔄 Resetar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 5: PRIMEIRO EVENTO -->
+      <div class="secao">
+        <h2>🖱️ 5. Primeiro Evento</h2>
+        <p>Vamos fazer a página reagir aos cliques do usuário!</p>
+
+        <div class="codigo-exemplo">
+          // Forma básica (não recomendada) botao.onclick = function() {
+          alert("Clicou!"); }; // Forma moderna (recomendada)
+          botao.addEventListener("click", function() { console.log("Botão
+          clicado!"); });
+        </div>
+
+        <div class="demo-area">
+          <h3>🎮 Área de Interação</h3>
+          <div class="contador-demo" id="contador">0</div>
+          <p>Cliques registrados: <span id="total-cliques">0</span></p>
+
+          <div style="margin-top: 15px">
+            <button class="botao" id="botao-contador">👆 Clique em Mim!</button>
+            <button class="botao botao-secundario" id="botao-reset">
+              🔄 Resetar
+            </button>
+            <button class="botao botao-perigo" id="botao-surpresa">
+              🎉 Surpresa!
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 6: EXERCÍCIO PRÁTICO -->
+      <div class="secao exercicio-ativo">
+        <h2>🧪 6. Exercício Prático</h2>
+        <p>Agora é sua vez! Vamos criar um mini TODO list!</p>
+
+        <div class="alert-info">
+          📝 <strong>Tarefa:</strong> Use o que aprendeu para criar, modificar e
+          interagir com elementos da lista abaixo.
+        </div>
+
+        <div class="demo-area">
+          <h3>📋 Mini TODO List</h3>
+          <input
+            type="text"
+            id="nova-tarefa"
+            class="input-demo"
+            placeholder="Digite uma nova tarefa..."
+          />
+          <button class="botao" id="adicionar-tarefa">➕ Adicionar</button>
+
+          <ul class="lista-demo" id="lista-tarefas">
+            <li data-id="1">Aprender seletores DOM</li>
+            <li data-id="2">Modificar conteúdo de elementos</li>
+            <li data-id="3">Trabalhar com eventos</li>
+          </ul>
+
+          <div style="margin-top: 15px">
+            <button class="botao botao-secundario" id="destacar-primeira">
+              🎯 Destacar Primeira
+            </button>
+            <button class="botao botao-secundario" id="contar-tarefas">
+              📊 Contar Tarefas
+            </button>
+            <button class="botao botao-perigo" id="limpar-lista">
+              🗑️ Limpar Lista
+            </button>
+          </div>
+        </div>
+
+        <div class="console-output" id="output-exercicio">
+          Console do exercício - suas ações aparecerão aqui!
+        </div>
+      </div>
+
+      <!-- PROGRESSO DA AULA -->
+      <div class="secao">
+        <h2>📈 Progresso da Aula</h2>
+        <div class="progresso">
+          <div class="progresso-barra" id="barra-progresso"></div>
+        </div>
+        <div class="alert-success" id="status-progresso">
+          🎯 Complete todos os exercícios para finalizar a aula!
+        </div>
+      </div>
+
+      <!-- RESUMO -->
+      <div class="secao">
+        <h2>📋 Resumo da Aula</h2>
+        <ul>
+          <li>
+            ✅ <strong>DOM:</strong> Árvore de elementos que o JS pode manipular
+          </li>
+          <li>
+            ✅ <strong>Seletores:</strong> getElementById, querySelector,
+            querySelectorAll
+          </li>
+          <li>
+            ✅ <strong>Conteúdo:</strong> textContent, innerHTML, setAttribute
+          </li>
+          <li>
+            ✅ <strong>Estilos:</strong> style.propriedade,
+            classList.add/remove/toggle
+          </li>
+          <li>
+            ✅ <strong>Eventos:</strong> addEventListener para reagir a cliques
+          </li>
+        </ul>
+
+        <div class="alert-info">
+          🚀 <strong>Próxima aula:</strong> Eventos Avançados e Interatividade
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ========== VARIÁVEIS GLOBAIS ==========
+      let contadorCliques = 0;
+      let exerciciosCompletos = 0;
+      const totalExercicios = 6;
+
+      // ========== DEMONSTRAÇÕES DA AULA ==========
+
+      function demonstrarSelecao() {
+        const output = document.getElementById("output-selecao");
+
+        // Demonstrar diferentes tipos de seleção
+        const titulo = document.getElementById("titulo-demo");
+        const paragrafo = document.querySelector(".paragrafo-demo");
+        const botoes = document.querySelectorAll(".botao-demo");
+
+        let resultado = "🔍 DEMONSTRAÇÃO DE SELEÇÃO:\n\n";
+        resultado += `✅ Título por ID: "${titulo.textContent}"\n`;
+        resultado += `✅ Parágrafo por classe: "${paragrafo.textContent}"\n`;
+        resultado += `✅ Botões encontrados: ${botoes.length}\n`;
+
+        botoes.forEach((botao, index) => {
+          resultado += `   - Botão ${index + 1}: "${botao.textContent}"\n`;
+        });
+
+        output.textContent = resultado;
+        atualizarProgresso();
+      }
+
+      function mudarTexto() {
+        const titulo = document.getElementById("texto-mutavel");
+        const paragrafo = document.getElementById("paragrafo-mutavel");
+
+        titulo.textContent = "✨ Texto Alterado com JavaScript!";
+        paragrafo.textContent =
+          "Este parágrafo foi modificado usando textContent!";
+
+        console.log("📝 Texto modificado com sucesso!");
+        atualizarProgresso();
+      }
+
+      function mudarHTML() {
+        const paragrafo = document.getElementById("paragrafo-mutavel");
+        paragrafo.innerHTML =
+          "<strong>Texto em negrito</strong> e <em>itálico</em> usando innerHTML!";
+
+        console.log("🏷️ HTML modificado com sucesso!");
+        atualizarProgresso();
+      }
+
+      function mudarAtributos() {
+        const imagem = document.getElementById("imagem-mutavel");
+        const titulo = document.getElementById("texto-mutavel");
+
+        // Mudar atributos da imagem
+        imagem.setAttribute("alt", "Nova descrição da imagem");
+        imagem.style.border = "3px solid #4299e1";
+
+        // Mudar ID do título
+        titulo.id = "titulo-modificado";
+        titulo.setAttribute("data-modificado", "true");
+
+        console.log("⚙️ Atributos modificados com sucesso!");
+        atualizarProgresso();
+      }
+
+      function mudarCor() {
+        const caixa = document.getElementById("caixa-estilo");
+        const cores = ["#e53e3e", "#38a169", "#d69e2e", "#805ad5", "#dd6b20"];
+        const corAleatoria = cores[Math.floor(Math.random() * cores.length)];
+
+        caixa.style.background = corAleatoria;
+        console.log(`🌈 Cor alterada para: ${corAleatoria}`);
+      }
+
+      function mudarTamanho() {
+        const caixa = document.getElementById("caixa-estilo");
+        const tamanhos = ["1.2rem", "1.5rem", "1.8rem", "2rem"];
+        const tamanhoAleatorio =
+          tamanhos[Math.floor(Math.random() * tamanhos.length)];
+
+        caixa.style.fontSize = tamanhoAleatorio;
+        console.log(`📏 Tamanho alterado para: ${tamanhoAleatorio}`);
+      }
+
+      function adicionarClasse() {
+        const caixa = document.getElementById("caixa-estilo");
+        caixa.classList.toggle("elemento-destaque");
+
+        if (caixa.classList.contains("elemento-destaque")) {
+          console.log("✨ Classe 'elemento-destaque' adicionada!");
+        } else {
+          console.log("❌ Classe 'elemento-destaque' removida!");
+        }
+      }
+
+      function resetarEstilo() {
+        const caixa = document.getElementById("caixa-estilo");
+        caixa.style.background = "";
+        caixa.style.fontSize = "";
+        caixa.className = "elemento-destaque";
+
+        console.log("🔄 Estilos resetados!");
+        atualizarProgresso();
+      }
+
+      // ========== EVENTOS E CONTADOR ==========
+
+      function configurarEventos() {
+        const botaoContador = document.getElementById("botao-contador");
+        const botaoReset = document.getElementById("botao-reset");
+        const botaoSurpresa = document.getElementById("botao-surpresa");
+
+        // Evento de clique no contador
+        botaoContador.addEventListener("click", function () {
+          contadorCliques++;
+          document.getElementById("contador").textContent = contadorCliques;
+          document.getElementById("total-cliques").textContent =
+            contadorCliques;
+
+          console.log(`👆 Clique registrado! Total: ${contadorCliques}`);
+
+          if (contadorCliques === 1) {
+            atualizarProgresso();
+          }
+        });
+
+        // Evento de reset
+        botaoReset.addEventListener("click", function () {
+          contadorCliques = 0;
+          document.getElementById("contador").textContent = "0";
+          document.getElementById("total-cliques").textContent = "0";
+
+          console.log("🔄 Contador resetado!");
+        });
+
+        // Evento surpresa
+        botaoSurpresa.addEventListener("click", function () {
+          const mensagens = [
+            "🎉 Parabéns! Você está aprendendo JavaScript!",
+            "🚀 Continue assim, você está indo muito bem!",
+            "💪 Cada clique é um passo no seu aprendizado!",
+            "🌟 Você está dominando o DOM!",
+          ];
+
+          const mensagem =
+            mensagens[Math.floor(Math.random() * mensagens.length)];
+          alert(mensagem);
+
+          console.log("🎉 Surpresa ativada!");
+          atualizarProgresso();
+        });
+      }
+
+      // ========== EXERCÍCIO PRÁTICO ==========
+
+      function configurarExercicio() {
+        const input = document.getElementById("nova-tarefa");
+        const botaoAdicionar = document.getElementById("adicionar-tarefa");
+        const lista = document.getElementById("lista-tarefas");
+        const output = document.getElementById("output-exercicio");
+
+        // Adicionar nova tarefa
+        botaoAdicionar.addEventListener("click", function () {
+          const texto = input.value.trim();
+
+          if (texto !== "") {
+            const li = document.createElement("li");
+            li.textContent = texto;
+            li.setAttribute("data-id", Date.now());
+
+            lista.appendChild(li);
+            input.value = "";
+
+            output.textContent += `✅ Tarefa adicionada: "${texto}"\n`;
+            console.log(`📝 Nova tarefa: ${texto}`);
+            atualizarProgresso();
+          } else {
+            output.textContent += "❌ Digite uma tarefa válida!\n";
+          }
+        });
+
+        // Destacar primeira tarefa
+        document
+          .getElementById("destacar-primeira")
+          .addEventListener("click", function () {
+            const primeiraTarefa = lista.querySelector("li");
+            if (primeiraTarefa) {
+              primeiraTarefa.style.background = "#fed7d7";
+              primeiraTarefa.style.fontWeight = "bold";
+              output.textContent += "🎯 Primeira tarefa destacada!\n";
+              atualizarProgresso();
+            } else {
+              output.textContent += "❌ Nenhuma tarefa para destacar!\n";
+            }
+          });
+
+        // Contar tarefas
+        document
+          .getElementById("contar-tarefas")
+          .addEventListener("click", function () {
+            const totalTarefas = lista.querySelectorAll("li").length;
+            output.textContent += `📊 Total de tarefas: ${totalTarefas}\n`;
+            atualizarProgresso();
+          });
+
+        // Limpar lista
+        document
+          .getElementById("limpar-lista")
+          .addEventListener("click", function () {
+            lista.innerHTML = "";
+            output.textContent += "🗑️ Lista limpa!\n";
+            console.log("Lista de tarefas limpa!");
+          });
+      }
+
+      // ========== SISTEMA DE PROGRESSO ==========
+
+      function atualizarProgresso() {
+        exerciciosCompletos++;
+        const porcentagem = (exerciciosCompletos / totalExercicios) * 100;
+
+        const barra = document.getElementById("barra-progresso");
+        const status = document.getElementById("status-progresso");
+
+        barra.style.width = porcentagem + "%";
+
+        if (porcentagem === 100) {
+          status.innerHTML =
+            "🏆 <strong>Parabéns!</strong> Você completou todos os exercícios da Aula 2!";
+          status.className = "alert-success";
+        } else {
+          status.innerHTML = `🎯 Progresso: ${exerciciosCompletos}/${totalExercicios} exercícios completados (${Math.round(
+            porcentagem
+          )}%)`;
+        }
+      }
+
+      // ========== INICIALIZAÇÃO ==========
+
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("🌐 Aula 2: DOM e Primeiras Interações carregada!");
+        console.log("📚 Conceitos que você aprenderá:");
+        console.log("  ✅ O que é DOM");
+        console.log("  ✅ Selecionar elementos");
+        console.log("  ✅ Modificar conteúdo e estilos");
+        console.log("  ✅ Primeiros eventos");
+
+        configurarEventos();
+        configurarExercicio();
+
+        // Animação inicial da barra de progresso
+        setTimeout(() => {
+          document.getElementById("barra-progresso").style.width = "0%";
+        }, 1000);
+      });
+
+      // Função para professores - mostrar estrutura DOM
+      function mostrarEstruturaDom() {
+        console.log("🌳 ESTRUTURA DOM DESTA PÁGINA:");
+        console.log("document");
+        console.log("├── html");
+        console.log("│   ├── head");
+        console.log("│   │   ├── title");
+        console.log("│   │   └── style");
+        console.log("│   └── body");
+        console.log("│       └── div.container");
+        console.log("│           ├── h1");
+        console.log("│           ├── div.secao (várias)");
+        console.log("│           └── script");
+      }
+
+      // Ativar no console: mostrarEstruturaDom()
+    </script>
+  </body>
+</html>
