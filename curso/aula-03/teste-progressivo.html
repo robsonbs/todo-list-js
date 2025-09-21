@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teste Progressivo - Aula 3: Eventos | Professor</title>
+    <style>
+      /* Reset e configurações básicas */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 2rem;
+      }
+
+      .demo {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-left: 4px solid #e74c3c;
+      }
+
+      .demo h2 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .demo h3 {
+        color: #34495e;
+        margin: 1.5rem 0 1rem 0;
+        font-size: 1.3rem;
+      }
+
+      .code-area {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 1.5rem;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        margin: 1rem 0;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .step {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        margin: 1rem 0;
+        transition: all 0.3s ease;
+      }
+
+      .step.active {
+        border-color: #e74c3c;
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);
+      }
+
+      .step-number {
+        display: inline-block;
+        background: #e74c3c;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        font-weight: bold;
+        margin-right: 1rem;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 5px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(231, 76, 60, 0.3);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+      }
+
+      .btn-info {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        margin: 0.5rem 0;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+      }
+
+      .form-control.error {
+        border-color: #e74c3c;
+        background-color: #fdf2f2;
+      }
+
+      .form-control.success {
+        border-color: #27ae60;
+        background-color: #f2fdf2;
+      }
+
+      .output {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        min-height: 50px;
+      }
+
+      .highlight {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .contador-display {
+        font-size: 3rem;
+        font-weight: bold;
+        text-align: center;
+        margin: 1rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+      }
+
+      .feedback {
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin: 0.5rem 0;
+        font-weight: 600;
+      }
+
+      .feedback.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .feedback.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .lista-dinamica {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .item-lista {
+        background: white;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      .item-lista:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-pequeno {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+
+      .navegacao-demo {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .menu-item {
+        padding: 12px;
+        margin: 4px 0;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .menu-item:hover {
+        background: #e9ecef;
+      }
+
+      .menu-item.ativo {
+        background: #e74c3c;
+        color: white;
+        transform: translateX(10px);
+      }
+
+      .status-bar {
+        background: #34495e;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+        font-size: 0.8rem;
+        margin: 1rem 0;
+      }
+
+      .timer {
+        display: inline-block;
+        background: #e74c3c;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+        margin: 0 0.5rem;
+      }
+
+      /* Indicadores de progresso */
+      .progress-bar {
+        background: #e9ecef;
+        border-radius: 10px;
+        padding: 3px;
+        margin: 1rem 0;
+      }
+
+      .progress-fill {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        height: 20px;
+        border-radius: 8px;
+        transition: width 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 0.8rem;
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        .container {
+          margin: 10px;
+          border-radius: 12px;
+        }
+
+        .header {
+          padding: 1.5rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .content {
+          padding: 1rem;
+        }
+
+        .demo {
+          padding: 1.5rem;
+        }
+      }
+
+      /* Animações */
+      @keyframes bounce {
+        0%,
+        20%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        80% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .bounce {
+        animation: bounce 1s ease;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .pulse {
+        animation: pulse 0.5s ease;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      .shake {
+        animation: shake 0.5s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>👨‍🏫 Demonstrações Progressivas - Aula 3</h1>
+        <p>Eventos e Interatividade | Material do Professor</p>
+      </div>
+
+      <div class="content">
+        <!-- Cronômetro da Aula -->
+        <div class="status-bar">
+          🕐 Tempo de aula: <span class="timer" id="tempoAula">00:00</span> | 📊
+          Progresso: <span id="progressoAula">0%</span> | 🎯 Seção atual:
+          <span id="secaoAtual">Preparação</span>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="barraProgresso" style="width: 0%">
+            0%
+          </div>
+        </div>
+
+        <!-- Demo 1: Primeiro Event Listener (0:05 - 0:15) -->
+        <div class="demo" id="demo1">
+          <h2>🎯 Demo 1: Primeiro Event Listener (10 min)</h2>
+
+          <div class="step" id="step1-1">
+            <span class="step-number">1</span>
+            <h3>Event Listener Básico</h3>
+            <p>Demonstração do primeiro addEventListener</p>
+
+            <button class="btn" id="primeiroBtn">Clique aqui!</button>
+            <div class="output" id="output1">Aguardando primeiro clique...</div>
+
+            <div class="code-area">
+              const botao = document.getElementById('primeiroBtn');
+              botao.addEventListener('click', function() { console.log('Botão
+              foi clicado!'); // Resultado aparece no output acima });
+            </div>
+          </div>
+
+          <div class="step" id="step1-2">
+            <span class="step-number">2</span>
+            <h3>Contador de Cliques</h3>
+            <p>Mantendo estado entre eventos</p>
+
+            <button class="btn" id="contadorBtn">Cliques: 0</button>
+            <div class="contador-display" id="contadorDisplay">0</div>
+
+            <div class="code-area">
+              let clicks = 0; const botao =
+              document.getElementById('contadorBtn');
+              botao.addEventListener('click', function() { clicks++;
+              botao.textContent = `Cliques: ${clicks}`; // Efeitos visuais
+              baseados no número if (clicks % 5 === 0) { // Fazer algo especial
+              a cada 5 cliques } });
+            </div>
+          </div>
+
+          <div class="step" id="step1-3">
+            <span class="step-number">3</span>
+            <h3>Eventos de Teclado</h3>
+            <p>Capturando teclas especiais</p>
+
+            <input
+              type="text"
+              class="form-control"
+              id="tecladoInput"
+              placeholder="Digite e pressione Enter"
+            />
+            <div class="output" id="outputTeclado">
+              Digite algo e pressione Enter...
+            </div>
+
+            <div class="code-area">
+              input.addEventListener('keypress', function(event) { if (event.key
+              === 'Enter') { const texto = this.value; console.log('Texto
+              capturado:', texto); // Processar o texto... } });
+            </div>
+          </div>
+
+          <button class="btn btn-success" onclick="proximaDemo(2)">
+            ✅ Próxima Demo
+          </button>
+        </div>
+
+        <!-- Demo 2: Prática Guiada - Contador Interativo (0:15 - 0:30) -->
+        <div class="demo" id="demo2" style="display: none">
+          <h2>🎮 Demo 2: Contador Interativo - Prática Guiada (15 min)</h2>
+
+          <div class="highlight">
+            <strong>👨‍🏫 Instruções para o Professor:</strong><br />
+            Esta seção deve ser feita JUNTO com os alunos. Cada passo deve ser
+            implementado simultaneamente por todos.
+          </div>
+
+          <div class="step active" id="step2-1">
+            <span class="step-number">1</span>
+            <h3>Configuração Básica (3 min)</h3>
+
+            <div class="contador-display" id="numeroDisplay">0</div>
+
+            <div class="code-area">
+              // TODOS fazem junto - Passo 1 let contador = 0; const numeroSpan
+              = document.getElementById('numeroDisplay'); function
+              atualizarDisplay() { numeroSpan.textContent = contador; } //
+              Testar a função atualizarDisplay();
+            </div>
+
+            <button class="btn" onclick="avancarPasso(2, 2)">
+              Passo Concluído ✅
+            </button>
+          </div>
+
+          <div class="step" id="step2-2">
+            <span class="step-number">2</span>
+            <h3>Botão Aumentar (2 min)</h3>
+
+            <button class="btn btn-success" id="btnAumentar">+</button>
+
+            <div class="code-area">
+              // TODOS fazem junto - Passo 2 const btnAumentar =
+              document.getElementById('btnAumentar');
+              btnAumentar.addEventListener('click', function() { contador++;
+              atualizarDisplay(); console.log('Contador aumentado:', contador);
+              });
+            </div>
+
+            <button class="btn" onclick="avancarPasso(2, 3)">
+              Passo Concluído ✅
+            </button>
+          </div>
+
+          <div class="step" id="step2-3">
+            <span class="step-number">3</span>
+            <h3>Botão Diminuir (2 min)</h3>
+
+            <button class="btn btn-warning" id="btnDiminuir">-</button>
+
+            <div class="code-area">
+              // TODOS fazem junto - Passo 3 const btnDiminuir =
+              document.getElementById('btnDiminuir');
+              btnDiminuir.addEventListener('click', function() { contador--;
+              atualizarDisplay(); console.log('Contador diminuído:', contador);
+              });
+            </div>
+
+            <button class="btn" onclick="avancarPasso(2, 4)">
+              Passo Concluído ✅
+            </button>
+          </div>
+
+          <div class="step" id="step2-4">
+            <span class="step-number">4</span>
+            <h3>Reset (2 min)</h3>
+
+            <button class="btn" id="btnReset">Reset</button>
+
+            <div class="code-area">
+              // TODOS fazem junto - Passo 4 const btnReset =
+              document.getElementById('btnReset');
+              btnReset.addEventListener('click', function() { contador = 0;
+              atualizarDisplay(); console.log('Contador resetado'); });
+            </div>
+
+            <button class="btn" onclick="avancarPasso(2, 5)">
+              Passo Concluído ✅
+            </button>
+          </div>
+
+          <div class="step" id="step2-5">
+            <span class="step-number">5</span>
+            <h3>Input com Enter (3 min)</h3>
+
+            <input
+              type="number"
+              class="form-control"
+              id="inputValor"
+              placeholder="Digite um valor"
+            />
+            <button class="btn btn-info" id="btnDefinir">Definir</button>
+
+            <div class="code-area">
+              // TODOS fazem junto - Passo 5 const inputValor =
+              document.getElementById('inputValor'); const btnDefinir =
+              document.getElementById('btnDefinir'); function definirValor() {
+              const valor = parseInt(inputValor.value); if (!isNaN(valor)) {
+              contador = valor; atualizarDisplay(); inputValor.value = '';
+              console.log('Valor definido:', valor); } else { alert('Digite um
+              número válido!'); } } btnDefinir.addEventListener('click',
+              definirValor); inputValor.addEventListener('keypress',
+              function(event) { if (event.key === 'Enter') { definirValor(); }
+              });
+            </div>
+
+            <button class="btn" onclick="avancarPasso(2, 6)">
+              Passo Concluído ✅
+            </button>
+          </div>
+
+          <div class="step" id="step2-6">
+            <span class="step-number">6</span>
+            <h3>Efeitos Visuais (3 min)</h3>
+
+            <div class="code-area">
+              // TODOS fazem junto - Passo 6 function atualizarDisplay() {
+              numeroSpan.textContent = contador; // Mudança de cor baseada no
+              valor if (contador > 0) { numeroSpan.style.color = 'green';
+              numeroSpan.parentElement.style.background =
+              'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'; } else if
+              (contador < 0) { numeroSpan.style.color = 'white';
+              numeroSpan.parentElement.style.background =
+              'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'; } else {
+              numeroSpan.style.color = 'white';
+              numeroSpan.parentElement.style.background =
+              'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; } // Efeito
+              de pulse numeroSpan.parentElement.classList.add('pulse');
+              setTimeout(() => {
+              numeroSpan.parentElement.classList.remove('pulse'); }, 500); }
+            </div>
+
+            <button class="btn btn-success" onclick="proximaDemo(3)">
+              ✅ Prática Concluída - Próxima Demo
+            </button>
+          </div>
+        </div>
+
+        <!-- Demo 3: Conceitos Avançados (0:30 - 0:40) -->
+        <div class="demo" id="demo3" style="display: none">
+          <h2>🚀 Demo 3: Conceitos Avançados (10 min)</h2>
+
+          <div class="step active" id="step3-1">
+            <span class="step-number">1</span>
+            <h3>preventDefault() e Event Object (3 min)</h3>
+
+            <form id="demoForm">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Digite algo"
+                required
+              />
+              <button type="submit" class="btn">
+                Enviar (será interceptado)
+              </button>
+            </form>
+
+            <div class="output" id="outputForm">
+              Aguardando submit do formulário...
+            </div>
+
+            <div class="code-area">
+              const form = document.getElementById('demoForm');
+              form.addEventListener('submit', function(event) {
+              event.preventDefault(); // Impede envio padrão console.log('Evento
+              interceptado!'); console.log('Tipo:', event.type);
+              console.log('Target:', event.target.tagName);
+              console.log('Timestamp:', event.timeStamp); // Processar dados
+              aqui... const formData = new FormData(event.target); // ... });
+            </div>
+
+            <button class="btn" onclick="avancarPasso(3, 2)">
+              Conceito Demonstrado ✅
+            </button>
+          </div>
+
+          <div class="step" id="step3-2">
+            <span class="step-number">2</span>
+            <h3>Event Delegation (3 min)</h3>
+
+            <button class="btn btn-success" id="addItemBtn">
+              Adicionar Item
+            </button>
+            <div class="lista-dinamica" id="listaDinamica">
+              <p><strong>Lista Dinâmica:</strong> (clique no X para remover)</p>
+            </div>
+
+            <div class="code-area">
+              // Event Delegation - UM listener para TODOS os botões const lista
+              = document.getElementById('listaDinamica');
+              lista.addEventListener('click', function(event) { // Verifica se
+              clicou em um botão de remover if
+              (event.target.classList.contains('btn-remover')) {
+              event.target.parentElement.remove(); console.log('Item removido
+              via delegation'); } }); // Adicionar novos itens (que funcionarão
+              automaticamente)
+              document.getElementById('addItemBtn').addEventListener('click',
+              function() { const item = document.createElement('div');
+              item.className = 'item-lista'; item.innerHTML = ` Item
+              ${Date.now()}
+              <button class="btn btn-pequeno btn-remover">X</button>
+              `; lista.appendChild(item); });
+            </div>
+
+            <button class="btn" onclick="avancarPasso(3, 3)">
+              Conceito Demonstrado ✅
+            </button>
+          </div>
+
+          <div class="step" id="step3-3">
+            <span class="step-number">3</span>
+            <h3>Validação em Tempo Real (4 min)</h3>
+
+            <input
+              type="email"
+              class="form-control"
+              id="emailDemo"
+              placeholder="Digite seu email"
+            />
+            <div class="feedback" id="feedbackEmail">
+              Digite um email para ver a validação...
+            </div>
+
+            <input
+              type="password"
+              class="form-control"
+              id="senhaDemo"
+              placeholder="Crie uma senha"
+            />
+            <div class="feedback" id="feedbackSenha">
+              Digite uma senha para ver a força...
+            </div>
+
+            <div class="code-area">
+              // Validação em tempo real const emailInput =
+              document.getElementById('emailDemo'); const senhaInput =
+              document.getElementById('senhaDemo');
+              emailInput.addEventListener('input', function() { const email =
+              this.value; const feedback =
+              document.getElementById('feedbackEmail'); if (email.length === 0)
+              { this.className = 'form-control'; feedback.textContent = 'Digite
+              um email...'; feedback.className = 'feedback'; } else if
+              (email.includes('@') && email.includes('.')) { this.className =
+              'form-control success'; feedback.textContent = '✅ Email válido!';
+              feedback.className = 'feedback success'; } else { this.className =
+              'form-control error'; feedback.textContent = '❌ Email inválido';
+              feedback.className = 'feedback error'; } });
+              senhaInput.addEventListener('input', function() { const senha =
+              this.value; const feedback =
+              document.getElementById('feedbackSenha'); if (senha.length < 6) {
+              this.className = 'form-control error'; feedback.textContent = '❌
+              Muito fraca (min 6 caracteres)'; feedback.className = 'feedback
+              error'; } else if (senha.length < 10) { this.className =
+              'form-control'; feedback.textContent = '⚠️ Média';
+              feedback.className = 'feedback'; } else { this.className =
+              'form-control success'; feedback.textContent = '✅ Forte!';
+              feedback.className = 'feedback success'; } });
+            </div>
+
+            <button class="btn btn-success" onclick="proximaDemo(4)">
+              ✅ Conceitos Avançados Concluídos
+            </button>
+          </div>
+        </div>
+
+        <!-- Demo 4: Exercícios Individuais (0:40 - 0:55) -->
+        <div class="demo" id="demo4" style="display: none">
+          <h2>📝 Demo 4: Exercícios Individuais (15 min)</h2>
+
+          <div class="highlight">
+            <strong>👨‍🏫 Instruções para o Professor:</strong><br />
+            • Distribuir o exercício de formulário de cadastro<br />
+            • Circular pela sala oferecendo apoio individual<br />
+            • Marcar tempo: 5min, 10min, 13min para orientar progresso<br />
+            • Últimos 2 minutos: pedir para finalizar o que conseguiram
+          </div>
+
+          <div class="step active" id="step4-1">
+            <span class="step-number">📋</span>
+            <h3>Formulário de Cadastro - Template</h3>
+
+            <form id="formCadastroDemo">
+              <h3>📝 Cadastro de Usuário</h3>
+
+              <div style="margin: 1rem 0">
+                <label for="nomeDemo">Nome:</label>
+                <input
+                  type="text"
+                  id="nomeDemo"
+                  class="form-control"
+                  placeholder="Mínimo 3 caracteres"
+                />
+                <span class="feedback" id="feedbackNomeDemo"
+                  >Digite seu nome...</span
+                >
+              </div>
+
+              <div style="margin: 1rem 0">
+                <label for="emailCadastro">Email:</label>
+                <input
+                  type="email"
+                  id="emailCadastro"
+                  class="form-control"
+                  placeholder="seu@email.com"
+                />
+                <span class="feedback" id="feedbackEmailCadastro"
+                  >Digite seu email...</span
+                >
+              </div>
+
+              <div style="margin: 1rem 0">
+                <label for="idadeDemo">Idade:</label>
+                <input
+                  type="number"
+                  id="idadeDemo"
+                  class="form-control"
+                  min="1"
+                  max="120"
+                  placeholder="Sua idade"
+                />
+                <span class="feedback" id="feedbackIdadeDemo"
+                  >Digite sua idade...</span
+                >
+              </div>
+
+              <button type="submit" class="btn btn-success">Cadastrar</button>
+              <button type="reset" class="btn btn-warning">Limpar</button>
+            </form>
+
+            <div id="resultadoDemo" style="margin-top: 2rem"></div>
+          </div>
+
+          <div class="step" id="step4-2">
+            <span class="step-number">⏱️</span>
+            <h3>Controle de Tempo</h3>
+
+            <div class="timer" id="tempoExercicio">15:00</div>
+
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="progressoExercicio"
+                style="width: 0%"
+              >
+                0%
+              </div>
+            </div>
+
+            <div class="status-bar">
+              <strong>Marcos de Tempo:</strong><br />
+              • 5 min: "Como está o andamento? Alguém precisa de ajuda?"<br />
+              • 10 min: Circular pela sala, apoio individual<br />
+              • 13 min: "Últimos 2 minutos, finalizem o que conseguiram"<br />
+              • 15 min: Finalizar exercícios
+            </div>
+
+            <button class="btn btn-warning" onclick="iniciarTempoExercicio()">
+              🕐 Iniciar Cronômetro
+            </button>
+            <button class="btn" onclick="proximaDemo(5)">
+              ⏭️ Finalizar Exercícios
+            </button>
+          </div>
+        </div>
+
+        <!-- Demo 5: Fechamento (0:55 - 1:00) -->
+        <div class="demo" id="demo5" style="display: none">
+          <h2>🎊 Demo 5: Fechamento e Review (5 min)</h2>
+
+          <div class="step active" id="step5-1">
+            <span class="step-number">📊</span>
+            <h3>Review da Aula (2 min)</h3>
+
+            <div class="highlight">
+              <strong>Perguntas para a turma:</strong><br />
+              • "Quem conseguiu fazer a validação em tempo real?"<br />
+              • "Qual foi a parte mais desafiadora?"<br />
+              • "Quem quer mostrar seu resultado?"
+            </div>
+
+            <div class="code-area">
+              ✅ O QUE APRENDEMOS HOJE: ├── Event listeners com
+              addEventListener() ├── Diferentes tipos de eventos (click,
+              keypress, submit, input) ├── Objeto event e métodos
+              (preventDefault, target) ├── Validação de formulários ├── Event
+              delegation para elementos dinâmicos └── Feedback visual e
+              experiência do usuário
+            </div>
+
+            <button class="btn" onclick="avancarPasso(5, 2)">
+              Review Concluído ✅
+            </button>
+          </div>
+
+          <div class="step" id="step5-2">
+            <span class="step-number">🚀</span>
+            <h3>Próxima Aula e Motivação (3 min)</h3>
+
+            <div class="highlight">
+              <strong>🎯 Próxima Aula:</strong> Arrays e Manipulação de Dados<br />
+              <strong>🎮 Foco:</strong> Trabalhar com listas, CRUD operations<br />
+              <strong>📱 Projeto:</strong> Estrutura real do TODO List
+            </div>
+
+            <div
+              class="contador-display"
+              style="
+                background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+              "
+            >
+              🎉 AULA CONCLUÍDA! 🎉
+            </div>
+
+            <div class="feedback success">
+              <strong>Parabéns!</strong> Vocês dominaram os eventos JavaScript e
+              estão prontos para criar interfaces totalmente interativas!
+            </div>
+
+            <div class="status-bar">
+              💪 <strong>Para casa (opcional):</strong> Completar exercícios não
+              finalizados e experimentar com outros tipos de eventos
+            </div>
+
+            <button class="btn btn-success" onclick="finalizarAula()">
+              🎓 Finalizar Aula
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ==========================================
+      // SISTEMA DE CONTROLE DA AULA
+      // ==========================================
+
+      let inicioAula = Date.now();
+      let tempoExercicioAtivo = false;
+      let tempoExercicioInicio = null;
+
+      // Atualizar cronômetro da aula
+      function atualizarTempo() {
+        const agora = Date.now();
+        const decorrido = Math.floor((agora - inicioAula) / 1000);
+        const minutos = Math.floor(decorrido / 60);
+        const segundos = decorrido % 60;
+
+        document.getElementById("tempoAula").textContent = `${minutos
+          .toString()
+          .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
+
+        // Atualizar progresso (50 minutos = 100%)
+        const progresso = Math.min(100, (decorrido / 3000) * 100);
+        document.getElementById("progressoAula").textContent = `${Math.round(
+          progresso
+        )}%`;
+        document.getElementById("barraProgresso").style.width = `${progresso}%`;
+        document.getElementById("barraProgresso").textContent = `${Math.round(
+          progresso
+        )}%`;
+
+        // Atualizar seção atual baseada no tempo
+        if (decorrido < 300) {
+          document.getElementById("secaoAtual").textContent = "Revisão (5min)";
+        } else if (decorrido < 900) {
+          document.getElementById("secaoAtual").textContent =
+            "Introdução aos Eventos (10min)";
+        } else if (decorrido < 1800) {
+          document.getElementById("secaoAtual").textContent =
+            "Prática Guiada (15min)";
+        } else if (decorrido < 2400) {
+          document.getElementById("secaoAtual").textContent =
+            "Conceitos Avançados (10min)";
+        } else if (decorrido < 3300) {
+          document.getElementById("secaoAtual").textContent =
+            "Exercícios Individuais (15min)";
+        } else {
+          document.getElementById("secaoAtual").textContent =
+            "Fechamento (5min)";
+        }
+      }
+
+      // Atualizar a cada segundo
+      setInterval(atualizarTempo, 1000);
+
+      // ==========================================
+      // NAVEGAÇÃO ENTRE DEMOS
+      // ==========================================
+
+      function proximaDemo(numero) {
+        // Esconder demo atual
+        const demos = document.querySelectorAll(".demo");
+        demos.forEach((demo) => (demo.style.display = "none"));
+
+        // Mostrar próxima demo
+        const proximaDemo = document.getElementById(`demo${numero}`);
+        if (proximaDemo) {
+          proximaDemo.style.display = "block";
+          proximaDemo.scrollIntoView({ behavior: "smooth" });
+        }
+
+        console.log(`Avançando para Demo ${numero}`);
+      }
+
+      function avancarPasso(demo, passo) {
+        // Remover classe active do passo atual
+        const stepAtual = document.querySelector(`#demo${demo} .step.active`);
+        if (stepAtual) {
+          stepAtual.classList.remove("active");
+        }
+
+        // Adicionar classe active ao próximo passo
+        const proximoPasso = document.getElementById(`step${demo}-${passo}`);
+        if (proximoPasso) {
+          proximoPasso.classList.add("active");
+          proximoPasso.scrollIntoView({ behavior: "smooth" });
+        }
+
+        console.log(`Demo ${demo}, Passo ${passo} ativado`);
+      }
+
+      // ==========================================
+      // IMPLEMENTAÇÃO DAS DEMOS
+      // ==========================================
+
+      // Demo 1: Event Listeners Básicos
+      document
+        .getElementById("primeiroBtn")
+        .addEventListener("click", function () {
+          const output = document.getElementById("output1");
+          const agora = new Date().toLocaleTimeString();
+          output.innerHTML += `<br>[${agora}] Botão clicado! Primeiro event listener funcionando.`;
+          this.classList.add("bounce");
+          setTimeout(() => this.classList.remove("bounce"), 1000);
+        });
+
+      let clicks = 0;
+      document
+        .getElementById("contadorBtn")
+        .addEventListener("click", function () {
+          clicks++;
+          this.textContent = `Cliques: ${clicks}`;
+          document.getElementById("contadorDisplay").textContent = clicks;
+
+          if (clicks % 5 === 0) {
+            this.classList.add("pulse");
+            setTimeout(() => this.classList.remove("pulse"), 500);
+          }
+        });
+
+      document
+        .getElementById("tecladoInput")
+        .addEventListener("keypress", function (event) {
+          if (event.key === "Enter") {
+            const texto = this.value;
+            const output = document.getElementById("outputTeclado");
+            output.innerHTML = `✅ Texto capturado: "${texto}" | Tecla: ${event.key} | Código: ${event.code}`;
+            this.value = "";
+          }
+        });
+
+      // Demo 2: Contador Interativo (será implementado pelos alunos)
+      let contador = 0;
+      const numeroDisplay = document.getElementById("numeroDisplay");
+
+      function atualizarDisplay() {
+        numeroDisplay.textContent = contador;
+
+        if (contador > 0) {
+          numeroDisplay.style.color = "white";
+          numeroDisplay.parentElement.style.background =
+            "linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)";
+        } else if (contador < 0) {
+          numeroDisplay.style.color = "white";
+          numeroDisplay.parentElement.style.background =
+            "linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)";
+        } else {
+          numeroDisplay.style.color = "white";
+          numeroDisplay.parentElement.style.background =
+            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        }
+
+        numeroDisplay.parentElement.classList.add("pulse");
+        setTimeout(() => {
+          numeroDisplay.parentElement.classList.remove("pulse");
+        }, 500);
+      }
+
+      document
+        .getElementById("btnAumentar")
+        .addEventListener("click", function () {
+          contador++;
+          atualizarDisplay();
+        });
+
+      document
+        .getElementById("btnDiminuir")
+        .addEventListener("click", function () {
+          contador--;
+          atualizarDisplay();
+        });
+
+      document
+        .getElementById("btnReset")
+        .addEventListener("click", function () {
+          contador = 0;
+          atualizarDisplay();
+        });
+
+      const inputValor = document.getElementById("inputValor");
+      document
+        .getElementById("btnDefinir")
+        .addEventListener("click", function () {
+          const valor = parseInt(inputValor.value);
+          if (!isNaN(valor)) {
+            contador = valor;
+            atualizarDisplay();
+            inputValor.value = "";
+          }
+        });
+
+      inputValor.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          const valor = parseInt(this.value);
+          if (!isNaN(valor)) {
+            contador = valor;
+            atualizarDisplay();
+            this.value = "";
+          }
+        }
+      });
+
+      // Demo 3: Conceitos Avançados
+      document
+        .getElementById("demoForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const output = document.getElementById("outputForm");
+          output.innerHTML = `
+                ✅ Formulário interceptado!<br>
+                📊 Tipo do evento: ${event.type}<br>
+                🎯 Target: ${event.target.tagName}<br>
+                ⏰ Timestamp: ${event.timeStamp}<br>
+                🚫 Envio padrão foi prevenido com preventDefault()
+            `;
+        });
+
+      // Event Delegation
+      let itemCounter = 0;
+      const listaDinamica = document.getElementById("listaDinamica");
+
+      listaDinamica.addEventListener("click", function (event) {
+        if (event.target.classList.contains("btn-remover")) {
+          event.target.parentElement.remove();
+          console.log("Item removido via event delegation");
+        }
+      });
+
+      document
+        .getElementById("addItemBtn")
+        .addEventListener("click", function () {
+          itemCounter++;
+          const item = document.createElement("div");
+          item.className = "item-lista";
+          item.innerHTML = `
+                📋 Item Dinâmico ${itemCounter}
+                <button class="btn btn-pequeno btn-remover">❌</button>
+            `;
+          listaDinamica.appendChild(item);
+        });
+
+      // Validação em tempo real
+      document
+        .getElementById("emailDemo")
+        .addEventListener("input", function () {
+          const email = this.value;
+          const feedback = document.getElementById("feedbackEmail");
+
+          if (email.length === 0) {
+            this.className = "form-control";
+            feedback.textContent = "Digite um email...";
+            feedback.className = "feedback";
+          } else if (email.includes("@") && email.includes(".")) {
+            this.className = "form-control success";
+            feedback.textContent = "✅ Email válido!";
+            feedback.className = "feedback success";
+          } else {
+            this.className = "form-control error";
+            feedback.textContent = "❌ Email inválido";
+            feedback.className = "feedback error";
+          }
+        });
+
+      document
+        .getElementById("senhaDemo")
+        .addEventListener("input", function () {
+          const senha = this.value;
+          const feedback = document.getElementById("feedbackSenha");
+
+          if (senha.length < 6) {
+            this.className = "form-control error";
+            feedback.textContent = "❌ Muito fraca (min 6 caracteres)";
+            feedback.className = "feedback error";
+          } else if (senha.length < 10) {
+            this.className = "form-control";
+            feedback.textContent = "⚠️ Média";
+            feedback.className = "feedback";
+          } else {
+            this.className = "form-control success";
+            feedback.textContent = "✅ Forte!";
+            feedback.className = "feedback success";
+          }
+        });
+
+      // ==========================================
+      // CRONÔMETRO DE EXERCÍCIOS
+      // ==========================================
+
+      function iniciarTempoExercicio() {
+        tempoExercicioAtivo = true;
+        tempoExercicioInicio = Date.now();
+
+        const intervalo = setInterval(() => {
+          if (!tempoExercicioAtivo) {
+            clearInterval(intervalo);
+            return;
+          }
+
+          const decorrido = Math.floor(
+            (Date.now() - tempoExercicioInicio) / 1000
+          );
+          const restante = Math.max(0, 900 - decorrido); // 15 minutos = 900 segundos
+
+          const minutos = Math.floor(restante / 60);
+          const segundos = restante % 60;
+
+          document.getElementById("tempoExercicio").textContent = `${minutos
+            .toString()
+            .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
+
+          const progresso = ((900 - restante) / 900) * 100;
+          document.getElementById(
+            "progressoExercicio"
+          ).style.width = `${progresso}%`;
+          document.getElementById(
+            "progressoExercicio"
+          ).textContent = `${Math.round(progresso)}%`;
+
+          // Alertas de tempo
+          if (restante === 600) {
+            // 10 min restantes
+            alert("⏰ 10 minutos restantes! Como está o andamento?");
+          } else if (restante === 300) {
+            // 5 min restantes
+            alert("⏰ 5 minutos restantes! Circulation pela sala.");
+          } else if (restante === 120) {
+            // 2 min restantes
+            alert("⏰ Últimos 2 minutos! Finalizem o que conseguiram.");
+          } else if (restante === 0) {
+            alert("⏰ Tempo esgotado! Finalizar exercícios.");
+            tempoExercicioAtivo = false;
+          }
+        }, 1000);
+      }
+
+      function finalizarAula() {
+        document.querySelector(".container").innerHTML = `
+                <div style="text-align: center; padding: 4rem; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white;">
+                    <h1 style="font-size: 3rem; margin-bottom: 2rem;">🎉 AULA 3 CONCLUÍDA! 🎉</h1>
+                    <p style="font-size: 1.5rem; margin-bottom: 2rem;">
+                        Parabéns! Vocês dominaram os eventos JavaScript!
+                    </p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 2rem; border-radius: 12px; margin: 2rem 0;">
+                        <h2>📚 Próxima Aula: Arrays e Manipulação de Dados</h2>
+                        <p>Vamos transformar conhecimento em um TODO List funcional!</p>
+                    </div>
+                    <p style="font-size: 1.2rem;">
+                        💪 Continuem praticando e até a próxima! 💪
+                    </p>
+                </div>
+            `;
+      }
+
+      // ==========================================
+      // FORMULÁRIO DE DEMONSTRAÇÃO (DEMO 4)
+      // ==========================================
+
+      // Validação do formulário de cadastro demo
+      const nomeDemo = document.getElementById("nomeDemo");
+      const emailCadastro = document.getElementById("emailCadastro");
+      const idadeDemo = document.getElementById("idadeDemo");
+
+      nomeDemo.addEventListener("input", function () {
+        const nome = this.value.trim();
+        const feedback = document.getElementById("feedbackNomeDemo");
+
+        if (nome.length === 0) {
+          this.className = "form-control";
+          feedback.textContent = "Digite seu nome...";
+          feedback.className = "feedback";
+        } else if (nome.length < 3) {
+          this.className = "form-control error";
+          feedback.textContent = "❌ Nome muito curto (mín 3 caracteres)";
+          feedback.className = "feedback error";
+        } else {
+          this.className = "form-control success";
+          feedback.textContent = "✅ Nome válido!";
+          feedback.className = "feedback success";
+        }
+      });
+
+      emailCadastro.addEventListener("input", function () {
+        const email = this.value;
+        const feedback = document.getElementById("feedbackEmailCadastro");
+
+        if (email.length === 0) {
+          this.className = "form-control";
+          feedback.textContent = "Digite seu email...";
+          feedback.className = "feedback";
+        } else if (email.includes("@") && email.includes(".")) {
+          this.className = "form-control success";
+          feedback.textContent = "✅ Email válido!";
+          feedback.className = "feedback success";
+        } else {
+          this.className = "form-control error";
+          feedback.textContent = "❌ Email inválido";
+          feedback.className = "feedback error";
+        }
+      });
+
+      idadeDemo.addEventListener("input", function () {
+        const idade = parseInt(this.value);
+        const feedback = document.getElementById("feedbackIdadeDemo");
+
+        if (isNaN(idade)) {
+          this.className = "form-control";
+          feedback.textContent = "Digite sua idade...";
+          feedback.className = "feedback";
+        } else if (idade < 1 || idade > 120) {
+          this.className = "form-control error";
+          feedback.textContent = "❌ Idade inválida (1-120 anos)";
+          feedback.className = "feedback error";
+        } else {
+          this.className = "form-control success";
+          feedback.textContent = "✅ Idade válida!";
+          feedback.className = "feedback success";
+        }
+      });
+
+      document
+        .getElementById("formCadastroDemo")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const nome = nomeDemo.value.trim();
+          const email = emailCadastro.value.trim();
+          const idade = parseInt(idadeDemo.value);
+
+          const nomeValido = nome.length >= 3;
+          const emailValido = email.includes("@") && email.includes(".");
+          const idadeValida = !isNaN(idade) && idade >= 1 && idade <= 120;
+
+          const resultado = document.getElementById("resultadoDemo");
+
+          if (nomeValido && emailValido && idadeValida) {
+            resultado.innerHTML = `
+                    <div class="feedback success">
+                        ✅ <strong>Cadastro realizado com sucesso!</strong><br>
+                        📝 Nome: ${nome}<br>
+                        📧 Email: ${email}<br>
+                        🎂 Idade: ${idade} anos
+                    </div>
+                `;
+          } else {
+            resultado.innerHTML = `
+                    <div class="feedback error">
+                        ❌ <strong>Erro no cadastro!</strong><br>
+                        Por favor, corrija os campos inválidos.
+                    </div>
+                `;
+          }
+        });
+
+      // Log de inicialização
+      console.log("🎯 Sistema de demonstrações da Aula 3 carregado!");
+      console.log(
+        "👨‍🏫 Pronto para conduzir a aula sobre Eventos e Interatividade"
+      );
+    </script>
+  </body>
+</html>
