@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teste Progressivo - Aula 5: Criação Dinâmica de Elementos</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+      }
+
+      .progress-container {
+        background: #f8f9fa;
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #45a049);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        margin-top: 10px;
+        text-align: center;
+        font-weight: bold;
+        color: #495057;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+      .question-container {
+        margin-bottom: 30px;
+        padding: 25px;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        background: #f8f9fa;
+        display: none;
+      }
+
+      .question-container.active {
+        display: block;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .question-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .question-number {
+        background: #007bff;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+      }
+
+      .question-type {
+        background: #6c757d;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+
+      .question-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
+
+      .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        margin: 15px 0;
+        overflow-x: auto;
+      }
+
+      .options {
+        list-style: none;
+      }
+
+      .option {
+        margin: 10px 0;
+        padding: 15px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .option:hover {
+        border-color: #007bff;
+        background: #f8f9ff;
+      }
+
+      .option.selected {
+        border-color: #007bff;
+        background: #e3f2fd;
+      }
+
+      .option.correct {
+        border-color: #28a745;
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .option.incorrect {
+        border-color: #dc3545;
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .practical-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 15px 0;
+        background: #ffffff;
+        min-height: 100px;
+      }
+
+      .code-input {
+        width: 100%;
+        height: 150px;
+        font-family: "Courier New", monospace;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #f8f9fa;
+        resize: vertical;
+      }
+
+      .buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+
+      .btn-primary {
+        background: #007bff;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #0056b3;
+      }
+
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #1e7e34;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #545b62;
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        display: none;
+      }
+
+      .feedback.show {
+        display: block;
+        animation: slideIn 0.3s ease;
+      }
+
+      .feedback.correct {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .feedback.incorrect {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+
+      .results {
+        display: none;
+        text-align: center;
+        padding: 40px 20px;
+      }
+
+      .results.show {
+        display: block;
+      }
+
+      .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      .score-excellent {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+      }
+
+      .score-good {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+      }
+
+      .score-poor {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+      }
+
+      .timer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        z-index: 1000;
+      }
+
+      .hint-btn {
+        background: #ffc107;
+        color: #212529;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      .hint {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+        display: none;
+      }
+
+      .hint.show {
+        display: block;
+        animation: slideIn 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          margin: 10px;
+          border-radius: 10px;
+        }
+
+        .header {
+          padding: 20px;
+        }
+
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .content {
+          padding: 20px;
+        }
+
+        .buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="timer" id="timer">⏱️ 20:00</div>
+
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Teste Progressivo - Aula 5</h1>
+        <p>Criação Dinâmica de Elementos HTML com JavaScript</p>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">Questão 0 de 12</div>
+      </div>
+
+      <div class="content">
+        <!-- Questão 1: Conceitual -->
+        <div class="question-container active" id="question-1">
+          <div class="question-header">
+            <div class="question-number">1</div>
+            <div class="question-type">CONCEITUAL</div>
+          </div>
+          <div class="question-title">
+            Qual é a principal diferença entre createElement e innerHTML?
+          </div>
+          <ul class="options">
+            <li class="option" data-value="a">
+              createElement é mais rápido que innerHTML
+            </li>
+            <li class="option" data-value="b">
+              createElement é mais seguro contra XSS e oferece melhor controle
+            </li>
+            <li class="option" data-value="c">
+              innerHTML só funciona com texto simples
+            </li>
+            <li class="option" data-value="d">
+              Não há diferença significativa entre eles
+            </li>
+          </ul>
+          <div class="feedback">
+            <strong>Explicação:</strong> createElement é mais seguro pois evita
+            vulnerabilidades XSS e oferece controle granular sobre os elementos
+            criados.
+          </div>
+          <button class="hint-btn" onclick="showHint(1)">💡 Dica</button>
+          <div class="hint" id="hint-1">
+            Pense em segurança e controle sobre os elementos DOM.
+          </div>
+        </div>
+
+        <!-- Questão 2: Prática Básica -->
+        <div class="question-container" id="question-2">
+          <div class="question-header">
+            <div class="question-number">2</div>
+            <div class="question-type">PRÁTICA</div>
+          </div>
+          <div class="question-title">
+            Complete o código para criar um botão com texto "Clique aqui":
+          </div>
+          <div class="code-block">
+            const botao = document.createElement('______'); botao.______ =
+            'Clique aqui'; document.body.______(botao);
+          </div>
+          <ul class="options">
+            <li class="option" data-value="a">
+              button, textContent, appendChild
+            </li>
+            <li class="option" data-value="b">btn, innerHTML, append</li>
+            <li class="option" data-value="c">button, text, addChild</li>
+            <li class="option" data-value="d">input, value, appendChild</li>
+          </ul>
+          <div class="feedback">
+            <strong>Explicação:</strong> document.createElement('button') cria o
+            elemento, textContent define o texto e appendChild adiciona ao DOM.
+          </div>
+        </div>
+
+        <!-- Questão 3: DocumentFragment -->
+        <div class="question-container" id="question-3">
+          <div class="question-header">
+            <div class="question-number">3</div>
+            <div class="question-type">CONCEITUAL</div>
+          </div>
+          <div class="question-title">
+            Quando devemos usar DocumentFragment?
+          </div>
+          <ul class="options">
+            <li class="option" data-value="a">
+              Sempre que criar qualquer elemento
+            </li>
+            <li class="option" data-value="b">
+              Apenas para elementos complexos
+            </li>
+            <li class="option" data-value="c">
+              Quando precisamos adicionar múltiplos elementos de uma vez
+            </li>
+            <li class="option" data-value="d">
+              DocumentFragment está obsoleto
+            </li>
+          </ul>
+          <div class="feedback">
+            <strong>Explicação:</strong> DocumentFragment é ideal para múltiplas
+            inserções pois evita reflows desnecessários no DOM.
+          </div>
+          <button class="hint-btn" onclick="showHint(3)">💡 Dica</button>
+          <div class="hint" id="hint-3">
+            Pense em performance quando você tem muitos elementos para
+            adicionar.
+          </div>
+        </div>
+
+        <!-- Questão 4: Prática DocumentFragment -->
+        <div class="question-container" id="question-4">
+          <div class="question-header">
+            <div class="question-number">4</div>
+            <div class="question-type">CÓDIGO</div>
+          </div>
+          <div class="question-title">
+            Escreva o código para criar uma lista com 3 itens usando
+            DocumentFragment:
+          </div>
+          <textarea
+            class="code-input"
+            id="code-4"
+            placeholder="// Crie uma ul com 3 li usando DocumentFragment
+const fragment = ..."
+          ></textarea>
+          <div class="practical-area" id="result-4"></div>
+          <button class="btn btn-primary" onclick="testCode(4)">
+            ▶️ Testar Código
+          </button>
+          <div class="feedback">
+            <strong>Resposta esperada:</strong> Uso correto de DocumentFragment
+            para criar lista otimizada.
+          </div>
+        </div>
+
+        <!-- Questão 5: setAttribute -->
+        <div class="question-container" id="question-5">
+          <div class="question-header">
+            <div class="question-number">5</div>
+            <div class="question-type">PRÁTICA</div>
+          </div>
+          <div class="question-title">
+            Qual código adiciona corretamente uma classe e um ID a um elemento?
+          </div>
+          <ul class="options">
+            <li class="option" data-value="a">
+              element.class = 'minha-classe'; element.id = 'meu-id';
+            </li>
+            <li class="option" data-value="b">
+              element.setAttribute('class', 'minha-classe');
+              element.setAttribute('id', 'meu-id');
+            </li>
+            <li class="option" data-value="c">
+              element.addAttribute('class', 'minha-classe');
+              element.addAttribute('id', 'meu-id');
+            </li>
+            <li class="option" data-value="d">
+              element.setClass('minha-classe'); element.setId('meu-id');
+            </li>
+          </ul>
+          <div class="feedback">
+            <strong>Explicação:</strong> setAttribute é o método padrão para
+            definir atributos HTML, embora className e id também funcionem.
+          </div>
+        </div>
+
+        <!-- Questão 6: Hierarquia -->
+        <div class="question-container" id="question-6">
+          <div class="question-header">
+            <div class="question-number">6</div>
+            <div class="question-type">CÓDIGO</div>
+          </div>
+          <div class="question-title">
+            Crie a seguinte estrutura HTML dinamicamente:
+          </div>
+          <div class="code-block">
+            &lt;div class="card"&gt; &lt;h3&gt;Título&lt;/h3&gt;
+            &lt;p&gt;Descrição&lt;/p&gt; &lt;/div&gt;
+          </div>
+          <textarea
+            class="code-input"
+            id="code-6"
+            placeholder="// Crie a estrutura acima usando createElement"
+          ></textarea>
+          <div class="practical-area" id="result-6"></div>
+          <button class="btn btn-primary" onclick="testCode(6)">
+            ▶️ Testar Código
+          </button>
+          <div class="feedback">
+            <strong>Avaliação:</strong> Estrutura hierárquica correta com classe
+            e conteúdo.
+          </div>
+        </div>
+
+        <!-- Questão 7: cloneNode -->
+        <div class="question-container" id="question-7">
+          <div class="question-header">
+            <div class="question-number">7</div>
+            <div class="question-type">CONCEITUAL</div>
+          </div>
+          <div class="question-title">
+            Qual a diferença entre cloneNode(true) e cloneNode(false)?
+          </div>
+          <ul class="options">
+            <li class="option" data-value="a">
+              true clona apenas o elemento, false clona com filhos
+            </li>
+            <li class="option" data-value="b">
+              true clona o elemento e todos os filhos, false clona apenas o
+              elemento
+            </li>
+            <li class="option" data-value="c">Não há diferença prática</li>
+            <li class="option" data-value="d">
+              true é para elementos HTML, false para SVG
+            </li>
+          </ul>
+          <div class="feedback">
+            <strong>Explicação:</strong> cloneNode(true) faz clone profundo
+            (deep clone) incluindo filhos, false faz clone superficial.
+          </div>
+        </div>
+
+        <!-- Questão 8: Performance -->
+        <div class="question-container" id="question-8">
+          <div class="question-header">
+            <div class="question-number">8</div>
+            <div class="question-type">CÓDIGO</div>
+          </div>
+          <div class="question-title">
+            Implemente uma função otimizada para criar 100 itens de lista:
+          </div>
+          <textarea
+            class="code-input"
+            id="code-8"
+            placeholder="function criarListaOtimizada(items) {
+  // Sua implementação aqui usando DocumentFragment
+}"
+          ></textarea>
+          <div class="practical-area" id="result-8"></div>
+          <button class="btn btn-primary" onclick="testCode(8)">
+            ▶️ Testar Código
+          </button>
+          <div class="feedback">
+            <strong>Critérios:</strong> Uso de DocumentFragment, loop eficiente,
+            estrutura correta.
+          </div>
+        </div>
+
+        <!-- Questão 9: Templates -->
+        <div class="question-container" id="question-9">
+          <div class="question-header">
+            <div class="question-number">9</div>
+            <div class="question-type">CONCEITUAL</div>
+          </div>
+          <div class="question-title">
+            Qual é a vantagem principal de usar templates em JavaScript?
+          </div>
+          <ul class="options">
+            <li class="option" data-value="a">Melhor performance sempre</li>
+            <li class="option" data-value="b">
+              Reutilização de código e consistência na criação de elementos
+            </li>
+            <li class="option" data-value="c">Menor uso de memória</li>
+            <li class="option" data-value="d">
+              Compatibilidade com navegadores antigos
+            </li>
+          </ul>
+          <div class="feedback">
+            <strong>Explicação:</strong> Templates permitem reutilizar
+            estruturas, mantendo consistência e reduzindo código duplicado.
+          </div>
+        </div>
+
+        <!-- Questão 10: Componente -->
+        <div class="question-container" id="question-10">
+          <div class="question-header">
+            <div class="question-number">10</div>
+            <div class="question-type">CÓDIGO</div>
+          </div>
+          <div class="question-title">
+            Crie uma função componente que receba dados e retorne um card de
+            usuário:
+          </div>
+          <textarea
+            class="code-input"
+            id="code-10"
+            placeholder="function criarCardUsuario(usuario) {
+  // usuario = { nome: 'João', email: 'joao@email.com', avatar: 'avatar.jpg' }
+  // Retorne um elemento div com as informações do usuário
+}"
+          ></textarea>
+          <div class="practical-area" id="result-10"></div>
+          <button class="btn btn-primary" onclick="testCode(10)">
+            ▶️ Testar Código
+          </button>
+          <div class="feedback">
+            <strong>Avaliação:</strong> Função retorna elemento correto com
+            dados do usuário.
+          </div>
+        </div>
+
+        <!-- Questão 11: Virtual DOM Conceito -->
+        <div class="question-container" id="question-11">
+          <div class="question-header">
+            <div class="question-number">11</div>
+            <div class="question-type">CONCEITUAL</div>
+          </div>
+          <div class="question-title">
+            O que é Virtual DOM e por que é usado em frameworks como React?
+          </div>
+          <ul class="options">
+            <li class="option" data-value="a">
+              Uma cópia exata do DOM em memória
+            </li>
+            <li class="option" data-value="b">
+              Uma representação leve do DOM que permite otimizações de
+              re-renderização
+            </li>
+            <li class="option" data-value="c">
+              Um substituto completo para o DOM
+            </li>
+            <li class="option" data-value="d">
+              Uma ferramenta apenas para debugging
+            </li>
+          </ul>
+          <div class="feedback">
+            <strong>Explicação:</strong> Virtual DOM é uma representação leve
+            que permite calcular mudanças eficientemente antes de atualizar o
+            DOM real.
+          </div>
+          <button class="hint-btn" onclick="showHint(11)">💡 Dica</button>
+          <div class="hint" id="hint-11">
+            Pense em como frameworks modernos otimizam atualizações da
+            interface.
+          </div>
+        </div>
+
+        <!-- Questão 12: Desafio Final -->
+        <div class="question-container" id="question-12">
+          <div class="question-header">
+            <div class="question-number">12</div>
+            <div class="question-type">DESAFIO</div>
+          </div>
+          <div class="question-title">
+            DESAFIO FINAL: Crie um sistema completo de TODO dinâmico
+          </div>
+          <p>Implemente um sistema que:</p>
+          <ul style="margin: 15px 0; padding-left: 20px">
+            <li>Adicione novos TODOs dinamicamente</li>
+            <li>Marque/desmarque como concluído</li>
+            <li>Remova TODOs</li>
+            <li>Use apenas createElement (sem innerHTML)</li>
+          </ul>
+          <textarea
+            class="code-input"
+            id="code-12"
+            placeholder="// Implemente um sistema completo de TODO
+// Crie funções: adicionarTodo, marcarCompleto, removerTodo
+// Use createElement para tudo"
+          ></textarea>
+          <div class="practical-area" id="result-12"></div>
+          <button class="btn btn-primary" onclick="testCode(12)">
+            ▶️ Testar Sistema
+          </button>
+          <div class="feedback">
+            <strong>Critérios:</strong> Funcionalidade completa, uso correto de
+            createElement, interatividade.
+          </div>
+        </div>
+
+        <!-- Botões de navegação -->
+        <div class="buttons">
+          <button
+            class="btn btn-secondary"
+            id="prevBtn"
+            onclick="previousQuestion()"
+            disabled
+          >
+            ⬅️ Anterior
+          </button>
+          <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+            Próxima ➡️
+          </button>
+          <button
+            class="btn btn-success"
+            id="submitBtn"
+            onclick="submitTest()"
+            style="display: none"
+          >
+            🏁 Finalizar Teste
+          </button>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div class="results" id="results">
+        <div class="score-circle" id="scoreCircle">
+          <span id="scorePercentage">0%</span>
+        </div>
+        <h2 id="scoreTitle">Resultado do Teste</h2>
+        <p id="scoreDescription">Descrição do desempenho</p>
+        <div style="margin: 20px 0">
+          <strong>Questões Corretas:</strong>
+          <span id="correctCount">0</span> de <span id="totalCount">12</span>
+        </div>
+        <div style="margin: 20px 0">
+          <strong>Tempo Total:</strong> <span id="finalTime">00:00</span>
+        </div>
+        <button class="btn btn-primary" onclick="reviewAnswers()">
+          📋 Revisar Respostas
+        </button>
+        <button class="btn btn-secondary" onclick="restartTest()">
+          🔄 Refazer Teste
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Estado do teste
+      let currentQuestion = 1;
+      const totalQuestions = 12;
+      let answers = {};
+      let startTime = Date.now();
+      let timeLimit = 20 * 60 * 1000; // 20 minutos em millisegundos
+      let timerInterval;
+
+      // Respostas corretas
+      const correctAnswers = {
+        1: "b",
+        2: "a",
+        3: "c",
+        4: "code", // Questão prática
+        5: "b",
+        6: "code", // Questão prática
+        7: "b",
+        8: "code", // Questão prática
+        9: "b",
+        10: "code", // Questão prática
+        11: "b",
+        12: "code", // Questão prática
+      };
+
+      // Inicializar teste
+      document.addEventListener("DOMContentLoaded", function () {
+        updateProgress();
+        startTimer();
+        bindOptionEvents();
+      });
+
+      // Timer
+      function startTimer() {
+        timerInterval = setInterval(function () {
+          const elapsed = Date.now() - startTime;
+          const remaining = timeLimit - elapsed;
+
+          if (remaining <= 0) {
+            clearInterval(timerInterval);
+            submitTest();
+            return;
+          }
+
+          const minutes = Math.floor(remaining / 60000);
+          const seconds = Math.floor((remaining % 60000) / 1000);
+          document.getElementById("timer").textContent = `⏱️ ${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+          // Alerta quando restam 2 minutos
+          if (remaining <= 2 * 60 * 1000 && remaining > 119000) {
+            document.getElementById("timer").style.background =
+              "rgba(220, 53, 69, 0.9)";
+            document.getElementById("timer").style.animation =
+              "pulse 1s infinite";
+          }
+        }, 1000);
+      }
+
+      // Vincular eventos às opções
+      function bindOptionEvents() {
+        document.addEventListener("click", function (e) {
+          if (e.target.classList.contains("option")) {
+            const questionContainer = e.target.closest(".question-container");
+            const questionNum = parseInt(questionContainer.id.split("-")[1]);
+
+            // Remover seleção anterior
+            questionContainer.querySelectorAll(".option").forEach((opt) => {
+              opt.classList.remove("selected");
+            });
+
+            // Adicionar seleção atual
+            e.target.classList.add("selected");
+
+            // Salvar resposta
+            answers[questionNum] = e.target.dataset.value;
+
+            // Mostrar feedback
+            showFeedback(questionNum);
+          }
+        });
+      }
+
+      // Mostrar feedback
+      function showFeedback(questionNum) {
+        const questionContainer = document.getElementById(
+          `question-${questionNum}`
+        );
+        const feedback = questionContainer.querySelector(".feedback");
+        const isCorrect = answers[questionNum] === correctAnswers[questionNum];
+
+        feedback.className = `feedback show ${
+          isCorrect ? "correct" : "incorrect"
+        }`;
+
+        // Marcar opções como corretas/incorretas
+        questionContainer.querySelectorAll(".option").forEach((opt) => {
+          if (opt.dataset.value === correctAnswers[questionNum]) {
+            opt.classList.add("correct");
+          } else if (opt.classList.contains("selected") && !isCorrect) {
+            opt.classList.add("incorrect");
+          }
+        });
+      }
+
+      // Testar código prático
+      function testCode(questionNum) {
+        const code = document
+          .getElementById(`code-${questionNum}`)
+          .value.trim();
+        const resultArea = document.getElementById(`result-${questionNum}`);
+        const feedback = document.querySelector(
+          `#question-${questionNum} .feedback`
+        );
+
+        if (!code) {
+          alert("Por favor, escreva o código antes de testar!");
+          return;
+        }
+
+        try {
+          // Salvar código
+          answers[questionNum] = code;
+
+          // Limpar área de resultado
+          resultArea.innerHTML = "";
+
+          // Avaliar código baseado na questão
+          let success = false;
+
+          switch (questionNum) {
+            case 4: // DocumentFragment lista
+              success = evaluateListCode(code, resultArea);
+              break;
+            case 6: // Estrutura hierárquica
+              success = evaluateCardCode(code, resultArea);
+              break;
+            case 8: // Lista otimizada
+              success = evaluateOptimizedListCode(code, resultArea);
+              break;
+            case 10: // Componente usuário
+              success = evaluateUserCardCode(code, resultArea);
+              break;
+            case 12: // Sistema TODO
+              success = evaluateTodoSystemCode(code, resultArea);
+              break;
+          }
+
+          // Mostrar feedback
+          feedback.className = `feedback show ${
+            success ? "correct" : "incorrect"
+          }`;
+        } catch (error) {
+          resultArea.innerHTML = `<div style="color: red;">Erro: ${error.message}</div>`;
+          feedback.className = "feedback show incorrect";
+        }
+      }
+
+      // Avaliar código da lista (questão 4)
+      function evaluateListCode(code, resultArea) {
+        if (
+          code.includes("DocumentFragment") &&
+          code.includes("createElement") &&
+          code.includes("ul")
+        ) {
+          try {
+            eval(code);
+            resultArea.innerHTML =
+              '<div style="color: green;">✅ Código correto! DocumentFragment usado adequadamente.</div>';
+            return true;
+          } catch (e) {
+            resultArea.innerHTML =
+              '<div style="color: red;">❌ Erro na execução do código.</div>';
+            return false;
+          }
+        } else {
+          resultArea.innerHTML =
+            '<div style="color: orange;">⚠️ Verifique se está usando DocumentFragment e createElement.</div>';
+          return false;
+        }
+      }
+
+      // Avaliar código do card (questão 6)
+      function evaluateCardCode(code, resultArea) {
+        if (
+          code.includes("createElement") &&
+          code.includes("card") &&
+          code.includes("appendChild")
+        ) {
+          try {
+            eval(code);
+            resultArea.innerHTML =
+              '<div style="color: green;">✅ Estrutura hierárquica criada corretamente!</div>';
+            return true;
+          } catch (e) {
+            resultArea.innerHTML =
+              '<div style="color: red;">❌ Erro na execução do código.</div>';
+            return false;
+          }
+        } else {
+          resultArea.innerHTML =
+            '<div style="color: orange;">⚠️ Verifique a estrutura e métodos utilizados.</div>';
+          return false;
+        }
+      }
+
+      // Avaliar código da lista otimizada (questão 8)
+      function evaluateOptimizedListCode(code, resultArea) {
+        if (
+          code.includes("DocumentFragment") &&
+          code.includes("function") &&
+          code.includes("for")
+        ) {
+          try {
+            eval(code);
+            resultArea.innerHTML =
+              '<div style="color: green;">✅ Função otimizada implementada!</div>';
+            return true;
+          } catch (e) {
+            resultArea.innerHTML =
+              '<div style="color: red;">❌ Erro na execução do código.</div>';
+            return false;
+          }
+        } else {
+          resultArea.innerHTML =
+            '<div style="color: orange;">⚠️ Implemente uma função com DocumentFragment e loop.</div>';
+          return false;
+        }
+      }
+
+      // Avaliar código do card de usuário (questão 10)
+      function evaluateUserCardCode(code, resultArea) {
+        if (
+          code.includes("function") &&
+          code.includes("createElement") &&
+          code.includes("usuario")
+        ) {
+          try {
+            eval(code);
+            resultArea.innerHTML =
+              '<div style="color: green;">✅ Componente de usuário criado!</div>';
+            return true;
+          } catch (e) {
+            resultArea.innerHTML =
+              '<div style="color: red;">❌ Erro na execução do código.</div>';
+            return false;
+          }
+        } else {
+          resultArea.innerHTML =
+            '<div style="color: orange;">⚠️ Crie uma função que retorne um elemento com dados do usuário.</div>';
+          return false;
+        }
+      }
+
+      // Avaliar sistema TODO (questão 12)
+      function evaluateTodoSystemCode(code, resultArea) {
+        if (
+          code.includes("createElement") &&
+          (code.includes("adicionarTodo") || code.includes("adicionar")) &&
+          (code.includes("remover") || code.includes("marcar"))
+        ) {
+          try {
+            eval(code);
+            resultArea.innerHTML =
+              '<div style="color: green;">✅ Sistema TODO implementado! Excelente trabalho!</div>';
+            return true;
+          } catch (e) {
+            resultArea.innerHTML =
+              '<div style="color: red;">❌ Erro na execução do código.</div>';
+            return false;
+          }
+        } else {
+          resultArea.innerHTML =
+            '<div style="color: orange;">⚠️ Implemente funções para adicionar, marcar e remover TODOs.</div>';
+          return false;
+        }
+      }
+
+      // Mostrar dica
+      function showHint(questionNum) {
+        const hint = document.getElementById(`hint-${questionNum}`);
+        hint.classList.toggle("show");
+      }
+
+      // Navegação
+      function nextQuestion() {
+        if (currentQuestion < totalQuestions) {
+          document
+            .getElementById(`question-${currentQuestion}`)
+            .classList.remove("active");
+          currentQuestion++;
+          document
+            .getElementById(`question-${currentQuestion}`)
+            .classList.add("active");
+          updateProgress();
+          updateButtons();
+        }
+      }
+
+      function previousQuestion() {
+        if (currentQuestion > 1) {
+          document
+            .getElementById(`question-${currentQuestion}`)
+            .classList.remove("active");
+          currentQuestion--;
+          document
+            .getElementById(`question-${currentQuestion}`)
+            .classList.add("active");
+          updateProgress();
+          updateButtons();
+        }
+      }
+
+      function updateProgress() {
+        const progress = (currentQuestion / totalQuestions) * 100;
+        document.getElementById("progressFill").style.width = progress + "%";
+        document.getElementById(
+          "progressText"
+        ).textContent = `Questão ${currentQuestion} de ${totalQuestions}`;
+      }
+
+      function updateButtons() {
+        document.getElementById("prevBtn").disabled = currentQuestion === 1;
+
+        if (currentQuestion === totalQuestions) {
+          document.getElementById("nextBtn").style.display = "none";
+          document.getElementById("submitBtn").style.display = "block";
+        } else {
+          document.getElementById("nextBtn").style.display = "block";
+          document.getElementById("submitBtn").style.display = "none";
+        }
+      }
+
+      // Finalizar teste
+      function submitTest() {
+        clearInterval(timerInterval);
+
+        // Calcular pontuação
+        let correctCount = 0;
+        const totalAnswered = Object.keys(answers).length;
+
+        for (let i = 1; i <= totalQuestions; i++) {
+          if (
+            answers[i] &&
+            (correctAnswers[i] === "code" || answers[i] === correctAnswers[i])
+          ) {
+            correctCount++;
+          }
+        }
+
+        const percentage = Math.round((correctCount / totalQuestions) * 100);
+        const timeElapsed = Date.now() - startTime;
+        const minutes = Math.floor(timeElapsed / 60000);
+        const seconds = Math.floor((timeElapsed % 60000) / 1000);
+
+        // Mostrar resultados
+        document.querySelector(".content").style.display = "none";
+        document.getElementById("results").classList.add("show");
+
+        document.getElementById("scorePercentage").textContent =
+          percentage + "%";
+        document.getElementById("correctCount").textContent = correctCount;
+        document.getElementById("totalCount").textContent = totalQuestions;
+        document.getElementById("finalTime").textContent = `${minutes
+          .toString()
+          .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+        const scoreCircle = document.getElementById("scoreCircle");
+        const scoreTitle = document.getElementById("scoreTitle");
+        const scoreDescription = document.getElementById("scoreDescription");
+
+        if (percentage >= 80) {
+          scoreCircle.className = "score-circle score-excellent";
+          scoreTitle.textContent = "Excelente! 🌟";
+          scoreDescription.textContent =
+            "Você domina a criação dinâmica de elementos!";
+        } else if (percentage >= 60) {
+          scoreCircle.className = "score-circle score-good";
+          scoreTitle.textContent = "Bom trabalho! 👍";
+          scoreDescription.textContent =
+            "Continue praticando para aperfeiçoar suas habilidades.";
+        } else {
+          scoreCircle.className = "score-circle score-poor";
+          scoreTitle.textContent = "Continue estudando! 📚";
+          scoreDescription.textContent =
+            "Revise os conceitos e pratique mais exercícios.";
+        }
+      }
+
+      // Revisar respostas
+      function reviewAnswers() {
+        document.getElementById("results").classList.remove("show");
+        document.querySelector(".content").style.display = "block";
+        currentQuestion = 1;
+        document
+          .getElementById(`question-${currentQuestion}`)
+          .classList.add("active");
+
+        // Marcar todas as respostas
+        for (let i = 1; i <= totalQuestions; i++) {
+          const questionContainer = document.getElementById(`question-${i}`);
+          const feedback = questionContainer.querySelector(".feedback");
+
+          if (answers[i]) {
+            if (correctAnswers[i] !== "code") {
+              questionContainer.querySelectorAll(".option").forEach((opt) => {
+                if (opt.dataset.value === answers[i]) {
+                  opt.classList.add("selected");
+                }
+                if (opt.dataset.value === correctAnswers[i]) {
+                  opt.classList.add("correct");
+                } else if (
+                  opt.classList.contains("selected") &&
+                  answers[i] !== correctAnswers[i]
+                ) {
+                  opt.classList.add("incorrect");
+                }
+              });
+            }
+
+            const isCorrect =
+              answers[i] === correctAnswers[i] || correctAnswers[i] === "code";
+            feedback.className = `feedback show ${
+              isCorrect ? "correct" : "incorrect"
+            }`;
+          }
+        }
+
+        updateProgress();
+      }
+
+      // Reiniciar teste
+      function restartTest() {
+        location.reload();
+      }
+
+      // Adicionar estilo de animação para o timer
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>
