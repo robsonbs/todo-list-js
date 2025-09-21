@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 4: Arrays e Manipulação de Dados - JavaScript TODO List</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .header h1 {
+        color: #4a5568;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .header .subtitle {
+        color: #718096;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+      }
+
+      .progress-bar {
+        background: #e2e8f0;
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 15px;
+      }
+
+      .progress-fill {
+        background: linear-gradient(90deg, #48bb78, #38a169);
+        height: 100%;
+        width: 50%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .lesson-info {
+        background: #f7fafc;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #4299e1;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .section {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .section h2 {
+        color: #2d3748;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section h3 {
+        color: #4a5568;
+        margin: 20px 0 15px 0;
+        font-size: 1.2em;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 5px;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .demo-btn {
+        background: linear-gradient(135deg, #4299e1, #3182ce);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .demo-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4);
+      }
+
+      .demo-btn:active {
+        transform: translateY(0);
+      }
+
+      .demo-btn.success {
+        background: linear-gradient(135deg, #48bb78, #38a169);
+        animation: pulse 0.6s ease-in-out;
+      }
+
+      .demo-btn.error {
+        background: linear-gradient(135deg, #e53e3e, #c53030);
+        animation: shake 0.6s ease-in-out;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      .result-display {
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 13px;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
+        color: #2d3748;
+      }
+
+      .result-display:empty::before {
+        content: "Clique em um botão para ver o resultado...";
+        color: #a0aec0;
+        font-style: italic;
+      }
+
+      .todo-system {
+        grid-column: 1 / -1;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .todo-input-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .todo-input {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      .todo-input:focus {
+        outline: none;
+        border-color: #4299e1;
+      }
+
+      .add-btn {
+        background: linear-gradient(135deg, #48bb78, #38a169);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+      }
+
+      .todo-stats {
+        background: #f0fff4;
+        border: 1px solid #9ae6b4;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+
+      .todo-stats h4 {
+        color: #22543d;
+        margin-bottom: 10px;
+      }
+
+      .todo-list {
+        background: #fafafa;
+        border-radius: 8px;
+        padding: 15px;
+      }
+
+      .todo-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        margin-bottom: 8px;
+        background: white;
+        border-radius: 6px;
+        border-left: 4px solid #4299e1;
+      }
+
+      .todo-item.completed {
+        border-left-color: #48bb78;
+        opacity: 0.7;
+      }
+
+      .priority {
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      .priority.high {
+        background: #fed7d7;
+        color: #c53030;
+      }
+
+      .priority.medium {
+        background: #feebc8;
+        color: #dd6b20;
+      }
+
+      .priority.low {
+        background: #e6fffa;
+        color: #00b5d8;
+      }
+
+      .advanced-section {
+        grid-column: 1 / -1;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .reset-btn {
+        background: linear-gradient(135deg, #e53e3e, #c53030);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+      }
+
+      .reset-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(229, 62, 62, 0.4);
+      }
+
+      .status-display {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+
+      .concept-explanation {
+        background: #f0f4f8;
+        border-left: 4px solid #4299e1;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+      }
+
+      .concept-explanation h4 {
+        color: #2d3748;
+        margin-bottom: 8px;
+      }
+
+      .concept-explanation p {
+        color: #4a5568;
+        font-size: 14px;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+
+        .button-group {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2em;
+        }
+
+        .todo-input-container {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header Section -->
+      <header class="header">
+        <h1>🎯 Aula 4: Arrays e Manipulação de Dados</h1>
+        <p class="subtitle">Domine todos os métodos de arrays do JavaScript</p>
+
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+
+        <div class="lesson-info">
+          <strong>📚 Objetivo:</strong> Aprender manipulação completa de arrays,
+          desde operações básicas até algoritmos avançados e performance.
+        </div>
+      </header>
+
+      <!-- Status Display -->
+      <div class="status-display" id="statusDisplay">
+        Carregando sistema de arrays...
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="main-content">
+        <!-- CRUD Operations Section -->
+        <section class="section">
+          <h2>📝 Operações CRUD Básicas</h2>
+
+          <div class="concept-explanation">
+            <h4>Push & Pop</h4>
+            <p>Adição e remoção no final do array</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="pushBtn">
+              🔼 Push (Adicionar Final)
+            </button>
+            <button class="demo-btn" id="popBtn">🔽 Pop (Remover Final)</button>
+          </div>
+          <div class="result-display" id="pushResult"></div>
+          <div class="result-display" id="popResult"></div>
+
+          <div class="concept-explanation">
+            <h4>Unshift & Shift</h4>
+            <p>Adição e remoção no início do array</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="unshiftBtn">
+              ⬆️ Unshift (Adicionar Início)
+            </button>
+            <button class="demo-btn" id="shiftBtn">
+              ⬇️ Shift (Remover Início)
+            </button>
+          </div>
+          <div class="result-display" id="unshiftResult"></div>
+          <div class="result-display" id="shiftResult"></div>
+
+          <div class="concept-explanation">
+            <h4>Splice</h4>
+            <p>Remoção/adição em posição específica</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="spliceBtn">
+              ✂️ Splice (Editar Posição)
+            </button>
+          </div>
+          <div class="result-display" id="spliceResult"></div>
+        </section>
+
+        <!-- Search and Find Section -->
+        <section class="section">
+          <h2>🔍 Busca e Localização</h2>
+
+          <div class="concept-explanation">
+            <h4>Busca de Índices</h4>
+            <p>Encontrar posições de elementos</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="indexOfBtn">📍 IndexOf</button>
+            <button class="demo-btn" id="includesBtn">✅ Includes</button>
+          </div>
+          <div class="result-display" id="indexOfResult"></div>
+          <div class="result-display" id="includesResult"></div>
+
+          <div class="concept-explanation">
+            <h4>Busca com Condições</h4>
+            <p>Encontrar elementos por critérios</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="findBtn">🎯 Find</button>
+            <button class="demo-btn" id="findIndexBtn">📌 FindIndex</button>
+          </div>
+          <div class="result-display" id="findResult"></div>
+          <div class="result-display" id="findIndexResult"></div>
+        </section>
+
+        <!-- Filter and Transform Section -->
+        <section class="section">
+          <h2>🔄 Filtro e Transformação</h2>
+
+          <div class="concept-explanation">
+            <h4>Filtros e Mapeamento</h4>
+            <p>Criar novos arrays baseados em condições</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="filterBtn">🔬 Filter</button>
+            <button class="demo-btn" id="mapBtn">🗺️ Map</button>
+            <button class="demo-btn" id="forEachBtn">🔁 ForEach</button>
+          </div>
+          <div class="result-display" id="filterResult"></div>
+          <div class="result-display" id="mapResult"></div>
+          <div class="result-display" id="forEachResult"></div>
+        </section>
+
+        <!-- Aggregation Section -->
+        <section class="section">
+          <h2>📊 Agregação e Redução</h2>
+
+          <div class="concept-explanation">
+            <h4>Métodos de Redução</h4>
+            <p>Reduzir arrays a valores únicos</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="reduceBtn">⬇️ Reduce</button>
+            <button class="demo-btn" id="someBtn">❓ Some</button>
+            <button class="demo-btn" id="everyBtn">✔️ Every</button>
+          </div>
+          <div class="result-display" id="reduceResult"></div>
+          <div class="result-display" id="reduceAdvancedResult"></div>
+          <div class="result-display" id="someResult"></div>
+          <div class="result-display" id="everyResult"></div>
+        </section>
+
+        <!-- Sorting Section -->
+        <section class="section">
+          <h2>🔢 Ordenação e Organização</h2>
+
+          <div class="concept-explanation">
+            <h4>Métodos de Ordenação</h4>
+            <p>Organizar elementos por critérios</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="sortBtn">📈 Sort</button>
+            <button class="demo-btn" id="reverseBtn">🔄 Reverse</button>
+          </div>
+          <div class="result-display" id="sortResult"></div>
+          <div class="result-display" id="reverseResult"></div>
+        </section>
+
+        <!-- Concatenation Section -->
+        <section class="section">
+          <h2>🔗 Concatenação e Junção</h2>
+
+          <div class="concept-explanation">
+            <h4>Unindo Arrays</h4>
+            <p>Combinar e extrair partes de arrays</p>
+          </div>
+          <div class="button-group">
+            <button class="demo-btn" id="concatBtn">➕ Concat</button>
+            <button class="demo-btn" id="joinBtn">🔗 Join</button>
+            <button class="demo-btn" id="sliceBtn">✂️ Slice</button>
+          </div>
+          <div class="result-display" id="concatResult"></div>
+          <div class="result-display" id="joinResult"></div>
+          <div class="result-display" id="sliceResult"></div>
+        </section>
+      </div>
+
+      <!-- TODO System Implementation -->
+      <section class="todo-system">
+        <h2>📋 Sistema TODO - Aplicação Prática</h2>
+
+        <div class="concept-explanation">
+          <h4>Arrays na Prática</h4>
+          <p>
+            Veja como todos os métodos se aplicam em um sistema real de
+            gerenciamento de tarefas
+          </p>
+        </div>
+
+        <div class="todo-input-container">
+          <input
+            type="text"
+            class="todo-input"
+            id="todoInput"
+            placeholder="Digite uma nova tarefa..."
+          />
+          <button class="add-btn" id="addTodoBtn">➕ Adicionar</button>
+        </div>
+
+        <div id="todoSystemResult">
+          <!-- Todo list will be populated here -->
+        </div>
+      </section>
+
+      <!-- Advanced Operations Section -->
+      <section class="advanced-section">
+        <h2>🚀 Operações Avançadas</h2>
+
+        <div class="button-group">
+          <button class="demo-btn" id="objectMethodsBtn">
+            🏗️ CRUD com Objetos
+          </button>
+          <button class="demo-btn" id="performanceBtn">⚡ Performance</button>
+          <button class="demo-btn" id="binarySearchBtn">
+            🔍 Busca Binária
+          </button>
+          <button class="demo-btn" id="multiDimensionalBtn">
+            📊 Arrays 2D
+          </button>
+          <button class="demo-btn" id="utilitiesBtn">🛠️ Utilitários</button>
+        </div>
+
+        <div class="result-display" id="objectMethodsResult"></div>
+        <div class="result-display" id="performanceResult"></div>
+        <div class="result-display" id="binarySearchResult"></div>
+        <div class="result-display" id="multiDimensionalResult"></div>
+        <div class="result-display" id="utilitiesResult"></div>
+
+        <div class="concept-explanation">
+          <h4>💡 Dicas de Performance</h4>
+          <p>
+            • Use <code>for</code> loops para performance máxima<br />
+            • <code>forEach</code> é mais legível mas mais lento<br />
+            • <code>find</code> para uma busca, <code>filter</code> para
+            múltiplos resultados<br />
+            • <code>some/every</code> param com boolean prematuramente<br />
+            • <code>reduce</code> é poderoso mas pode ser complexo
+          </p>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">🔄 Resetar Dados</button>
+      </section>
+    </div>
+
+    <script src="codigo-progressivo.js"></script>
+  </body>
+</html>
