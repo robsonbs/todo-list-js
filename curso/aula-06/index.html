@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 6: Eventos Avançados e Interatividade - Curso JavaScript</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- Custom Styles -->
+    <style>
+      :root {
+        --primary-color: #007bff;
+        --secondary-color: #6c757d;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --warning-color: #ffc107;
+        --info-color: #17a2b8;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px 0;
+      }
+
+      .main-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 0 auto;
+        max-width: 1200px;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        text-align: center;
+        position: relative;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .header .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+      }
+
+      .nav-tabs {
+        background: var(--light-color);
+        border-bottom: 3px solid var(--primary-color);
+        padding: 0 20px;
+      }
+
+      .nav-tabs .nav-link {
+        border: none;
+        color: var(--secondary-color);
+        font-weight: 600;
+        padding: 15px 20px;
+        transition: all 0.3s ease;
+        border-radius: 0;
+        position: relative;
+      }
+
+      .nav-tabs .nav-link:hover {
+        background: rgba(0, 123, 255, 0.1);
+        color: var(--primary-color);
+      }
+
+      .nav-tabs .nav-link.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      .nav-tabs .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-color);
+      }
+
+      .tab-content {
+        padding: 40px;
+        min-height: 600px;
+      }
+
+      .demo-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e9ecef;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .demo-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .demo-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .demo-title i {
+        font-size: 1.3rem;
+      }
+
+      .code-example {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        font-family: "Courier New", monospace;
+        margin: 20px 0;
+        overflow-x: auto;
+      }
+
+      .btn-demo {
+        background: linear-gradient(135deg, var(--primary-color), #0056b3);
+        border: none;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-demo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+        color: white;
+      }
+
+      .result-area {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        min-height: 100px;
+        transition: all 0.3s ease;
+      }
+
+      .result-area.active {
+        border-color: var(--success-color);
+        background: #f8fff9;
+      }
+
+      .progress-indicator {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .progress-step {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        position: relative;
+      }
+
+      .progress-step::before {
+        content: "";
+        position: absolute;
+        left: 20px;
+        top: 40px;
+        bottom: -20px;
+        width: 2px;
+        background: #dee2e6;
+      }
+
+      .progress-step:last-child::before {
+        display: none;
+      }
+
+      .step-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: white;
+        font-weight: bold;
+        z-index: 1;
+        position: relative;
+      }
+
+      .step-icon.completed {
+        background: var(--success-color);
+      }
+
+      .step-icon.active {
+        background: var(--primary-color);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+        }
+      }
+
+      .keyboard-demo {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 20px 0;
+      }
+
+      .mouse-tracker {
+        border: 3px solid var(--info-color);
+        border-radius: 10px;
+        height: 200px;
+        position: relative;
+        cursor: crosshair;
+        background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+          linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+          linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      }
+
+      .drag-zone {
+        border: 3px dashed var(--warning-color);
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        background: #fff9e6;
+        transition: all 0.3s ease;
+        margin: 20px 0;
+      }
+
+      .drag-zone.drag-over {
+        border-color: var(--success-color);
+        background: #f0fff4;
+        transform: scale(1.02);
+      }
+
+      .draggable-item {
+        background: var(--primary-color);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        cursor: move;
+        margin: 10px;
+        display: inline-block;
+        transition: all 0.3s ease;
+        user-select: none;
+      }
+
+      .draggable-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+      }
+
+      .draggable-item.dragging {
+        opacity: 0.5;
+        transform: rotate(5deg);
+      }
+
+      .touch-area {
+        background: linear-gradient(135deg, #ff6b6b, #feca57);
+        border-radius: 15px;
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        text-align: center;
+        user-select: none;
+        touch-action: none;
+      }
+
+      .event-log {
+        background: #2d3748;
+        color: #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        height: 200px;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        margin: 20px 0;
+      }
+
+      .event-log .log-entry {
+        margin: 5px 0;
+        padding: 5px;
+        border-left: 3px solid var(--primary-color);
+        padding-left: 10px;
+      }
+
+      .footer {
+        background: var(--dark-color);
+        color: white;
+        text-align: center;
+        padding: 30px;
+      }
+
+      .footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .tab-content {
+          padding: 20px;
+        }
+
+        .demo-section {
+          padding: 20px;
+        }
+
+        .nav-tabs .nav-link {
+          padding: 10px 15px;
+          font-size: 14px;
+        }
+      }
+
+      /* Animation Classes */
+      .fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .bounce {
+        animation: bounce 0.6s ease;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-20px);
+        }
+        60% {
+          transform: translateY(-10px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <!-- Header -->
+      <header class="header">
+        <h1>
+          <i class="fas fa-mouse-pointer"></i> Aula 6: Eventos Avançados e
+          Interatividade
+        </h1>
+        <p class="subtitle">
+          Domine addEventListener, delegation, custom events, keyboard, mouse,
+          drag & drop
+        </p>
+      </header>
+
+      <!-- Progress Indicator -->
+      <div class="container">
+        <div class="progress-indicator">
+          <h5><i class="fas fa-tasks"></i> Progresso da Aula</h5>
+          <div class="progress-step">
+            <div class="step-icon completed">1</div>
+            <div>
+              <strong>Eventos Básicos</strong>
+              <br /><small
+                >addEventListener, removeEventListener, propriedades do
+                evento</small
+              >
+            </div>
+          </div>
+          <div class="progress-step">
+            <div class="step-icon completed">2</div>
+            <div>
+              <strong>Event Object</strong>
+              <br /><small
+                >Propriedades, coordenadas, target vs currentTarget</small
+              >
+            </div>
+          </div>
+          <div class="progress-step">
+            <div class="step-icon completed">3</div>
+            <div>
+              <strong>Bubbling & Capturing</strong>
+              <br /><small
+                >Propagação de eventos, preventDefault, stopPropagation</small
+              >
+            </div>
+          </div>
+          <div class="progress-step">
+            <div class="step-icon active">4</div>
+            <div>
+              <strong>Event Delegation</strong>
+              <br /><small
+                >Técnica avançada, performance, elementos dinâmicos</small
+              >
+            </div>
+          </div>
+          <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div>
+              <strong>Custom Events</strong>
+              <br /><small
+                >Eventos personalizados, comunicação entre componentes</small
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-tabs" id="aulaTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="basicos-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#basicos"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-play-circle"></i> Eventos Básicos
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="avancados-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#avancados"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-cogs"></i> Técnicas Avançadas
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="interacao-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#interacao"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-hand-pointer"></i> Interação
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pratica-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#pratica"
+            type="button"
+            role="tab"
+          >
+            <i class="fas fa-code"></i> Prática
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content" id="aulaTabContent">
+        <!-- Eventos Básicos -->
+        <div class="tab-pane fade show active" id="basicos" role="tabpanel">
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-mouse-pointer"></i>
+              Demonstração 1: Eventos Básicos
+            </h3>
+            <p>
+              Aprenda os fundamentos de addEventListener e como gerenciar
+              eventos em JavaScript.
+            </p>
+            <div id="demo-eventos-basicos" class="result-area">
+              <!-- Conteúdo será gerado pelo JavaScript -->
+            </div>
+          </div>
+
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-info-circle"></i>
+              Demonstração 2: Event Object
+            </h3>
+            <p>
+              Explore as propriedades do objeto Event e como utilizá-las
+              efetivamente.
+            </p>
+            <div id="demo-event-object" class="result-area">
+              <!-- Conteúdo será gerado pelo JavaScript -->
+            </div>
+          </div>
+
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-sitemap"></i>
+              Demonstração 3: Event Bubbling e Capturing
+            </h3>
+            <p>Compreenda como os eventos se propagam pela árvore DOM.</p>
+            <div id="demo-bubbling-capturing" class="result-area">
+              <!-- Conteúdo será gerado pelo JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Técnicas Avançadas -->
+        <div class="tab-pane fade" id="avancados" role="tabpanel">
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-share-alt"></i>
+              Demonstração 4: Event Delegation
+            </h3>
+            <p>
+              Técnica poderosa para gerenciar eventos de múltiplos elementos com
+              performance otimizada.
+            </p>
+            <div id="demo-event-delegation" class="result-area">
+              <!-- Conteúdo será gerado pelo JavaScript -->
+            </div>
+          </div>
+
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-star"></i>
+              Demonstração 5: Custom Events
+            </h3>
+            <p>
+              Crie eventos personalizados para comunicação entre componentes da
+              aplicação.
+            </p>
+            <div id="demo-custom-events" class="result-area">
+              <!-- Conteúdo será gerado pelo JavaScript -->
+            </div>
+          </div>
+
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-keyboard"></i>
+              Demonstração 6: Keyboard Events
+            </h3>
+            <p>
+              Capture e responda a eventos de teclado para criar interfaces
+              interativas.
+            </p>
+            <div class="keyboard-demo">
+              <h5>🎹 Teste de Teclado</h5>
+              <p>Pressione qualquer tecla para ver os detalhes do evento:</p>
+              <div
+                id="keyboard-info"
+                style="
+                  background: rgba(255, 255, 255, 0.1);
+                  padding: 15px;
+                  border-radius: 8px;
+                  margin-top: 15px;
+                "
+              >
+                <em>Pressione uma tecla...</em>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interação -->
+        <div class="tab-pane fade" id="interacao" role="tabpanel">
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-mouse"></i>
+              Demonstração 7: Mouse Events Avançados
+            </h3>
+            <p>
+              Explore eventos avançados do mouse para criar interações
+              sofisticadas.
+            </p>
+            <div class="mouse-tracker" id="mouse-tracker">
+              <div
+                style="
+                  position: absolute;
+                  top: 10px;
+                  left: 10px;
+                  background: rgba(0, 0, 0, 0.7);
+                  color: white;
+                  padding: 10px;
+                  border-radius: 5px;
+                "
+              >
+                <div>Posição: <span id="mouse-position">0, 0</span></div>
+                <div>Botão: <span id="mouse-button">Nenhum</span></div>
+                <div>Evento: <span id="mouse-event">Mova o mouse</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-arrows-alt"></i>
+              Demonstração 8: Drag and Drop
+            </h3>
+            <p>
+              Implemente funcionalidade de arrastar e soltar para interfaces
+              intuitivas.
+            </p>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin: 20px 0;
+              "
+            >
+              <div>
+                <h6>Itens Disponíveis:</h6>
+                <div id="drag-source">
+                  <div
+                    class="draggable-item"
+                    draggable="true"
+                    data-item="item1"
+                  >
+                    📄 Documento 1
+                  </div>
+                  <div
+                    class="draggable-item"
+                    draggable="true"
+                    data-item="item2"
+                  >
+                    🖼️ Imagem 1
+                  </div>
+                  <div
+                    class="draggable-item"
+                    draggable="true"
+                    data-item="item3"
+                  >
+                    📊 Planilha 1
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h6>Zona de Drop:</h6>
+                <div class="drag-zone" id="drop-zone">
+                  <i
+                    class="fas fa-cloud-upload-alt fa-3x"
+                    style="opacity: 0.5"
+                  ></i>
+                  <br /><br />
+                  <strong>Arraste itens aqui</strong>
+                  <br />
+                  <small>Os itens arrastados aparecerão nesta área</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-mobile-alt"></i>
+              Demonstração 9: Touch Events
+            </h3>
+            <p>
+              Crie interfaces responsivas ao toque para dispositivos móveis.
+            </p>
+            <div class="touch-area" id="touch-area">
+              <div>
+                <i class="fas fa-hand-paper fa-2x"></i>
+                <br /><br />
+                <strong>Área Sensível ao Toque</strong>
+                <br />
+                <small>Toque, arraste ou use gestos</small>
+              </div>
+            </div>
+            <div id="touch-info" class="event-log">
+              <div class="log-entry">Eventos de toque aparecerão aqui...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prática -->
+        <div class="tab-pane fade" id="pratica" role="tabpanel">
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-tasks"></i>
+              Demonstração 10: Sistema Completo de Eventos para TODO List
+            </h3>
+            <p>
+              Integre todos os conceitos em um sistema completo de eventos para
+              a aplicação TODO.
+            </p>
+
+            <div class="row">
+              <div class="col-md-8">
+                <div
+                  id="todo-app"
+                  style="
+                    background: #f8f9fa;
+                    border-radius: 10px;
+                    padding: 20px;
+                  "
+                >
+                  <h5>📝 TODO List Interativa</h5>
+
+                  <div class="input-group mb-3">
+                    <input
+                      type="text"
+                      id="todo-input"
+                      class="form-control"
+                      placeholder="Digite uma nova tarefa..."
+                    />
+                    <button class="btn btn-primary" id="add-todo">
+                      <i class="fas fa-plus"></i> Adicionar
+                    </button>
+                  </div>
+
+                  <ul id="todo-list" class="list-group">
+                    <!-- Itens serão adicionados dinamicamente -->
+                  </ul>
+
+                  <div class="mt-3">
+                    <small class="text-muted">
+                      <strong>Recursos:</strong> Enter para adicionar, clique
+                      para marcar/desmarcar, duplo-clique para editar, arrastar
+                      para reordenar
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="event-log">
+                  <h6 style="color: #e2e8f0; margin-bottom: 15px">
+                    <i class="fas fa-terminal"></i> Event Log
+                  </h6>
+                  <div id="event-log-content">
+                    <div class="log-entry">
+                      Sistema de eventos inicializado...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-section">
+            <h3 class="demo-title">
+              <i class="fas fa-graduation-cap"></i>
+              Resumo e Próximos Passos
+            </h3>
+            <div class="row">
+              <div class="col-md-6">
+                <h5>🎯 O que aprendemos:</h5>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    ✅ addEventListener e removeEventListener
+                  </li>
+                  <li class="list-group-item">
+                    ✅ Propriedades do Event Object
+                  </li>
+                  <li class="list-group-item">✅ Event Bubbling e Capturing</li>
+                  <li class="list-group-item">✅ Event Delegation</li>
+                  <li class="list-group-item">✅ Custom Events</li>
+                  <li class="list-group-item">✅ Keyboard Events</li>
+                  <li class="list-group-item">✅ Mouse Events Avançados</li>
+                  <li class="list-group-item">✅ Drag and Drop</li>
+                  <li class="list-group-item">✅ Touch Events</li>
+                  <li class="list-group-item">
+                    ✅ Sistema Completo de Eventos
+                  </li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h5>🚀 Próximas aulas:</h5>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    📦 Aula 7: Módulos e Organização de Código
+                  </li>
+                  <li class="list-group-item">
+                    🔄 Aula 8: Programação Assíncrona
+                  </li>
+                  <li class="list-group-item">🌐 Aula 9: APIs e Fetch</li>
+                  <li class="list-group-item">
+                    🎨 Aula 10: Manipulação Avançada do DOM
+                  </li>
+                  <li class="list-group-item">
+                    🏁 Projeto Final: TODO List Completa
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="container">
+          <p>
+            &copy; 2025 Curso JavaScript - Aula 6: Eventos Avançados e
+            Interatividade
+          </p>
+          <p>
+            <a href="../aula-05/index.html"
+              ><i class="fas fa-arrow-left"></i> Aula Anterior</a
+            >
+            |
+            <a href="../aula-07/index.html"
+              >Próxima Aula <i class="fas fa-arrow-right"></i
+            ></a>
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Aula 6 JavaScript -->
+    <script src="codigo-progressivo.js"></script>
+
+    <!-- JavaScript adicional para eventos especiais -->
+    <script>
+      // ===== KEYBOARD EVENTS =====
+      document.addEventListener("keydown", function (event) {
+        const keyboardInfo = document.getElementById("keyboard-info");
+        if (keyboardInfo) {
+          keyboardInfo.innerHTML = `
+                    <strong>Tecla Pressionada:</strong><br>
+                    • Key: ${event.key}<br>
+                    • Code: ${event.code}<br>
+                    • KeyCode: ${event.keyCode}<br>
+                    • Shift: ${event.shiftKey}<br>
+                    • Ctrl: ${event.ctrlKey}<br>
+                    • Alt: ${event.altKey}
+                `;
+        }
+      });
+
+      // ===== MOUSE EVENTS =====
+      const mouseTracker = document.getElementById("mouse-tracker");
+      const mousePosition = document.getElementById("mouse-position");
+      const mouseButton = document.getElementById("mouse-button");
+      const mouseEventDisplay = document.getElementById("mouse-event");
+
+      if (mouseTracker) {
+        mouseTracker.addEventListener("mousemove", function (event) {
+          const rect = this.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+
+          if (mousePosition)
+            mousePosition.textContent = `${Math.round(x)}, ${Math.round(y)}`;
+          if (mouseEventDisplay) mouseEventDisplay.textContent = "mousemove";
+        });
+
+        mouseTracker.addEventListener("mousedown", function (event) {
+          if (mouseButton) mouseButton.textContent = `Botão ${event.button}`;
+          if (mouseEventDisplay) mouseEventDisplay.textContent = "mousedown";
+        });
+
+        mouseTracker.addEventListener("mouseup", function (event) {
+          if (mouseButton) mouseButton.textContent = "Nenhum";
+          if (mouseEventDisplay) mouseEventDisplay.textContent = "mouseup";
+        });
+      }
+
+      // ===== DRAG AND DROP =====
+      const draggableItems = document.querySelectorAll(".draggable-item");
+      const dropZone = document.getElementById("drop-zone");
+
+      draggableItems.forEach((item) => {
+        item.addEventListener("dragstart", function (event) {
+          event.dataTransfer.setData("text/plain", this.dataset.item);
+          this.classList.add("dragging");
+        });
+
+        item.addEventListener("dragend", function () {
+          this.classList.remove("dragging");
+        });
+      });
+
+      if (dropZone) {
+        dropZone.addEventListener("dragover", function (event) {
+          event.preventDefault();
+          this.classList.add("drag-over");
+        });
+
+        dropZone.addEventListener("dragleave", function () {
+          this.classList.remove("drag-over");
+        });
+
+        dropZone.addEventListener("drop", function (event) {
+          event.preventDefault();
+          this.classList.remove("drag-over");
+
+          const data = event.dataTransfer.getData("text/plain");
+          const draggedItem = document.querySelector(`[data-item="${data}"]`);
+
+          if (draggedItem) {
+            const clone = draggedItem.cloneNode(true);
+            clone.draggable = false;
+            clone.style.cursor = "default";
+            clone.style.margin = "5px";
+
+            if (this.innerHTML.includes("Arraste itens aqui")) {
+              this.innerHTML = "<h6>Itens Recebidos:</h6>";
+            }
+
+            this.appendChild(clone);
+          }
+        });
+      }
+
+      // ===== TOUCH EVENTS =====
+      const touchArea = document.getElementById("touch-area");
+      const touchInfo = document.getElementById("touch-info");
+
+      function addTouchLog(message) {
+        if (touchInfo) {
+          const logEntry = document.createElement("div");
+          logEntry.className = "log-entry";
+          logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+          touchInfo.appendChild(logEntry);
+          touchInfo.scrollTop = touchInfo.scrollHeight;
+        }
+      }
+
+      if (touchArea) {
+        touchArea.addEventListener("touchstart", function (event) {
+          addTouchLog(`Touch Start - ${event.touches.length} toque(s)`);
+        });
+
+        touchArea.addEventListener("touchmove", function (event) {
+          event.preventDefault();
+          const touch = event.touches[0];
+          addTouchLog(
+            `Touch Move - X: ${Math.round(touch.clientX)}, Y: ${Math.round(
+              touch.clientY
+            )}`
+          );
+        });
+
+        touchArea.addEventListener("touchend", function (event) {
+          addTouchLog("Touch End");
+        });
+      }
+
+      // ===== TODO APP COM EVENTOS =====
+      const todoInput = document.getElementById("todo-input");
+      const addTodoBtn = document.getElementById("add-todo");
+      const todoList = document.getElementById("todo-list");
+      const eventLogContent = document.getElementById("event-log-content");
+
+      function addEventLog(message) {
+        if (eventLogContent) {
+          const logEntry = document.createElement("div");
+          logEntry.className = "log-entry";
+          logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+          eventLogContent.appendChild(logEntry);
+          eventLogContent.scrollTop = eventLogContent.scrollHeight;
+        }
+      }
+
+      function addTodoItem(text) {
+        const li = document.createElement("li");
+        li.className =
+          "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `
+                <span class="todo-text">${text}</span>
+                <div>
+                    <button class="btn btn-sm btn-outline-success me-2 toggle-todo">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-todo">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+        todoList.appendChild(li);
+        addEventLog(`Nova tarefa adicionada: "${text}"`);
+      }
+
+      if (addTodoBtn && todoInput) {
+        addTodoBtn.addEventListener("click", function () {
+          const text = todoInput.value.trim();
+          if (text) {
+            addTodoItem(text);
+            todoInput.value = "";
+          }
+        });
+
+        todoInput.addEventListener("keypress", function (event) {
+          if (event.key === "Enter") {
+            const text = this.value.trim();
+            if (text) {
+              addTodoItem(text);
+              this.value = "";
+            }
+          }
+        });
+      }
+
+      // Event delegation para TODO items
+      if (todoList) {
+        todoList.addEventListener("click", function (event) {
+          if (event.target.closest(".toggle-todo")) {
+            const item = event.target.closest(".list-group-item");
+            item.classList.toggle("completed");
+            const text = item.querySelector(".todo-text").textContent;
+            addEventLog(
+              `Tarefa ${
+                item.classList.contains("completed")
+                  ? "completada"
+                  : "reativada"
+              }: "${text}"`
+            );
+          }
+
+          if (event.target.closest(".delete-todo")) {
+            const item = event.target.closest(".list-group-item");
+            const text = item.querySelector(".todo-text").textContent;
+            item.remove();
+            addEventLog(`Tarefa removida: "${text}"`);
+          }
+        });
+      }
+
+      // ===== INICIALIZAÇÃO =====
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("🎉 Interface da Aula 6 carregada com sucesso!");
+        addEventLog("Sistema de eventos da TODO List inicializado");
+
+        // Adicionar alguns itens de exemplo
+        setTimeout(() => {
+          addTodoItem("Estudar Event Delegation");
+          addTodoItem("Praticar Custom Events");
+          addTodoItem("Implementar Drag and Drop");
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>

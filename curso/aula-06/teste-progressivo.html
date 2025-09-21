@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Progressivo - Aula 6: Eventos Avançados e Interatividade</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .test-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 0 auto;
+            max-width: 1000px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .progress-section {
+            background: var(--light-color);
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .test-progress {
+            height: 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #e9ecef;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 25px;
+        }
+
+        .test-content {
+            padding: 30px;
+        }
+
+        .question-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .question-card.current {
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 30px rgba(0,123,255,0.2);
+            transform: translateY(-5px);
+        }
+
+        .question-card.correct {
+            border-color: var(--success-color);
+            background: #f8fff9;
+        }
+
+        .question-card.incorrect {
+            border-color: var(--danger-color);
+            background: #fff5f5;
+        }
+
+        .question-number {
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .question-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+
+        .question-description {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .answer-option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .answer-option:hover {
+            border-color: var(--primary-color);
+            background: rgba(0,123,255,0.05);
+        }
+
+        .answer-option.selected {
+            border-color: var(--primary-color);
+            background: rgba(0,123,255,0.1);
+        }
+
+        .answer-option.correct {
+            border-color: var(--success-color);
+            background: rgba(40,167,69,0.1);
+        }
+
+        .answer-option.incorrect {
+            border-color: var(--danger-color);
+            background: rgba(220,53,69,0.1);
+        }
+
+        .answer-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .practical-exercise {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .exercise-area {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 150px;
+        }
+
+        .feedback-section {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback-section.correct {
+            background: rgba(40,167,69,0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .feedback-section.incorrect {
+            background: rgba(220,53,69,0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .test-controls {
+            background: var(--light-color);
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: between;
+            gap: 15px;
+        }
+
+        .btn-test {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .results-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid var(--light-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .score-excellent {
+            border-color: var(--success-color);
+            color: var(--success-color);
+            background: rgba(40,167,69,0.1);
+        }
+
+        .score-good {
+            border-color: var(--info-color);
+            color: var(--info-color);
+            background: rgba(23,162,184,0.1);
+        }
+
+        .score-fair {
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+            background: rgba(255,193,7,0.1);
+        }
+
+        .score-poor {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            background: rgba(220,53,69,0.1);
+        }
+
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .timer.warning {
+            background: var(--warning-color);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .test-content {
+                padding: 20px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+            
+            .answer-option {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .timer {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .celebration {
+            animation: celebration 0.6s ease;
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Timer -->
+    <div class="timer" id="timer">
+        <i class="fas fa-clock"></i>
+        <span id="time-display">30:00</span>
+    </div>
+
+    <div class="test-container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-clipboard-check"></i> Teste Progressivo</h1>
+            <p>Aula 6: Eventos Avançados e Interatividade</p>
+        </header>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="test-progress">
+                        <div class="progress-bar bg-primary" role="progressbar" id="progress-bar" style="width: 0%">
+                            0%
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span><strong>Questão:</strong> <span id="current-question">1</span> de <span id="total-questions">15</span></span>
+                        <span><strong>Pontuação:</strong> <span id="current-score">0</span> pontos</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="resetTest()">
+                        <i class="fas fa-redo"></i> Reiniciar Teste
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Content -->
+        <div class="test-content">
+            <div id="test-questions">
+                <!-- Questions will be generated by JavaScript -->
+            </div>
+
+            <!-- Results Summary (Hidden initially) -->
+            <div id="results-summary" class="results-summary" style="display: none;">
+                <div class="score-circle" id="score-circle">
+                    <span id="final-score">0%</span>
+                </div>
+                <h3 id="score-message">Resultado</h3>
+                <p id="score-description">Descrição do desempenho</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <h5><i class="fas fa-check-circle text-success"></i> Corretas</h5>
+                        <h3 id="correct-count" class="text-success">0</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h5><i class="fas fa-times-circle text-danger"></i> Incorretas</h5>
+                        <h3 id="incorrect-count" class="text-danger">0</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h5><i class="fas fa-clock text-info"></i> Tempo</h5>
+                        <h3 id="final-time" class="text-info">00:00</h3>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h5>📊 Análise por Categoria:</h5>
+                    <div id="category-analysis"></div>
+                </div>
+
+                <div class="mt-4">
+                    <button class="btn btn-primary me-2" onclick="reviewAnswers()">
+                        <i class="fas fa-eye"></i> Revisar Respostas
+                    </button>
+                    <button class="btn btn-success me-2" onclick="retakeTest()">
+                        <i class="fas fa-redo"></i> Refazer Teste
+                    </button>
+                    <button class="btn btn-info" onclick="exportResults()">
+                        <i class="fas fa-download"></i> Exportar Resultados
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Controls -->
+        <div class="test-controls">
+            <button class="btn btn-test btn-secondary" id="prev-btn" onclick="previousQuestion()" disabled>
+                <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+            
+            <div class="flex-grow-1 text-center">
+                <span class="text-muted">Use as setas do teclado para navegar</span>
+            </div>
+            
+            <button class="btn btn-test btn-primary" id="next-btn" onclick="nextQuestion()">
+                Próxima <i class="fas fa-arrow-right"></i>
+            </button>
+            
+            <button class="btn btn-test btn-success" id="finish-btn" onclick="finishTest()" style="display: none;">
+                <i class="fas fa-flag-checkered"></i> Finalizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Test System JavaScript -->
+    <script>
+        // ===== TEST CONFIGURATION =====
+        const TEST_CONFIG = {
+            timeLimit: 30 * 60, // 30 minutes in seconds
+            passingScore: 70,    // Percentage
+            showCorrectAnswers: true,
+            allowReview: true,
+            categories: [
+                'Eventos Básicos',
+                'Event Object',
+                'Event Flow',
+                'Event Delegation',
+                'Custom Events',
+                'Interações Avançadas'
+            ]
+        };
+
+        // ===== TEST QUESTIONS =====
+        const TEST_QUESTIONS = [
+            // EVENTOS BÁSICOS (Questões 1-3)
+            {
+                id: 1,
+                category: 'Eventos Básicos',
+                type: 'multiple-choice',
+                difficulty: 'easy',
+                points: 5,
+                question: 'Qual é a sintaxe correta para adicionar um event listener em JavaScript?',
+                code: `// Opções de sintaxe:`,
+                options: [
+                    'element.onClick = function() { ... }',
+                    'element.addEventListener("click", function() { ... })',
+                    'element.attachEvent("onclick", function() { ... })',
+                    'element.on("click", function() { ... })'
+                ],
+                correct: 1,
+                explanation: 'addEventListener é o método padrão moderno para adicionar eventos, oferecendo mais flexibilidade e suporte a múltiplos listeners.'
+            },
+            {
+                id: 2,
+                category: 'Eventos Básicos',
+                type: 'multiple-choice',
+                difficulty: 'easy',
+                points: 5,
+                question: 'Qual método é usado para remover um event listener?',
+                options: [
+                    'removeListener()',
+                    'detachEvent()',
+                    'removeEventListener()',
+                    'off()'
+                ],
+                correct: 2,
+                explanation: 'removeEventListener() é o método padrão para remover event listeners adicionados com addEventListener().'
+            },
+            {
+                id: 3,
+                category: 'Eventos Básicos',
+                type: 'practical',
+                difficulty: 'easy',
+                points: 10,
+                question: 'Complete o código para criar um botão que muda de cor quando clicado:',
+                code: `<button id="colorBtn">Clique em mim!</button>
+
+<script>
+const btn = document.getElementById('colorBtn');
+// Complete o código abaixo:
+btn.____________('click', function() {
+    this.style.backgroundColor = 'blue';
+});
+</script>`,
+                correct_answer: 'addEventListener',
+                explanation: 'Use addEventListener para vincular o evento de clique ao botão.'
+            },
+
+            // EVENT OBJECT (Questões 4-6)
+            {
+                id: 4,
+                category: 'Event Object',
+                type: 'multiple-choice',
+                difficulty: 'medium',
+                points: 7,
+                question: 'Qual propriedade do Event Object indica o elemento que disparou o evento?',
+                options: [
+                    'event.currentTarget',
+                    'event.target',
+                    'event.srcElement',
+                    'event.element'
+                ],
+                correct: 1,
+                explanation: 'event.target refere-se ao elemento que realmente disparou o evento, mesmo durante o bubbling.'
+            },
+            {
+                id: 5,
+                category: 'Event Object',
+                type: 'multiple-choice',
+                difficulty: 'medium',
+                points: 7,
+                question: 'Como obter as coordenadas do mouse em um evento de clique?',
+                code: `element.addEventListener('click', function(event) {
+    // Qual propriedade usar?
+});`,
+                options: [
+                    'event.x e event.y',
+                    'event.clientX e event.clientY',
+                    'event.mouseX e event.mouseY',
+                    'event.positionX e event.positionY'
+                ],
+                correct: 1,
+                explanation: 'clientX e clientY fornecem as coordenadas do mouse relativas à janela do browser.'
+            },
+            {
+                id: 6,
+                category: 'Event Object',
+                type: 'practical',
+                difficulty: 'medium',
+                points: 10,
+                question: 'Complete o código para mostrar as coordenadas do mouse em tempo real:',
+                code: `<div id="mouseTracker">Mova o mouse aqui</div>
+
+<script>
+const tracker = document.getElementById('mouseTracker');
+tracker.addEventListener('mousemove', function(event) {
+    this.textContent = \`X: \${event.______} Y: \${event.______}\`;
+});
+</script>`,
+                correct_answer: 'clientX, clientY',
+                explanation: 'Use event.clientX e event.clientY para obter as coordenadas do mouse.'
+            },
+
+            // EVENT FLOW (Questões 7-9)
+            {
+                id: 7,
+                category: 'Event Flow',
+                type: 'multiple-choice',
+                difficulty: 'medium',
+                points: 8,
+                question: 'Em que ordem os eventos se propagam durante o bubbling?',
+                code: `<div id="pai">
+    <div id="filho">
+        <button id="botao">Clique</button>
+    </div>
+</div>`,
+                options: [
+                    'pai → filho → botao',
+                    'botao → filho → pai',
+                    'filho → pai → botao',
+                    'pai → botao → filho'
+                ],
+                correct: 1,
+                explanation: 'Durante o bubbling, os eventos propagam do elemento mais específico (target) para o mais geral (document).'
+            },
+            {
+                id: 8,
+                category: 'Event Flow',
+                type: 'multiple-choice',
+                difficulty: 'hard',
+                points: 10,
+                question: 'Qual método previne o comportamento padrão do browser?',
+                options: [
+                    'event.stopPropagation()',
+                    'event.preventDefault()',
+                    'event.stopDefault()',
+                    'event.cancelBubble = true'
+                ],
+                correct: 1,
+                explanation: 'preventDefault() impede o comportamento padrão do browser (ex: link navigation, form submission).'
+            },
+            {
+                id: 9,
+                category: 'Event Flow',
+                type: 'practical',
+                difficulty: 'hard',
+                points: 12,
+                question: 'Complete o código para impedir que um formulário seja enviado se o campo estiver vazio:',
+                code: `<form id="myForm">
+    <input type="text" id="nameInput" required>
+    <button type="submit">Enviar</button>
+</form>
+
+<script>
+document.getElementById('myForm').addEventListener('submit', function(event) {
+    const input = document.getElementById('nameInput');
+    if (input.value.trim() === '') {
+        event.__________();
+        alert('Campo obrigatório!');
+    }
+});
+</script>`,
+                correct_answer: 'preventDefault',
+                explanation: 'Use event.preventDefault() para impedir o envio do formulário.'
+            },
+
+            // EVENT DELEGATION (Questões 10-12)
+            {
+                id: 10,
+                category: 'Event Delegation',
+                type: 'multiple-choice',
+                difficulty: 'hard',
+                points: 10,
+                question: 'Por que usar Event Delegation?',
+                options: [
+                    'Para melhorar a performance com muitos elementos',
+                    'Para gerenciar eventos de elementos criados dinamicamente',
+                    'Para reduzir o número de event listeners na página',
+                    'Todas as opções acima'
+                ],
+                correct: 3,
+                explanation: 'Event Delegation oferece todos esses benefícios: melhor performance, gerenciamento de elementos dinâmicos e menos listeners.'
+            },
+            {
+                id: 11,
+                category: 'Event Delegation',
+                type: 'practical',
+                difficulty: 'hard',
+                points: 15,
+                question: 'Implemente delegation para uma lista onde novos itens podem ser adicionados:',
+                code: `<ul id="taskList">
+    <li>Tarefa 1 <button class="delete">X</button></li>
+    <li>Tarefa 2 <button class="delete">X</button></li>
+</ul>
+
+<script>
+// Use delegation para gerenciar cliques nos botões delete:
+document.getElementById('taskList').addEventListener('click', function(event) {
+    if (event.target._____________('delete')) {
+        event.target.parentElement.remove();
+    }
+});
+</script>`,
+                correct_answer: 'classList.contains',
+                explanation: 'Use classList.contains() para verificar se o elemento clicado tem a classe específica.'
+            },
+
+            // CUSTOM EVENTS (Questões 12-13)
+            {
+                id: 12,
+                category: 'Custom Events',
+                type: 'multiple-choice',
+                difficulty: 'hard',
+                points: 10,
+                question: 'Como criar um evento customizado em JavaScript?',
+                options: [
+                    'new Event("customEvent")',
+                    'new CustomEvent("customEvent", { detail: data })',
+                    'document.createEvent("customEvent")',
+                    'CustomEvent.create("customEvent")'
+                ],
+                correct: 1,
+                explanation: 'CustomEvent permite criar eventos personalizados com dados customizados através da propriedade detail.'
+            },
+            {
+                id: 13,
+                category: 'Custom Events',
+                type: 'practical',
+                difficulty: 'hard',
+                points: 15,
+                question: 'Complete o sistema de notificações com custom events:',
+                code: `// Listener para notificações:
+document.addEventListener('notification:show', function(event) {
+    console.log('Notificação:', event.detail.message);
+});
+
+// Função para disparar notificação:
+function showNotification(message) {
+    const customEvent = new ____________('notification:show', {
+        detail: { message: message },
+        bubbles: ____
+    });
+    document.____________(customEvent);
+}`,
+                correct_answer: 'CustomEvent, true, dispatchEvent',
+                explanation: 'Use CustomEvent constructor, bubbles: true para propagação, e dispatchEvent para disparar.'
+            },
+
+            // INTERAÇÕES AVANÇADAS (Questões 14-15)
+            {
+                id: 14,
+                category: 'Interações Avançadas',
+                type: 'multiple-choice',
+                difficulty: 'hard',
+                points: 12,
+                question: 'Qual evento é disparado quando um elemento é arrastado sobre uma zona de drop?',
+                options: [
+                    'dragenter',
+                    'dragover',
+                    'dragleave',
+                    'drop'
+                ],
+                correct: 1,
+                explanation: 'dragover é disparado continuamente enquanto um elemento está sendo arrastado sobre uma zona válida de drop.'
+            },
+            {
+                id: 15,
+                category: 'Interações Avançadas',
+                type: 'practical',
+                difficulty: 'expert',
+                points: 20,
+                question: 'Implemente um sistema de atalhos de teclado:',
+                code: `// Sistema para Ctrl+S salvar e Ctrl+Z desfazer:
+document.addEventListener('keydown', function(event) {
+    if (event._______ && event.key === 's') {
+        event.preventDefault();
+        saveDocument();
+    } else if (event._______ && event.key === 'z') {
+        event.preventDefault();
+        undoAction();
+    }
+});
+
+function saveDocument() { console.log('Documento salvo!'); }
+function undoAction() { console.log('Ação desfeita!'); }`,
+                correct_answer: 'ctrlKey, ctrlKey',
+                explanation: 'Use event.ctrlKey para detectar se a tecla Ctrl está pressionada junto com outras teclas.'
+            }
+        ];
+
+        // ===== TEST STATE =====
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let testStartTime = Date.now();
+        let testTimer = null;
+        let timeRemaining = TEST_CONFIG.timeLimit;
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTest();
+            startTimer();
+            setupKeyboardNavigation();
+        });
+
+        function initializeTest() {
+            document.getElementById('total-questions').textContent = TEST_QUESTIONS.length;
+            renderQuestion(currentQuestionIndex);
+            updateProgress();
+        }
+
+        // ===== TIMER FUNCTIONS =====
+        function startTimer() {
+            testTimer = setInterval(function() {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 300) { // 5 minutes warning
+                    document.getElementById('timer').classList.add('warning');
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(testTimer);
+                    finishTest();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('time-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function getElapsedTime() {
+            const elapsed = TEST_CONFIG.timeLimit - timeRemaining;
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // ===== QUESTION RENDERING =====
+        function renderQuestion(index) {
+            const question = TEST_QUESTIONS[index];
+            const container = document.getElementById('test-questions');
+            
+            container.innerHTML = `
+                <div class="question-card current fade-in">
+                    <div class="question-number">${question.id}</div>
+                    <div class="question-title">${question.question}</div>
+                    <div class="question-description">
+                        <strong>Categoria:</strong> ${question.category} | 
+                        <strong>Dificuldade:</strong> ${question.difficulty} | 
+                        <strong>Pontos:</strong> ${question.points}
+                    </div>
+                    
+                    ${question.code ? `<div class="code-block">${question.code}</div>` : ''}
+                    
+                    <div class="answer-section">
+                        ${renderAnswerSection(question)}
+                    </div>
+                    
+                    <div class="feedback-section" id="feedback-${question.id}">
+                        <!-- Feedback will appear here -->
+                    </div>
+                </div>
+            `;
+            
+            // Restore previous answer if exists
+            const previousAnswer = userAnswers[index];
+            if (previousAnswer !== undefined) {
+                restorePreviousAnswer(question, previousAnswer);
+            }
+        }
+
+        function renderAnswerSection(question) {
+            if (question.type === 'multiple-choice') {
+                return question.options.map((option, index) => `
+                    <div class="answer-option" onclick="selectAnswer(${index})">
+                        <input type="radio" name="question-${question.id}" value="${index}" id="option-${index}">
+                        <label for="option-${index}">${option}</label>
+                    </div>
+                `).join('');
+            } else if (question.type === 'practical') {
+                return `
+                    <div class="practical-exercise">
+                        <h6><i class="fas fa-code"></i> Exercício Prático:</h6>
+                        <p>Complete o código com a resposta correta:</p>
+                        <div class="exercise-area">
+                            <input type="text" id="practical-answer" class="form-control" 
+                                   placeholder="Digite sua resposta aqui..." 
+                                   onkeyup="handlePracticalAnswer(this.value)">
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-lightbulb"></i> 
+                            Dica: Para múltiplas respostas, separe com vírgula
+                        </small>
+                    </div>
+                `;
+            }
+        }
+
+        function restorePreviousAnswer(question, answer) {
+            if (question.type === 'multiple-choice') {
+                const radio = document.querySelector(`input[name="question-${question.id}"][value="${answer}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    radio.closest('.answer-option').classList.add('selected');
+                }
+            } else if (question.type === 'practical') {
+                const input = document.getElementById('practical-answer');
+                if (input) {
+                    input.value = answer;
+                }
+            }
+        }
+
+        // ===== ANSWER HANDLING =====
+        function selectAnswer(optionIndex) {
+            // Clear previous selections
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Mark current selection
+            const selectedOption = document.querySelectorAll('.answer-option')[optionIndex];
+            selectedOption.classList.add('selected');
+            
+            // Store answer
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Enable next button
+            document.getElementById('next-btn').disabled = false;
+            
+            // Show immediate feedback if configured
+            if (TEST_CONFIG.showCorrectAnswers) {
+                setTimeout(() => showFeedback(), 500);
+            }
+        }
+
+        function handlePracticalAnswer(value) {
+            userAnswers[currentQuestionIndex] = value.trim();
+            document.getElementById('next-btn').disabled = value.trim() === '';
+            
+            if (TEST_CONFIG.showCorrectAnswers && value.trim() !== '') {
+                setTimeout(() => showFeedback(), 1000);
+            }
+        }
+
+        function showFeedback() {
+            const question = TEST_QUESTIONS[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const feedbackElement = document.getElementById(`feedback-${question.id}`);
+            
+            let isCorrect = false;
+            
+            if (question.type === 'multiple-choice') {
+                isCorrect = userAnswer === question.correct;
+            } else if (question.type === 'practical') {
+                const correctAnswers = question.correct_answer.toLowerCase().split(',').map(a => a.trim());
+                const userAnswerLower = userAnswer.toLowerCase();
+                isCorrect = correctAnswers.some(correct => userAnswerLower.includes(correct));
+            }
+            
+            feedbackElement.className = `feedback-section ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${isCorrect ? 'check-circle' : 'times-circle'} me-2"></i>
+                    <strong>${isCorrect ? 'Correto!' : 'Incorreto'}</strong>
+                </div>
+                <p class="mt-2 mb-0">${question.explanation}</p>
+            `;
+            feedbackElement.style.display = 'block';
+            
+            // Mark answer options visually
+            if (question.type === 'multiple-choice') {
+                const options = document.querySelectorAll('.answer-option');
+                options[question.correct].classList.add('correct');
+                if (userAnswer !== question.correct) {
+                    options[userAnswer]?.classList.add('incorrect');
+                }
+            }
+        }
+
+        // ===== NAVIGATION =====
+        function nextQuestion() {
+            if (currentQuestionIndex < TEST_QUESTIONS.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion(currentQuestionIndex);
+                updateProgress();
+                updateNavigationButtons();
+                
+                // Scroll to top
+                document.querySelector('.test-content').scrollTop = 0;
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion(currentQuestionIndex);
+                updateProgress();
+                updateNavigationButtons();
+                
+                // Scroll to top
+                document.querySelector('.test-content').scrollTop = 0;
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === TEST_QUESTIONS.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+                nextBtn.disabled = userAnswers[currentQuestionIndex] === undefined;
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / TEST_QUESTIONS.length) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${Math.round(progress)}%`;
+            
+            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+            
+            // Update score
+            const currentScore = calculateCurrentScore();
+            document.getElementById('current-score').textContent = currentScore;
+        }
+
+        function calculateCurrentScore() {
+            let score = 0;
+            for (let i = 0; i <= currentQuestionIndex; i++) {
+                if (userAnswers[i] !== undefined) {
+                    const question = TEST_QUESTIONS[i];
+                    let isCorrect = false;
+                    
+                    if (question.type === 'multiple-choice') {
+                        isCorrect = userAnswers[i] === question.correct;
+                    } else if (question.type === 'practical') {
+                        const correctAnswers = question.correct_answer.toLowerCase().split(',').map(a => a.trim());
+                        const userAnswerLower = userAnswers[i].toLowerCase();
+                        isCorrect = correctAnswers.some(correct => userAnswerLower.includes(correct));
+                    }
+                    
+                    if (isCorrect) {
+                        score += question.points;
+                    }
+                }
+            }
+            return score;
+        }
+
+        // ===== TEST COMPLETION =====
+        function finishTest() {
+            clearInterval(testTimer);
+            
+            const results = calculateResults();
+            displayResults(results);
+            
+            // Hide test content and show results
+            document.getElementById('test-questions').style.display = 'none';
+            document.getElementById('results-summary').style.display = 'block';
+            document.querySelector('.test-controls').style.display = 'none';
+        }
+
+        function calculateResults() {
+            let totalScore = 0;
+            let maxScore = 0;
+            let correctAnswers = 0;
+            let categoryStats = {};
+            
+            // Initialize category stats
+            TEST_CONFIG.categories.forEach(category => {
+                categoryStats[category] = { correct: 0, total: 0, points: 0, maxPoints: 0 };
+            });
+            
+            TEST_QUESTIONS.forEach((question, index) => {
+                maxScore += question.points;
+                categoryStats[question.category].total++;
+                categoryStats[question.category].maxPoints += question.points;
+                
+                if (userAnswers[index] !== undefined) {
+                    let isCorrect = false;
+                    
+                    if (question.type === 'multiple-choice') {
+                        isCorrect = userAnswers[index] === question.correct;
+                    } else if (question.type === 'practical') {
+                        const correctAnswers = question.correct_answer.toLowerCase().split(',').map(a => a.trim());
+                        const userAnswerLower = userAnswers[index].toLowerCase();
+                        isCorrect = correctAnswers.some(correct => userAnswerLower.includes(correct));
+                    }
+                    
+                    if (isCorrect) {
+                        totalScore += question.points;
+                        correctAnswers++;
+                        categoryStats[question.category].correct++;
+                        categoryStats[question.category].points += question.points;
+                    }
+                }
+            });
+            
+            const percentage = Math.round((totalScore / maxScore) * 100);
+            
+            return {
+                totalScore,
+                maxScore,
+                percentage,
+                correctAnswers,
+                incorrectAnswers: TEST_QUESTIONS.length - correctAnswers,
+                elapsedTime: getElapsedTime(),
+                categoryStats,
+                passed: percentage >= TEST_CONFIG.passingScore
+            };
+        }
+
+        function displayResults(results) {
+            // Update score circle
+            const scoreCircle = document.getElementById('score-circle');
+            const scoreClass = getScoreClass(results.percentage);
+            scoreCircle.className = `score-circle ${scoreClass}`;
+            scoreCircle.querySelector('#final-score').textContent = `${results.percentage}%`;
+            
+            // Update score message
+            const scoreMessage = getScoreMessage(results.percentage);
+            document.getElementById('score-message').textContent = scoreMessage.title;
+            document.getElementById('score-description').textContent = scoreMessage.description;
+            
+            // Update counts
+            document.getElementById('correct-count').textContent = results.correctAnswers;
+            document.getElementById('incorrect-count').textContent = results.incorrectAnswers;
+            document.getElementById('final-time').textContent = results.elapsedTime;
+            
+            // Category analysis
+            displayCategoryAnalysis(results.categoryStats);
+            
+            // Celebration animation for good scores
+            if (results.percentage >= TEST_CONFIG.passingScore) {
+                scoreCircle.classList.add('celebration');
+            }
+        }
+
+        function getScoreClass(percentage) {
+            if (percentage >= 90) return 'score-excellent';
+            if (percentage >= 80) return 'score-good';
+            if (percentage >= 70) return 'score-fair';
+            return 'score-poor';
+        }
+
+        function getScoreMessage(percentage) {
+            if (percentage >= 90) {
+                return {
+                    title: 'Excelente! 🎉',
+                    description: 'Você demonstrou domínio excepcional dos eventos JavaScript! Parabéns!'
+                };
+            } else if (percentage >= 80) {
+                return {
+                    title: 'Muito Bom! 👏',
+                    description: 'Ótimo desempenho! Você tem uma base sólida em eventos JavaScript.'
+                };
+            } else if (percentage >= 70) {
+                return {
+                    title: 'Bom Trabalho! 👍',
+                    description: 'Você passou no teste! Continue praticando para melhorar ainda mais.'
+                };
+            } else {
+                return {
+                    title: 'Continue Estudando 📚',
+                    description: 'Você precisa revisar alguns conceitos. Não desista, a prática leva à perfeição!'
+                };
+            }
+        }
+
+        function displayCategoryAnalysis(categoryStats) {
+            const container = document.getElementById('category-analysis');
+            let html = '';
+            
+            Object.entries(categoryStats).forEach(([category, stats]) => {
+                const percentage = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+                let progressColor = '#dc3545'; // red
+                if (percentage >= 70) progressColor = '#28a745'; // green
+                else if (percentage >= 50) progressColor = '#ffc107'; // yellow
+                
+                html += '<div class="row mb-2">';
+                html += '<div class="col-md-4"><strong>' + category + '</strong></div>';
+                html += '<div class="col-md-4">' + stats.correct + '/' + stats.total + ' questões</div>';
+                html += '<div class="col-md-4">';
+                html += '<div class="progress" style="height: 20px;">';
+                html += '<div class="progress-bar" style="width: ' + percentage + '%; background-color: ' + progressColor + ';">';
+                html += percentage + '%';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // ===== ADDITIONAL FEATURES =====
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', function(event) {
+                if (event.target.tagName !== 'INPUT') {
+                    switch(event.key) {
+                        case 'ArrowLeft':
+                            if (!document.getElementById('prev-btn').disabled) {
+                                previousQuestion();
+                            }
+                            break;
+                        case 'ArrowRight':
+                            if (!document.getElementById('next-btn').disabled) {
+                                nextQuestion();
+                            }
+                            break;
+                        case 'Enter':
+                            if (currentQuestionIndex === TEST_QUESTIONS.length - 1) {
+                                finishTest();
+                            } else if (!document.getElementById('next-btn').disabled) {
+                                nextQuestion();
+                            }
+                            break;
+                    }
+                }
+            });
+        }
+
+        function resetTest() {
+            if (confirm('Tem certeza que deseja reiniciar o teste? Todo o progresso será perdido.')) {
+                currentQuestionIndex = 0;
+                userAnswers = [];
+                timeRemaining = TEST_CONFIG.timeLimit;
+                
+                clearInterval(testTimer);
+                startTimer();
+                
+                document.getElementById('timer').classList.remove('warning');
+                document.getElementById('test-questions').style.display = 'block';
+                document.getElementById('results-summary').style.display = 'none';
+                document.querySelector('.test-controls').style.display = 'flex';
+                
+                initializeTest();
+            }
+        }
+
+        function reviewAnswers() {
+            // Implementation for reviewing answers
+            alert('Funcionalidade de revisão será implementada em breve!');
+        }
+
+        function retakeTest() {
+            resetTest();
+        }
+
+        function exportResults() {
+            const results = calculateResults();
+            const data = {
+                timestamp: new Date().toISOString(),
+                score: results.percentage,
+                totalQuestions: TEST_QUESTIONS.length,
+                correctAnswers: results.correctAnswers,
+                elapsedTime: results.elapsedTime,
+                categoryStats: results.categoryStats
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `teste-aula6-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ===== INITIALIZATION =====
+        console.log('🧪 Sistema de Teste da Aula 6 carregado!');
+        console.log(`📊 ${TEST_QUESTIONS.length} questões carregadas`);
+        console.log(`⏱️ Tempo limite: ${TEST_CONFIG.timeLimit / 60} minutos`);
+    </script>
+</body>
+</html>
