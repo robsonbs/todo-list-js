@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 9: Web APIs Modernas</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .main-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .nav-tabs-custom {
+        background: var(--light-color);
+        border: none;
+        padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+      }
+
+      .demo-tab {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .demo-tab:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+      }
+
+      .demo-tab.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      .demo-panel {
+        display: none;
+        padding: 2rem;
+        min-height: 600px;
+      }
+
+      .demo-panel.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .demo-header {
+        background: linear-gradient(
+          135deg,
+          var(--info-color) 0%,
+          var(--primary-color) 100%
+        );
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .control-panel {
+        background: var(--light-color);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e5e7eb;
+      }
+
+      .btn-demo {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-demo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+      }
+
+      .status-indicator {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-block;
+        margin: 0.5rem 0;
+      }
+
+      .api-result {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        border: 1px solid #e5e7eb;
+        margin-top: 1rem;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .info-item {
+        background: var(--light-color);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+      }
+
+      /* Geolocation Demo */
+      .map-placeholder {
+        background: var(--dark-color);
+        color: white;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin: 1rem 0;
+      }
+
+      .location-history {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+      }
+
+      .history-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      /* Camera Demo */
+      .camera-video {
+        width: 100%;
+        max-width: 640px;
+        border-radius: 10px;
+        background: #000;
+      }
+
+      .photos-container,
+      .videos-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .photo-item,
+      .video-item {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+      }
+
+      .captured-photo,
+      .recorded-video {
+        width: 100%;
+        height: auto;
+      }
+
+      .photo-actions,
+      .video-actions {
+        padding: 0.5rem;
+      }
+
+      /* Speech Demo */
+      .transcript-container {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        min-height: 150px;
+      }
+
+      .transcript-final {
+        color: var(--dark-color);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .transcript-interim {
+        color: #666;
+        font-style: italic;
+      }
+
+      .voice-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* Worker Demo */
+      .worker-result-item {
+        background: var(--light-color);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        margin: 0.25rem 0;
+        border-left: 3px solid var(--primary-color);
+      }
+
+      .progress-container {
+        margin: 1rem 0;
+      }
+
+      .progress {
+        height: 20px;
+        border-radius: 10px;
+      }
+
+      /* Notification Demo */
+      .notification-log {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+      }
+
+      .notification-log-item {
+        padding: 0.5rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 1rem;
+          border-radius: 15px;
+        }
+
+        .demo-panel {
+          padding: 1rem;
+        }
+
+        .nav-tabs-custom {
+          flex-direction: column;
+        }
+
+        .demo-tab {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .voice-controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Container Principal -->
+    <div class="main-container">
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          <i class="fas fa-globe-americas"></i>
+          Aula 9: Web APIs Modernas
+        </h1>
+        <p class="mb-0">
+          Explorando as APIs nativas mais poderosas do navegador
+        </p>
+      </div>
+
+      <!-- Navegação por Demonstrações -->
+      <div class="nav-tabs-custom">
+        <div class="demo-tab active" data-demo="demo1">
+          <i class="fas fa-map-marker-alt"></i>
+          Geolocation
+        </div>
+        <div class="demo-tab" data-demo="demo2">
+          <i class="fas fa-bell"></i>
+          Notifications
+        </div>
+        <div class="demo-tab" data-demo="demo3">
+          <i class="fas fa-microphone"></i>
+          Speech API
+        </div>
+        <div class="demo-tab" data-demo="demo4">
+          <i class="fas fa-camera"></i>
+          MediaStream
+        </div>
+        <div class="demo-tab" data-demo="demo5">
+          <i class="fas fa-cogs"></i>
+          Web Workers
+        </div>
+        <div class="demo-tab" data-demo="demo6">
+          <i class="fas fa-server"></i>
+          Service Workers
+        </div>
+      </div>
+
+      <!-- Demo 1: Geolocation API -->
+      <div id="demo1" class="demo-panel active">
+        <div class="demo-header">
+          <h2>
+            <i class="fas fa-map-marker-alt"></i> Demonstração 1: Geolocation
+            API
+          </h2>
+          <p>Obter a localização do usuário usando GPS, WiFi e dados de rede</p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Status da API</h4>
+          <div id="geolocation-status" class="status-indicator"></div>
+
+          <h4 class="mt-3">Controles</h4>
+          <button id="btn-get-location" class="btn-demo">
+            <i class="fas fa-crosshairs"></i>
+            Obter Localização Atual
+          </button>
+          <button id="btn-watch-location" class="btn-demo">
+            <i class="fas fa-satellite-dish"></i>
+            Monitorar Localização
+          </button>
+          <button id="btn-stop-watch" class="btn-demo">
+            <i class="fas fa-stop"></i>
+            Parar Monitoramento
+          </button>
+
+          <div id="watch-status" class="mt-2"></div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-8">
+            <div id="location-result" class="api-result">
+              <p class="text-muted">
+                Clique em "Obter Localização Atual" para começar
+              </p>
+            </div>
+
+            <div id="location-map" class="map-placeholder">
+              <i class="fas fa-map fa-3x"></i>
+              <p class="mt-2">Mapa será exibido aqui</p>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <h5>Histórico de Posições</h5>
+            <div id="location-history" class="location-history">
+              <p class="text-muted">Histórico vazio</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 2: Notification API -->
+      <div id="demo2" class="demo-panel">
+        <div class="demo-header">
+          <h2><i class="fas fa-bell"></i> Demonstração 2: Notification API</h2>
+          <p>Enviar notificações nativas do sistema operacional</p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Status da API</h4>
+          <div id="notification-status" class="status-indicator"></div>
+
+          <h4 class="mt-3">Permissão</h4>
+          <div>Status: <span id="permission-status"></span></div>
+          <button id="btn-request-permission" class="btn-demo mt-2">
+            <i class="fas fa-unlock"></i>
+            Solicitar Permissão
+          </button>
+
+          <h4 class="mt-3">Tipos de Notificação</h4>
+          <button id="btn-simple-notification" class="btn-demo">
+            <i class="fas fa-comment"></i>
+            Notificação Simples
+          </button>
+          <button id="btn-rich-notification" class="btn-demo">
+            <i class="fas fa-star"></i>
+            Notificação Avançada
+          </button>
+          <button id="btn-persistent-notification" class="btn-demo">
+            <i class="fas fa-thumbtack"></i>
+            Notificação Persistente
+          </button>
+        </div>
+
+        <div class="api-result">
+          <h5>Log de Notificações</h5>
+          <div id="notification-log">
+            <p class="text-muted">Nenhuma notificação enviada ainda</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 3: Web Speech API -->
+      <div id="demo3" class="demo-panel">
+        <div class="demo-header">
+          <h2>
+            <i class="fas fa-microphone"></i> Demonstração 3: Web Speech API
+          </h2>
+          <p>Reconhecimento de voz e síntese de fala</p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Status da API</h4>
+          <div id="speech-status" class="status-indicator"></div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <h4><i class="fas fa-microphone-alt"></i> Reconhecimento de Voz</h4>
+
+            <div class="mb-3">
+              <button id="btn-start-recording" class="btn-demo">
+                <i class="fas fa-play"></i>
+                Iniciar Gravação
+              </button>
+              <button id="btn-stop-recording" class="btn-demo">
+                <i class="fas fa-stop"></i>
+                Parar Gravação
+              </button>
+              <button id="btn-clear-transcript" class="btn-demo">
+                <i class="fas fa-trash"></i>
+                Limpar
+              </button>
+            </div>
+
+            <div>Status: <span id="recording-status"></span></div>
+
+            <div id="speech-result" class="transcript-container">
+              <p class="text-muted">Clique em "Iniciar Gravação" e fale algo</p>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <h4><i class="fas fa-volume-up"></i> Síntese de Voz</h4>
+
+            <div class="voice-controls">
+              <div>
+                <label>Texto para falar:</label>
+                <textarea
+                  id="text-to-speak"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Digite o texto que será falado..."
+                >
+Olá! Este é um exemplo de síntese de voz em português.</textarea
+                >
+              </div>
+
+              <div>
+                <label>Voz:</label>
+                <select id="voice-select" class="form-select">
+                  <option>Carregando vozes...</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Velocidade:</label>
+                <input
+                  type="range"
+                  id="speech-rate"
+                  class="form-range"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value="1"
+                />
+              </div>
+
+              <div>
+                <label>Tom:</label>
+                <input
+                  type="range"
+                  id="speech-pitch"
+                  class="form-range"
+                  min="0"
+                  max="2"
+                  step="0.1"
+                  value="1"
+                />
+              </div>
+
+              <div>
+                <label>Volume:</label>
+                <input
+                  type="range"
+                  id="speech-volume"
+                  class="form-range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value="1"
+                />
+              </div>
+            </div>
+
+            <button id="btn-speak-text" class="btn-demo">
+              <i class="fas fa-play"></i>
+              Falar Texto
+            </button>
+
+            <div class="mt-2">
+              Status: <span id="speech-synthesis-status">⏹️ Pronto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 4: MediaStream API -->
+      <div id="demo4" class="demo-panel">
+        <div class="demo-header">
+          <h2><i class="fas fa-camera"></i> Demonstração 4: MediaStream API</h2>
+          <p>Acesso à câmera e microfone para captura de mídia</p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Status da API</h4>
+          <div id="media-status" class="status-indicator"></div>
+
+          <h4 class="mt-3">Controles da Câmera</h4>
+          <button id="btn-start-camera" class="btn-demo">
+            <i class="fas fa-video"></i>
+            Iniciar Câmera
+          </button>
+          <button id="btn-stop-camera" class="btn-demo">
+            <i class="fas fa-video-slash"></i>
+            Parar Câmera
+          </button>
+          <button id="btn-take-photo" class="btn-demo" disabled>
+            <i class="fas fa-camera"></i>
+            Tirar Foto
+          </button>
+          <button id="btn-start-video-recording" class="btn-demo" disabled>
+            <i class="fas fa-record-vinyl"></i>
+            Gravar Vídeo
+          </button>
+          <button id="btn-stop-video-recording" class="btn-demo">
+            <i class="fas fa-stop"></i>
+            Parar Gravação
+          </button>
+
+          <div class="mt-2">
+            <div>Câmera: <span id="camera-status">📷 Parada</span></div>
+            <div>
+              Gravação: <span id="recording-status-video">⏹️ Parada</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <h5>Visualização da Câmera</h5>
+            <video
+              id="camera-video"
+              class="camera-video"
+              autoplay
+              muted
+              playsinline
+            >
+              <p>Seu navegador não suporta o elemento video.</p>
+            </video>
+
+            <div id="camera-result" class="mt-2"></div>
+          </div>
+
+          <div class="col-md-6">
+            <h5>Fotos Capturadas</h5>
+            <div id="photos-container" class="photos-container">
+              <p class="text-muted">Nenhuma foto capturada ainda</p>
+            </div>
+
+            <h5 class="mt-3">Vídeos Gravados</h5>
+            <div id="videos-container" class="videos-container">
+              <p class="text-muted">Nenhum vídeo gravado ainda</p>
+            </div>
+
+            <div id="video-result" class="mt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 5: Web Workers -->
+      <div id="demo5" class="demo-panel">
+        <div class="demo-header">
+          <h2><i class="fas fa-cogs"></i> Demonstração 5: Web Workers</h2>
+          <p>Processamento em background sem bloquear a interface</p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Status da API</h4>
+          <div id="worker-status" class="status-indicator"></div>
+
+          <h4 class="mt-3">Demonstrações</h4>
+          <button id="btn-heavy-task" class="btn-demo">
+            <i class="fas fa-weight-hanging"></i>
+            Tarefa Pesada (Main Thread)
+          </button>
+          <button id="btn-worker-task" class="btn-demo">
+            <i class="fas fa-rocket"></i>
+            Tarefa no Worker
+          </button>
+          <button id="btn-multiple-workers" class="btn-demo">
+            <i class="fas fa-users"></i>
+            Múltiplos Workers
+          </button>
+          <button id="btn-stop-workers" class="btn-demo">
+            <i class="fas fa-stop"></i>
+            Parar Todos
+          </button>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <h5>Main Thread</h5>
+            <div>Status: <span id="main-thread-status">⏹️ Pronto</span></div>
+            <div id="main-thread-result" class="mt-2"></div>
+          </div>
+
+          <div class="col-md-4">
+            <h5>Web Worker Individual</h5>
+            <div>Status: <span id="worker-status-single">⏹️ Pronto</span></div>
+
+            <div class="progress-container">
+              <div class="progress">
+                <div
+                  id="worker-progress"
+                  class="progress-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+
+            <div id="worker-result" class="mt-2"></div>
+          </div>
+
+          <div class="col-md-4">
+            <h5>Múltiplos Workers</h5>
+            <div>
+              Status: <span id="multiple-workers-status">⏹️ Pronto</span>
+            </div>
+            <div id="multiple-workers-results" class="mt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 6: Service Workers -->
+      <div id="demo6" class="demo-panel">
+        <div class="demo-header">
+          <h2><i class="fas fa-server"></i> Demonstração 6: Service Workers</h2>
+          <p>Cache, interceptação de rede e funcionalidades offline</p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Status da API</h4>
+          <div id="sw-status" class="status-indicator"></div>
+
+          <h4 class="mt-3">Gerenciamento</h4>
+          <button id="btn-register-sw" class="btn-demo">
+            <i class="fas fa-plus"></i>
+            Registrar Service Worker
+          </button>
+          <button id="btn-unregister-sw" class="btn-demo">
+            <i class="fas fa-trash"></i>
+            Remover Service Worker
+          </button>
+
+          <h4 class="mt-3">Cache</h4>
+          <button id="btn-test-cache" class="btn-demo">
+            <i class="fas fa-search"></i>
+            Testar Cache
+          </button>
+          <button id="btn-clear-cache" class="btn-demo">
+            <i class="fas fa-broom"></i>
+            Limpar Cache
+          </button>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <h5>Service Worker</h5>
+            <div>
+              Status: <span id="sw-registration-status">⏹️ Não registrado</span>
+            </div>
+            <div id="sw-info" class="mt-2"></div>
+          </div>
+
+          <div class="col-md-6">
+            <h5>Cache Storage</h5>
+            <div>Status: <span id="cache-status">⏹️ Pronto</span></div>
+            <div id="cache-info" class="mt-2"></div>
+          </div>
+        </div>
+
+        <div class="api-result mt-3">
+          <h5>ℹ️ Informações sobre Service Workers</h5>
+          <ul>
+            <li>
+              <strong>Cache:</strong> Armazena recursos para acesso offline
+            </li>
+            <li>
+              <strong>Interceptação:</strong> Pode interceptar e modificar
+              requisições
+            </li>
+            <li>
+              <strong>Background Sync:</strong> Sincronização em segundo plano
+            </li>
+            <li>
+              <strong>Push Notifications:</strong> Notificações mesmo com app
+              fechado
+            </li>
+            <li>
+              <strong>Offline First:</strong> Funcionalidade mesmo sem internet
+            </li>
+          </ul>
+          <div class="alert alert-warning">
+            <strong>Nota:</strong> Esta demonstração é simplificada. Em
+            produção, Service Workers requerem HTTPS e arquivos separados.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Navegação entre demonstrações -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const tabs = document.querySelectorAll(".demo-tab");
+        const panels = document.querySelectorAll(".demo-panel");
+
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", function () {
+            const targetDemo = this.dataset.demo;
+
+            // Remover classe active de todas as tabs e panels
+            tabs.forEach((t) => t.classList.remove("active"));
+            panels.forEach((p) => p.classList.remove("active"));
+
+            // Adicionar classe active na tab e panel selecionados
+            this.classList.add("active");
+            document.getElementById(targetDemo).classList.add("active");
+          });
+        });
+      });
+    </script>
+
+    <!-- JavaScript das demonstrações -->
+    <script src="codigo-webapis.js"></script>
+  </body>
+</html>
