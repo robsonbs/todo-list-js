@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guia do Professor - Curso JavaScript Interativo</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="estilos-guia.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header-guia">
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+          <a class="navbar-brand" href="#inicio">
+            <i class="fas fa-chalkboard-teacher"></i>
+            Guia do Professor
+          </a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarGuia"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarGuia">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#metodologia">
+                  <i class="fas fa-lightbulb"></i> Metodologia
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#planos-aula">
+                  <i class="fas fa-calendar-alt"></i> Planos de Aula
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#avaliacao">
+                  <i class="fas fa-clipboard-check"></i> Avaliação
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#recursos">
+                  <i class="fas fa-tools"></i> Recursos
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="../index.html">
+                  <i class="fas fa-arrow-left"></i> Voltar ao Curso
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <aside class="col-md-3 sidebar-guia">
+          <div class="sidebar-content">
+            <h5><i class="fas fa-list"></i> Índice do Guia</h5>
+            <nav class="nav flex-column">
+              <a class="nav-link" href="#intro">
+                <i class="fas fa-info-circle"></i> Introdução
+              </a>
+              <a class="nav-link" href="#metodologia">
+                <i class="fas fa-lightbulb"></i> Metodologias de Ensino
+              </a>
+              <a class="nav-link" href="#estrutura-curso">
+                <i class="fas fa-sitemap"></i> Estrutura do Curso
+              </a>
+              <a class="nav-link" href="#planos-aula">
+                <i class="fas fa-calendar-alt"></i> Planos de Aula
+              </a>
+
+              <!-- Submenu Aulas -->
+              <div class="submenu">
+                <small class="text-muted">Aulas Detalhadas:</small>
+                <a class="nav-link sub" href="#aula-1">Aula 1: Introdução</a>
+                <a class="nav-link sub" href="#aula-2">Aula 2: Variáveis</a>
+                <a class="nav-link sub" href="#aula-3">Aula 3: Funções</a>
+                <a class="nav-link sub" href="#aula-4">Aula 4: Arrays</a>
+                <a class="nav-link sub" href="#aula-5">Aula 5: Objetos</a>
+                <a class="nav-link sub" href="#aula-6">Aula 6: Eventos</a>
+                <a class="nav-link sub" href="#aula-7">Aula 7: DOM</a>
+                <a class="nav-link sub" href="#aula-8">Aula 8: Avançado</a>
+                <a class="nav-link sub" href="#aula-9">Aula 9: APIs Modernas</a>
+              </div>
+
+              <a class="nav-link" href="#avaliacao">
+                <i class="fas fa-clipboard-check"></i> Sistema de Avaliação
+              </a>
+              <a class="nav-link" href="#recursos">
+                <i class="fas fa-tools"></i> Recursos Adicionais
+              </a>
+              <a class="nav-link" href="#troubleshooting">
+                <i class="fas fa-wrench"></i> Troubleshooting
+              </a>
+            </nav>
+          </div>
+        </aside>
+
+        <!-- Content Area -->
+        <section class="col-md-9 content-guia">
+          <!-- Introdução -->
+          <section id="intro" class="content-section">
+            <div class="section-header">
+              <h1>
+                <i class="fas fa-chalkboard-teacher"></i> Guia do Professor
+              </h1>
+              <p class="lead">
+                Manual completo para ensinar JavaScript de forma interativa e
+                eficaz
+              </p>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3><i class="fas fa-bullseye"></i> Objetivos do Curso</h3>
+                    <ul class="list-unstyled">
+                      <li>
+                        <i class="fas fa-check text-success"></i> Ensinar
+                        fundamentos sólidos de JavaScript
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-success"></i> Desenvolver
+                        pensamento computacional
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-success"></i> Promover
+                        aprendizado prático e interativo
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-success"></i> Preparar para
+                        desenvolvimento web moderno
+                      </li>
+                      <li>
+                        <i class="fas fa-check text-success"></i> Incentivar
+                        resolução de problemas
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3><i class="fas fa-users"></i> Público-Alvo</h3>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>Alunos Iniciantes</h5>
+                        <ul>
+                          <li>Sem experiência prévia em programação</li>
+                          <li>Idade recomendada: 14+ anos</li>
+                          <li>Interesse em tecnologia</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>Pré-requisitos</h5>
+                        <ul>
+                          <li>Conhecimentos básicos de informática</li>
+                          <li>Navegador web atualizado</li>
+                          <li>Interesse em aprender</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card status-card">
+                  <div class="card-body text-center">
+                    <h4><i class="fas fa-chart-line text-primary"></i></h4>
+                    <h5>Estatísticas do Curso</h5>
+                    <div class="stat-item">
+                      <span class="stat-number">9</span>
+                      <span class="stat-label">Aulas</span>
+                    </div>
+                    <div class="stat-item">
+                      <span class="stat-number">50+</span>
+                      <span class="stat-label">Exercícios</span>
+                    </div>
+                    <div class="stat-item">
+                      <span class="stat-number">15+</span>
+                      <span class="stat-label">Projetos</span>
+                    </div>
+                    <div class="stat-item">
+                      <span class="stat-number">40h</span>
+                      <span class="stat-label">Duração</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card mt-3">
+                  <div class="card-body">
+                    <h5><i class="fas fa-download"></i> Downloads</h5>
+                    <div class="d-grid gap-2">
+                      <button
+                        class="btn btn-outline-primary btn-sm"
+                        onclick="baixarGuiaCompleto()"
+                      >
+                        <i class="fas fa-file-pdf"></i> Guia Completo (PDF)
+                      </button>
+                      <button
+                        class="btn btn-outline-secondary btn-sm"
+                        onclick="baixarPlanosAula()"
+                      >
+                        <i class="fas fa-calendar"></i> Planos de Aula
+                      </button>
+                      <button
+                        class="btn btn-outline-info btn-sm"
+                        onclick="baixarRubricas()"
+                      >
+                        <i class="fas fa-clipboard-list"></i> Rubricas de
+                        Avaliação
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Metodologias -->
+          <section id="metodologia" class="content-section">
+            <div class="section-header">
+              <h2><i class="fas fa-lightbulb"></i> Metodologias de Ensino</h2>
+              <p>
+                Abordagens pedagógicas recomendadas para o ensino de JavaScript
+              </p>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card metodologia-card">
+                  <div class="card-header">
+                    <h4>
+                      <i class="fas fa-hands-helping"></i> Aprendizado Ativo
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      <strong>Conceito:</strong> Engajar estudantes em
+                      atividades práticas e reflexão sobre o aprendizado.
+                    </p>
+                    <h6>Estratégias:</h6>
+                    <ul>
+                      <li>Coding em pares (pair programming)</li>
+                      <li>Resolução colaborativa de problemas</li>
+                      <li>Discussões em grupo sobre soluções</li>
+                      <li>Apresentações de projetos</li>
+                    </ul>
+                    <div class="metodologia-exemplo">
+                      <strong>Exemplo prático:</strong> Na Aula 3 (Funções),
+                      divida a turma em duplas para criar funções matemáticas e
+                      apresentar para a classe.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-4">
+                <div class="card metodologia-card">
+                  <div class="card-header">
+                    <h4>
+                      <i class="fas fa-puzzle-piece"></i> Problem-Based Learning
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      <strong>Conceito:</strong> Aprender através da resolução
+                      de problemas reais e contextualizados.
+                    </p>
+                    <h6>Estratégias:</h6>
+                    <ul>
+                      <li>Projetos práticos e relevantes</li>
+                      <li>Desafios incrementais</li>
+                      <li>Simulações do mundo real</li>
+                      <li>Case studies</li>
+                    </ul>
+                    <div class="metodologia-exemplo">
+                      <strong>Exemplo prático:</strong> Na Aula 4 (Arrays), usar
+                      exemplo de lista de compras para ensinar métodos de array.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-4">
+                <div class="card metodologia-card">
+                  <div class="card-header">
+                    <h4><i class="fas fa-layer-group"></i> Scaffolding</h4>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      <strong>Conceito:</strong> Fornecer suporte estruturado
+                      que é gradualmente removido à medida que o aluno
+                      desenvolve independência.
+                    </p>
+                    <h6>Estratégias:</h6>
+                    <ul>
+                      <li>Templates de código inicial</li>
+                      <li>Comentários guia no código</li>
+                      <li>Exercícios progressivos</li>
+                      <li>Feedback constante</li>
+                    </ul>
+                    <div class="metodologia-exemplo">
+                      <strong>Exemplo prático:</strong> Começar com código
+                      semi-pronto e gradualmente pedir para completar mais
+                      partes.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-4">
+                <div class="card metodologia-card">
+                  <div class="card-header">
+                    <h4>
+                      <i class="fas fa-sync-alt"></i> Aprendizado Iterativo
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      <strong>Conceito:</strong> Revisitar conceitos múltiplas
+                      vezes com complexidade crescente.
+                    </p>
+                    <h6>Estratégias:</h6>
+                    <ul>
+                      <li>Spiral curriculum</li>
+                      <li>Revisões frequentes</li>
+                      <li>Aplicação em diferentes contextos</li>
+                      <li>Conexões entre aulas</li>
+                    </ul>
+                    <div class="metodologia-exemplo">
+                      <strong>Exemplo prático:</strong> Variáveis são
+                      introduzidas na Aula 2, revisadas na Aula 3 (funções) e
+                      aprofundadas na Aula 5 (objetos).
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mt-4">
+              <div class="card-body">
+                <h4><i class="fas fa-clock"></i> Gestão do Tempo de Aula</h4>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="time-block">
+                      <h6>Abertura (5 min)</h6>
+                      <ul>
+                        <li>Review da aula anterior</li>
+                        <li>Objetivos da aula atual</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="time-block">
+                      <h6>Teoria (15 min)</h6>
+                      <ul>
+                        <li>Conceitos novos</li>
+                        <li>Demonstrações</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="time-block">
+                      <h6>Prática (25 min)</h6>
+                      <ul>
+                        <li>Exercícios guiados</li>
+                        <li>Atividades práticas</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="time-block">
+                      <h6>Fechamento (5 min)</h6>
+                      <ul>
+                        <li>Síntese do aprendizado</li>
+                        <li>Preview próxima aula</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Estrutura do Curso -->
+          <section id="estrutura-curso" class="content-section">
+            <div class="section-header">
+              <h2><i class="fas fa-sitemap"></i> Estrutura do Curso</h2>
+              <p>Visão geral da progressão e organização das aulas</p>
+            </div>
+
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-marker">1</div>
+                <div class="timeline-content">
+                  <h4>Módulo 1: Fundamentos (Aulas 1-3)</h4>
+                  <p><strong>Foco:</strong> Conceitos básicos e sintaxe</p>
+                  <ul>
+                    <li>Aula 1: Introdução ao JavaScript</li>
+                    <li>Aula 2: Variáveis e Tipos de Dados</li>
+                    <li>Aula 3: Funções</li>
+                  </ul>
+                  <span class="badge bg-primary">Duração: 6 horas</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker">2</div>
+                <div class="timeline-content">
+                  <h4>Módulo 2: Estruturas de Dados (Aulas 4-5)</h4>
+                  <p><strong>Foco:</strong> Manipulação de dados</p>
+                  <ul>
+                    <li>Aula 4: Arrays e Métodos</li>
+                    <li>Aula 5: Objetos e JSON</li>
+                  </ul>
+                  <span class="badge bg-info">Duração: 8 horas</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker">3</div>
+                <div class="timeline-content">
+                  <h4>Módulo 3: Interatividade (Aulas 6-7)</h4>
+                  <p><strong>Foco:</strong> Interação com usuário</p>
+                  <ul>
+                    <li>Aula 6: Eventos e Listeners</li>
+                    <li>Aula 7: Manipulação do DOM</li>
+                  </ul>
+                  <span class="badge bg-warning">Duração: 10 horas</span>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker">4</div>
+                <div class="timeline-content">
+                  <h4>Módulo 4: Tópicos Avançados (Aulas 8-9)</h4>
+                  <p>
+                    <strong>Foco:</strong> Conceitos avançados e APIs modernas
+                  </p>
+                  <ul>
+                    <li>Aula 8: Manipulação Avançada do DOM</li>
+                    <li>Aula 9: Web APIs Modernas</li>
+                  </ul>
+                  <span class="badge bg-success">Duração: 16 horas</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>
+                      <i class="fas fa-graduation-cap"></i> Competências
+                      Desenvolvidas
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="competencia-item">
+                      <h6>Pensamento Computacional</h6>
+                      <div class="progress mb-2">
+                        <div class="progress-bar" style="width: 90%">90%</div>
+                      </div>
+                    </div>
+                    <div class="competencia-item">
+                      <h6>Resolução de Problemas</h6>
+                      <div class="progress mb-2">
+                        <div class="progress-bar bg-info" style="width: 85%">
+                          85%
+                        </div>
+                      </div>
+                    </div>
+                    <div class="competencia-item">
+                      <h6>Sintaxe JavaScript</h6>
+                      <div class="progress mb-2">
+                        <div class="progress-bar bg-warning" style="width: 95%">
+                          95%
+                        </div>
+                      </div>
+                    </div>
+                    <div class="competencia-item">
+                      <h6>Desenvolvimento Web</h6>
+                      <div class="progress mb-2">
+                        <div class="progress-bar bg-success" style="width: 80%">
+                          80%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>
+                      <i class="fas fa-chart-pie"></i> Distribuição de
+                      Atividades
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <canvas
+                      id="chartAtividades"
+                      width="300"
+                      height="200"
+                    ></canvas>
+                    <div class="legend mt-3">
+                      <div class="legend-item">
+                        <span
+                          class="color-box"
+                          style="background: #007bff"
+                        ></span>
+                        <span>Teoria (30%)</span>
+                      </div>
+                      <div class="legend-item">
+                        <span
+                          class="color-box"
+                          style="background: #28a745"
+                        ></span>
+                        <span>Prática Guiada (40%)</span>
+                      </div>
+                      <div class="legend-item">
+                        <span
+                          class="color-box"
+                          style="background: #ffc107"
+                        ></span>
+                        <span>Projetos (20%)</span>
+                      </div>
+                      <div class="legend-item">
+                        <span
+                          class="color-box"
+                          style="background: #dc3545"
+                        ></span>
+                        <span>Avaliação (10%)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Botão para continuar -->
+          <div class="text-center mt-5">
+            <button
+              class="btn btn-primary btn-lg"
+              onclick="carregarPlanosAula()"
+            >
+              <i class="fas fa-calendar-alt"></i> Ver Planos de Aula Detalhados
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- JavaScript do Guia -->
+    <script src="scripts-guia.js"></script>
+  </body>
+</html>
