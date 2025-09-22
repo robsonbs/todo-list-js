@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 8: Manipulação Avançada do DOM</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- Estilos customizados -->
+    <link rel="stylesheet" href="estilos-avancados.css" />
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .main-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .nav-tabs-custom {
+        background: var(--light-color);
+        border: none;
+        padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+      }
+
+      .demo-tab {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .demo-tab:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+      }
+
+      .demo-tab.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      .demo-panel {
+        display: none;
+        padding: 2rem;
+        min-height: 600px;
+      }
+
+      .demo-panel.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .demo-header {
+        background: linear-gradient(
+          135deg,
+          var(--info-color) 0%,
+          var(--primary-color) 100%
+        );
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .control-panel {
+        background: var(--light-color);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e5e7eb;
+      }
+
+      .btn-demo {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-demo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+      }
+
+      /* Demo 1 - Performance */
+      .benchmark-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .benchmark-section {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+      }
+
+      .benchmark-list {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+
+      .list-item {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+      }
+
+      .performance-stats {
+        background: var(--dark-color);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+      }
+
+      .stat-value {
+        font-weight: bold;
+        color: var(--success-color);
+      }
+
+      /* Demo 2 - Observadores */
+      .lazy-load-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 1rem;
+      }
+
+      .lazy-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e5e7eb;
+        min-height: 200px;
+        transition: all 0.3s ease;
+      }
+
+      .lazy-card.loaded {
+        border-color: var(--success-color);
+        box-shadow: 0 2px 10px rgba(16, 185, 129, 0.1);
+      }
+
+      .card-placeholder {
+        text-align: center;
+        color: #666;
+        padding: 2rem;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .mutation-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .mutation-target {
+        background: var(--light-color);
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 1rem;
+        min-height: 200px;
+        transition: all 0.3s ease;
+      }
+
+      .dynamic-item {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        margin: 0.25rem;
+        display: inline-block;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .mutation-log {
+        background: var(--dark-color);
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+      }
+
+      .mutation-entry {
+        margin: 0.25rem 0;
+        padding: 0.25rem;
+        border-left: 3px solid var(--info-color);
+        padding-left: 0.5rem;
+      }
+
+      .time {
+        color: var(--warning-color);
+        font-weight: bold;
+      }
+
+      /* Demo 3 - Virtual Scrolling */
+      .virtual-scroll-container {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .virtual-list-info {
+        background: var(--info-color);
+        color: white;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .virtual-list-viewport {
+        border: 1px solid #e5e7eb;
+      }
+
+      .virtual-list-item {
+        transition: background-color 0.2s ease;
+      }
+
+      .virtual-list-item:hover {
+        background-color: var(--light-color) !important;
+      }
+
+      .search-controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: center;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      /* Demo 4 - Selection API */
+      .text-editor {
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 1.5rem;
+        min-height: 300px;
+        background: white;
+        line-height: 1.6;
+        font-size: 16px;
+      }
+
+      .text-editor:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .formatting-toolbar {
+        background: var(--light-color);
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .formatting-toolbar button {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .formatting-toolbar button:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      .selection-info {
+        background: var(--dark-color);
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+      }
+
+      .selection-details h4 {
+        color: var(--info-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .no-selection {
+        color: #999;
+        font-style: italic;
+      }
+
+      /* Demo 5 - Drag & Drop */
+      .kanban-board {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .kanban-column {
+        background: var(--light-color);
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+      }
+
+      .kanban-column h3 {
+        text-align: center;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+        font-weight: bold;
+      }
+
+      .drop-zone {
+        min-height: 300px;
+        border: 2px dashed #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .drop-zone.drag-over {
+        border-color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.05);
+      }
+
+      .kanban-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid #e5e7eb;
+        cursor: grab;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .kanban-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .kanban-card.dragging {
+        opacity: 0.5;
+        transform: rotate(5deg);
+      }
+
+      .card-content h4 {
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .card-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+        font-size: 12px;
+      }
+
+      .priority {
+        background: var(--warning-color);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        font-weight: bold;
+      }
+
+      .assignee {
+        background: var(--info-color);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+      }
+
+      .drag-handle {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.5rem;
+        color: #999;
+        cursor: grab;
+      }
+
+      .add-task-form {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+      }
+
+      .add-task-form.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Demo 6 - Animações */
+      .animation-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .animation-canvas {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #000;
+        width: 100%;
+        height: 400px;
+      }
+
+      .animation-info {
+        background: var(--dark-color);
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+        font-family: "Courier New", monospace;
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 1rem;
+          border-radius: 15px;
+        }
+
+        .demo-panel {
+          padding: 1rem;
+        }
+
+        .benchmark-container,
+        .kanban-board {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-tabs-custom {
+          flex-direction: column;
+        }
+
+        .demo-tab {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* Utilitários */
+      .text-center {
+        text-align: center;
+      }
+      .mb-2 {
+        margin-bottom: 1rem;
+      }
+      .mt-2 {
+        margin-top: 1rem;
+      }
+      .d-flex {
+        display: flex;
+      }
+      .justify-between {
+        justify-content: space-between;
+      }
+      .align-center {
+        align-items: center;
+      }
+      .gap-1 {
+        gap: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Container Principal -->
+    <div class="main-container">
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          <i class="fas fa-code"></i>
+          Aula 8: Manipulação Avançada do DOM
+        </h1>
+        <p class="mb-0">Técnicas avançadas para desenvolvimento web moderno</p>
+      </div>
+
+      <!-- Navegação por Demonstrações -->
+      <div class="nav-tabs-custom">
+        <div class="demo-tab active" data-demo="demo1">
+          <i class="fas fa-tachometer-alt"></i>
+          Performance
+        </div>
+        <div class="demo-tab" data-demo="demo2">
+          <i class="fas fa-eye"></i>
+          Observadores
+        </div>
+        <div class="demo-tab" data-demo="demo3">
+          <i class="fas fa-list"></i>
+          Virtual Scrolling
+        </div>
+        <div class="demo-tab" data-demo="demo4">
+          <i class="fas fa-edit"></i>
+          Selection API
+        </div>
+        <div class="demo-tab" data-demo="demo5">
+          <i class="fas fa-hand-paper"></i>
+          Drag & Drop
+        </div>
+        <div class="demo-tab" data-demo="demo6">
+          <i class="fas fa-play"></i>
+          Animações
+        </div>
+      </div>
+
+      <!-- Demo 1: Performance Optimization -->
+      <div id="demo1" class="demo-panel active">
+        <div class="demo-header">
+          <h2>
+            <i class="fas fa-tachometer-alt"></i> Demonstração 1: Otimização de
+            Performance
+          </h2>
+          <p>
+            Compare diferentes técnicas de manipulação DOM e suas implicações de
+            performance
+          </p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Controles de Benchmark</h4>
+          <div class="d-flex gap-1 mb-2">
+            <button id="btn-traditional" class="btn-demo">
+              <i class="fas fa-snail"></i>
+              Método Tradicional
+            </button>
+            <button id="btn-fragment" class="btn-demo">
+              <i class="fas fa-rocket"></i>
+              DocumentFragment
+            </button>
+            <button id="btn-batch" class="btn-demo">
+              <i class="fas fa-fire"></i>
+              Batch Updates
+            </button>
+            <button id="btn-benchmark" class="btn-demo">
+              <i class="fas fa-stopwatch"></i>
+              Benchmark Completo
+            </button>
+          </div>
+        </div>
+
+        <div class="benchmark-container">
+          <div class="benchmark-section">
+            <h5>Método Tradicional (appendChild individual)</h5>
+            <ul id="traditional-list" class="benchmark-list"></ul>
+          </div>
+          <div class="benchmark-section">
+            <h5>DocumentFragment (batch DOM operations)</h5>
+            <ul id="fragment-list" class="benchmark-list"></ul>
+          </div>
+          <div class="benchmark-section">
+            <h5>Batch Updates (innerHTML)</h5>
+            <ul id="batch-list" class="benchmark-list"></ul>
+          </div>
+        </div>
+
+        <div class="performance-stats" id="performance-stats">
+          <h5><i class="fas fa-chart-line"></i> Estatísticas de Performance</h5>
+          <p>Execute os testes para ver os resultados comparativos</p>
+        </div>
+      </div>
+
+      <!-- Demo 2: Observadores -->
+      <div id="demo2" class="demo-panel">
+        <div class="demo-header">
+          <h2><i class="fas fa-eye"></i> Demonstração 2: Observadores DOM</h2>
+          <p>
+            IntersectionObserver para lazy loading e MutationObserver para
+            mudanças DOM
+          </p>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <h4>
+              <i class="fas fa-images"></i> Lazy Loading com
+              IntersectionObserver
+            </h4>
+            <div id="lazy-load-container" class="lazy-load-container"></div>
+          </div>
+          <div class="col-md-6">
+            <h4><i class="fas fa-search"></i> MutationObserver</h4>
+
+            <div class="mutation-controls">
+              <button onclick="demo2.adicionarElemento()" class="btn-demo">
+                <i class="fas fa-plus"></i>
+                Adicionar
+              </button>
+              <button onclick="demo2.removerElemento()" class="btn-demo">
+                <i class="fas fa-minus"></i>
+                Remover
+              </button>
+              <button onclick="demo2.modificarAtributo()" class="btn-demo">
+                <i class="fas fa-palette"></i>
+                Mudar Cor
+              </button>
+            </div>
+
+            <div id="mutation-target" class="mutation-target">
+              <p>Área observada pelo MutationObserver</p>
+            </div>
+
+            <h5>Log de Mutations:</h5>
+            <div id="mutation-log" class="mutation-log">
+              <div class="mutation-entry">
+                <span class="time">00:00:00</span> MutationObserver ativo
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 3: Virtual Scrolling -->
+      <div id="demo3" class="demo-panel">
+        <div class="demo-header">
+          <h2><i class="fas fa-list"></i> Demonstração 3: Virtual Scrolling</h2>
+          <p>
+            Renderização eficiente de listas grandes com performance otimizada
+          </p>
+        </div>
+
+        <div class="search-controls">
+          <input
+            type="text"
+            id="virtual-search"
+            class="search-input"
+            placeholder="Buscar itens..."
+          />
+          <button
+            onclick="demo3.filtrarItens(document.getElementById('virtual-search').value)"
+            class="btn-demo"
+          >
+            <i class="fas fa-search"></i>
+            Filtrar
+          </button>
+          <button
+            onclick="document.getElementById('virtual-search').value = ''; demo3.filtrarItens('')"
+            class="btn-demo"
+          >
+            <i class="fas fa-times"></i>
+            Limpar
+          </button>
+        </div>
+
+        <div id="virtual-scroll-container" class="virtual-scroll-container">
+          <!-- Conteúdo será gerado dinamicamente -->
+        </div>
+
+        <div class="mt-2">
+          <div class="alert alert-info">
+            <strong>💡 Dica:</strong> Esta lista contém 10.000 itens, mas apenas
+            os visíveis são renderizados para manter a performance!
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 4: Selection API -->
+      <div id="demo4" class="demo-panel">
+        <div class="demo-header">
+          <h2>
+            <i class="fas fa-edit"></i> Demonstração 4: Selection API e Range
+          </h2>
+          <p>Editor de texto avançado com seleção e formatação dinâmica</p>
+        </div>
+
+        <div class="formatting-toolbar" id="formatting-toolbar">
+          <!-- Botões serão criados dinamicamente -->
+        </div>
+
+        <div id="text-editor" class="text-editor">
+          <!-- Conteúdo será criado dinamicamente -->
+        </div>
+
+        <div id="selection-info" class="selection-info">
+          <p class="no-selection">Selecione um texto para ver as informações</p>
+        </div>
+      </div>
+
+      <!-- Demo 5: Drag & Drop -->
+      <div id="demo5" class="demo-panel">
+        <div class="demo-header">
+          <h2>
+            <i class="fas fa-hand-paper"></i> Demonstração 5: Drag & Drop
+            Avançado
+          </h2>
+          <p>Kanban board interativo com drag & drop nativo e persistência</p>
+        </div>
+
+        <div class="control-panel">
+          <h4>Controles do Kanban</h4>
+          <div class="d-flex gap-1 mb-2">
+            <button
+              onclick="demo5.adicionarNovaTarefa('todo', prompt('Nome da tarefa:'))"
+              class="btn-demo"
+            >
+              <i class="fas fa-plus"></i>
+              Nova Tarefa
+            </button>
+            <button onclick="resetAllDemos()" class="btn-demo">
+              <i class="fas fa-redo"></i>
+              Reset Board
+            </button>
+            <button onclick="exportDemoData()" class="btn-demo">
+              <i class="fas fa-download"></i>
+              Exportar Dados
+            </button>
+          </div>
+        </div>
+
+        <div id="kanban-board" class="kanban-board">
+          <!-- Colunas serão criadas dinamicamente -->
+        </div>
+
+        <div class="mt-2">
+          <div class="alert alert-success">
+            <strong>✨ Feature:</strong> As mudanças são salvas automaticamente
+            no localStorage!
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 6: Animações -->
+      <div id="demo6" class="demo-panel">
+        <div class="demo-header">
+          <h2>
+            <i class="fas fa-play"></i> Demonstração 6: Animações com
+            RequestAnimationFrame
+          </h2>
+          <p>Sistema de partículas interativo com canvas e animações fluidas</p>
+        </div>
+
+        <div class="animation-controls">
+          <button id="btn-start-animation" class="btn-demo">
+            <i class="fas fa-play"></i>
+            Iniciar
+          </button>
+          <button id="btn-stop-animation" class="btn-demo">
+            <i class="fas fa-stop"></i>
+            Parar
+          </button>
+          <button id="btn-add-particles" class="btn-demo">
+            <i class="fas fa-plus"></i>
+            +10 Partículas
+          </button>
+          <button id="btn-clear-particles" class="btn-demo">
+            <i class="fas fa-trash"></i>
+            Limpar
+          </button>
+        </div>
+
+        <canvas id="animation-canvas" class="animation-canvas"></canvas>
+
+        <div class="animation-info">
+          <h5><i class="fas fa-info-circle"></i> Informações da Animação</h5>
+          <p>• Sistema de partículas com física realista</p>
+          <p>• Animações fluidas com RequestAnimationFrame</p>
+          <p>• Collision detection e bounce physics</p>
+          <p>• Performance otimizada para 60 FPS</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Controller da Interface -->
+    <script src="interface-controller.js"></script>
+
+    <!-- Utilitários de Performance -->
+    <script src="utils-performance.js"></script>
+
+    <!-- JavaScript das demonstrações -->
+    <script src="codigo-progressivo.js"></script>
+  </body>
+</html>
