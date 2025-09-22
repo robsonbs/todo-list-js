@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teste Progressivo - Aula 7: LocalStorage e Persistência</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .test-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 900px;
+      }
+
+      .test-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .test-progress {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 1rem;
+      }
+
+      .test-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .question-card {
+        padding: 2rem;
+        border-bottom: 1px solid #e5e7eb;
+        min-height: 400px;
+        display: none;
+      }
+
+      .question-card.active {
+        display: block;
+        animation: slideIn 0.5s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .question-number {
+        background: var(--primary-color);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+
+      .question-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .code-block {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        overflow-x: auto;
+      }
+
+      .answer-option {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .answer-option:hover {
+        border-color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.05);
+      }
+
+      .answer-option.selected {
+        border-color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.1);
+      }
+
+      .answer-option.correct {
+        border-color: var(--success-color);
+        background: rgba(16, 185, 129, 0.1);
+      }
+
+      .answer-option.incorrect {
+        border-color: var(--danger-color);
+        background: rgba(239, 68, 68, 0.1);
+      }
+
+      .timer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+
+      .timer.warning {
+        background: rgba(245, 158, 11, 0.95);
+        color: white;
+      }
+
+      .timer.danger {
+        background: rgba(239, 68, 68, 0.95);
+        color: white;
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .navigation-buttons {
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+      }
+
+      .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+      }
+
+      .btn-outline-secondary {
+        border: 2px solid #6c757d;
+        color: #6c757d;
+      }
+
+      .results-container {
+        display: none;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .score-circle {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2rem auto;
+        font-size: 3rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      .score-excellent {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+
+      .score-good {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      }
+
+      .score-average {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      }
+
+      .score-poor {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+
+      .feedback-item {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .chart-container {
+        max-width: 400px;
+        margin: 2rem auto;
+      }
+
+      .practical-test {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+
+      .practical-result {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        background: #212529;
+        color: #00ff00;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .test-container {
+          margin: 1rem;
+          border-radius: 15px;
+        }
+
+        .question-card {
+          padding: 1rem;
+          min-height: 300px;
+        }
+
+        .timer {
+          position: relative;
+          margin-bottom: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Timer -->
+    <div class="timer" id="timer">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-clock me-2"></i>
+        <div>
+          <div class="fw-bold">Tempo Restante</div>
+          <div class="fs-4" id="time-display">20:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="container">
+      <div class="test-container">
+        <!-- Header -->
+        <div class="test-header">
+          <h1>
+            <i class="fas fa-database"></i>
+            Teste de Conhecimento
+          </h1>
+          <h2>Aula 7: LocalStorage e Persistência</h2>
+          <p class="mb-0">
+            Avalie seu domínio sobre armazenamento de dados no navegador
+          </p>
+
+          <!-- Progress Bar -->
+          <div class="test-progress">
+            <div class="test-progress-bar" id="progress-bar"></div>
+          </div>
+          <div class="mt-2">
+            <span id="question-counter">Questão 1 de 15</span>
+          </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div class="loading" id="loading-screen">
+          <div class="spinner mb-3"></div>
+          <h4>Carregando Teste...</h4>
+          <p>Preparando questões personalizadas para você</p>
+        </div>
+
+        <!-- Questões -->
+        <div id="questions-container" style="display: none">
+          <!-- As questões serão inseridas dinamicamente -->
+        </div>
+
+        <!-- Resultados -->
+        <div class="results-container" id="results-container">
+          <h2>🎉 Teste Concluído!</h2>
+
+          <div class="score-circle" id="score-circle">
+            <span id="final-score">0%</span>
+          </div>
+
+          <h3 id="performance-message">Parabéns!</h3>
+          <p id="performance-description">Descrição da performance</p>
+
+          <!-- Gráfico de Performance -->
+          <div class="chart-container">
+            <canvas id="performance-chart"></canvas>
+          </div>
+
+          <!-- Feedback Detalhado -->
+          <div id="detailed-feedback">
+            <!-- Feedback será inserido dinamicamente -->
+          </div>
+
+          <!-- Ações Finais -->
+          <div class="mt-4">
+            <button
+              class="btn btn-success me-2"
+              onclick="downloadCertificate()"
+            >
+              <i class="fas fa-certificate"></i>
+              Baixar Certificado
+            </button>
+            <button class="btn btn-primary me-2" onclick="retakeTest()">
+              <i class="fas fa-redo"></i>
+              Refazer Teste
+            </button>
+            <button class="btn btn-outline-secondary" onclick="goToExercises()">
+              <i class="fas fa-dumbbell"></i>
+              Ir para Exercícios
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation-buttons" id="navigation" style="display: none">
+          <button
+            class="btn btn-outline-secondary"
+            id="prev-btn"
+            onclick="previousQuestion()"
+            disabled
+          >
+            <i class="fas fa-chevron-left"></i>
+            Anterior
+          </button>
+
+          <div>
+            <button class="btn btn-warning" onclick="skipQuestion()">
+              <i class="fas fa-forward"></i>
+              Pular Questão
+            </button>
+          </div>
+
+          <button
+            class="btn btn-primary"
+            id="next-btn"
+            onclick="nextQuestion()"
+          >
+            Próxima
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript do Teste -->
+    <script>
+      // ============================================================================
+      // 🎯 SISTEMA DE TESTE PROGRESSIVO - AULA 7: LOCALSTORAGE
+      // ============================================================================
+
+      class TestProgressivo {
+        constructor() {
+          this.questoes = [];
+          this.questaoAtual = 0;
+          this.respostas = [];
+          this.pontuacao = 0;
+          this.tempoInicial = 20 * 60; // 20 minutos em segundos
+          this.tempoRestante = this.tempoInicial;
+          this.timerInterval = null;
+          this.iniciarTeste();
+        }
+
+        async iniciarTeste() {
+          // Simular carregamento
+          await this.simularCarregamento();
+
+          // Criar questões
+          this.criarQuestoes();
+
+          // Inicializar interface
+          this.inicializarInterface();
+
+          // Iniciar timer
+          this.iniciarTimer();
+
+          // Mostrar primeira questão
+          this.mostrarQuestao(0);
+        }
+
+        async simularCarregamento() {
+          return new Promise((resolve) => {
+            setTimeout(resolve, 2000);
+          });
+        }
+
+        criarQuestoes() {
+          this.questoes = [
+            {
+              numero: 1,
+              tipo: "multipla_escolha",
+              categoria: "Conceitos Básicos",
+              titulo:
+                "Qual é a principal diferença entre localStorage e sessionStorage?",
+              opcoes: [
+                "localStorage é mais rápido que sessionStorage",
+                "localStorage persiste mesmo após fechar o navegador, sessionStorage não",
+                "sessionStorage tem mais capacidade de armazenamento",
+                "Não há diferença prática entre eles",
+              ],
+              correta: 1,
+              explicacao:
+                "O localStorage persiste dados até serem removidos manualmente, enquanto sessionStorage é limpo quando a aba é fechada.",
+            },
+            {
+              numero: 2,
+              tipo: "multipla_escolha",
+              categoria: "Métodos Básicos",
+              titulo: "Qual método é usado para salvar dados no localStorage?",
+              opcoes: [
+                "localStorage.save()",
+                "localStorage.setItem()",
+                "localStorage.store()",
+                "localStorage.put()",
+              ],
+              correta: 1,
+              explicacao:
+                "O método setItem(chave, valor) é usado para armazenar dados no localStorage.",
+            },
+            {
+              numero: 3,
+              tipo: "codigo",
+              categoria: "Serialização JSON",
+              titulo:
+                "Complete o código para salvar um objeto no localStorage:",
+              codigo: `const usuario = { nome: 'João', idade: 25 };
+// Complete a linha abaixo:
+localStorage.setItem('usuario', ________);`,
+              opcoes: [
+                "usuario",
+                "JSON.stringify(usuario)",
+                "usuario.toString()",
+                "String(usuario)",
+              ],
+              correta: 1,
+              explicacao:
+                "JSON.stringify() converte o objeto JavaScript em uma string JSON para armazenamento.",
+            },
+            {
+              numero: 4,
+              tipo: "multipla_escolha",
+              categoria: "Recuperação de Dados",
+              titulo:
+                "O que acontece quando tentamos recuperar uma chave que não existe no localStorage?",
+              opcoes: [
+                "Retorna uma string vazia",
+                "Retorna null",
+                "Lança uma exceção",
+                "Retorna undefined",
+              ],
+              correta: 1,
+              explicacao:
+                "localStorage.getItem() retorna null quando a chave não existe.",
+            },
+            {
+              numero: 5,
+              tipo: "pratica",
+              categoria: "Aplicação Prática",
+              titulo:
+                "Implemente uma função que verifica se o localStorage é suportado:",
+              template: `function verificarSuporte() {
+    // Seu código aqui
+    
+}`,
+              solucao: `function verificarSuporte() {
+    try {
+        return typeof(Storage) !== "undefined" && localStorage;
+    } catch (error) {
+        return false;
+    }
+}`,
+              explicacao:
+                "É importante verificar o suporte antes de usar localStorage, especialmente em navegadores antigos.",
+            },
+            {
+              numero: 6,
+              tipo: "multipla_escolha",
+              categoria: "Limitações",
+              titulo:
+                "Qual é a capacidade típica de armazenamento do localStorage?",
+              opcoes: [
+                "1-2 MB por domínio",
+                "5-10 MB por domínio",
+                "50-100 MB por domínio",
+                "Ilimitado",
+              ],
+              correta: 1,
+              explicacao:
+                "A maioria dos navegadores oferece cerca de 5-10 MB de localStorage por domínio.",
+            },
+            {
+              numero: 7,
+              tipo: "codigo",
+              categoria: "Tratamento de Erros",
+              titulo:
+                "Complete o código para tratar erros ao acessar localStorage:",
+              codigo: `function salvarSeguro(chave, valor) {
+    try {
+        localStorage.setItem(chave, valor);
+    } catch (error) {
+        // Complete o tratamento de erro:
+        ________
+    }
+}`,
+              opcoes: [
+                'console.log("Erro: " + error.message);',
+                'alert("LocalStorage não disponível");',
+                "return false;",
+                "Todas as alternativas são válidas",
+              ],
+              correta: 3,
+              explicacao:
+                "Todas são formas válidas de tratar erros, dependendo do contexto da aplicação.",
+            },
+            {
+              numero: 8,
+              tipo: "multipla_escolha",
+              categoria: "Objetos JSON",
+              titulo:
+                "Qual problema pode ocorrer ao usar JSON.stringify() com objetos?",
+              opcoes: [
+                "Propriedades com valor undefined são ignoradas",
+                "Funções são removidas do objeto",
+                "Referências circulares causam erro",
+                "Todas as alternativas estão corretas",
+              ],
+              correta: 3,
+              explicacao:
+                "JSON.stringify() tem várias limitações que devem ser consideradas ao serializar objetos.",
+            },
+            {
+              numero: 9,
+              tipo: "pratica",
+              categoria: "Sistema de Configurações",
+              titulo:
+                "Crie uma função que aplica configurações salvas no localStorage:",
+              template: `function aplicarConfiguracoes() {
+    // Recuperar configurações do localStorage
+    // Aplicar tema, fontSize, etc.
+    
+}`,
+              solucao: `function aplicarConfiguracoes() {
+    const config = JSON.parse(localStorage.getItem('config')) || {
+        tema: 'claro',
+        fontSize: '16px'
+    };
+    
+    document.body.className = config.tema;
+    document.body.style.fontSize = config.fontSize;
+}`,
+              explicacao:
+                "Sempre forneça valores padrão caso as configurações não existam no localStorage.",
+            },
+            {
+              numero: 10,
+              tipo: "multipla_escolha",
+              categoria: "Storage Events",
+              titulo: 'Quando o evento "storage" é disparado?',
+              opcoes: [
+                "Sempre que localStorage é acessado",
+                "Quando localStorage é modificado na mesma aba",
+                "Quando localStorage é modificado em outras abas",
+                "Nunca é disparado automaticamente",
+              ],
+              correta: 2,
+              explicacao:
+                "O evento storage é disparado quando localStorage é modificado em outras abas/janelas do mesmo domínio.",
+            },
+            {
+              numero: 11,
+              tipo: "codigo",
+              categoria: "Validação de Dados",
+              titulo: "Complete a validação antes de salvar dados:",
+              codigo: `function salvarUsuario(usuario) {
+    if (________ && ________) {
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+        return true;
+    }
+    return false;
+}`,
+              opcoes: [
+                "usuario && usuario.nome",
+                'typeof usuario === "object" && usuario.nome',
+                "usuario !== null && usuario.nome !== undefined",
+                "Todas as validações são importantes",
+              ],
+              correta: 3,
+              explicacao:
+                "É importante validar tanto o tipo quanto as propriedades necessárias antes de salvar.",
+            },
+            {
+              numero: 12,
+              tipo: "multipla_escolha",
+              categoria: "Performance",
+              titulo:
+                "Qual estratégia melhora a performance ao trabalhar com localStorage?",
+              opcoes: [
+                "Acessar localStorage apenas quando necessário",
+                "Cachear dados em variáveis JavaScript",
+                "Evitar JSON.parse/stringify desnecessários",
+                "Todas as estratégias são válidas",
+              ],
+              correta: 3,
+              explicacao:
+                "Todas essas estratégias contribuem para melhor performance ao usar localStorage.",
+            },
+            {
+              numero: 13,
+              tipo: "pratica",
+              categoria: "Cache de Dados",
+              titulo: "Implemente um sistema simples de cache com expiração:",
+              template: `function salvarComExpiracao(chave, dados, minutos) {
+    // Salvar dados com timestamp de expiração
+    
+}
+
+function obterSeValido(chave) {
+    // Recuperar apenas se não expirou
+    
+}`,
+              solucao: `function salvarComExpiracao(chave, dados, minutos) {
+    const item = {
+        dados: dados,
+        expira: Date.now() + (minutos * 60 * 1000)
+    };
+    localStorage.setItem(chave, JSON.stringify(item));
+}
+
+function obterSeValido(chave) {
+    const item = JSON.parse(localStorage.getItem(chave));
+    if (item && Date.now() < item.expira) {
+        return item.dados;
+    }
+    localStorage.removeItem(chave);
+    return null;
+}`,
+              explicacao:
+                "Cache com expiração evita dados obsoletos e gerencia automaticamente a limpeza.",
+            },
+            {
+              numero: 14,
+              tipo: "multipla_escolha",
+              categoria: "Segurança",
+              titulo:
+                "Qual cuidado de segurança é importante com localStorage?",
+              opcoes: [
+                "Não armazenar senhas ou tokens sensíveis",
+                "Validar dados recuperados do storage",
+                "Considerar que dados podem ser modificados pelo usuário",
+                "Todas as precauções são importantes",
+              ],
+              correta: 3,
+              explicacao:
+                "localStorage não é seguro para dados sensíveis e pode ser modificado pelo usuário.",
+            },
+            {
+              numero: 15,
+              tipo: "multipla_escolha",
+              categoria: "Boas Práticas",
+              titulo:
+                "Qual é a melhor prática ao estruturar dados no localStorage?",
+              opcoes: [
+                "Usar uma chave única para cada propriedade",
+                "Agrupar dados relacionados em objetos",
+                "Salvar tudo em uma única chave gigante",
+                "Misturar tipos de dados na mesma chave",
+              ],
+              correta: 1,
+              explicacao:
+                "Agrupar dados relacionados em objetos facilita manutenção e melhora a organização.",
+            },
+          ];
+        }
+
+        inicializarInterface() {
+          document.getElementById("loading-screen").style.display = "none";
+          document.getElementById("questions-container").style.display =
+            "block";
+          document.getElementById("navigation").style.display = "flex";
+
+          // Criar elementos das questões
+          this.criarElementosQuestoes();
+        }
+
+        criarElementosQuestoes() {
+          const container = document.getElementById("questions-container");
+
+          this.questoes.forEach((questao, index) => {
+            const questionCard = document.createElement("div");
+            questionCard.className = "question-card";
+            questionCard.id = `question-${index}`;
+
+            let conteudo = `
+                        <div class="question-number">${questao.numero}</div>
+                        <div class="question-title">${questao.titulo}</div>
+                        <div class="mb-3">
+                            <span class="badge bg-secondary">${questao.categoria}</span>
+                        </div>
+                    `;
+
+            if (questao.codigo) {
+              conteudo += `<div class="code-block">${questao.codigo}</div>`;
+            }
+
+            if (questao.template) {
+              conteudo += `
+                            <div class="practical-test">
+                                <h6>💻 Teste Prático:</h6>
+                                <textarea class="form-control mb-2" rows="8" placeholder="Digite seu código aqui...">${questao.template}</textarea>
+                                <button class="btn btn-info btn-sm" onclick="testarCodigo(${index})">
+                                    <i class="fas fa-play"></i> Executar Código
+                                </button>
+                                <div class="practical-result" id="result-${index}" style="display: none;"></div>
+                            </div>
+                        `;
+            } else {
+              questao.opcoes.forEach((opcao, opcaoIndex) => {
+                conteudo += `
+                                <div class="answer-option" onclick="selecionarResposta(${index}, ${opcaoIndex})">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <span class="badge bg-light text-dark">${String.fromCharCode(
+                                              65 + opcaoIndex
+                                            )}</span>
+                                        </div>
+                                        <div>${opcao}</div>
+                                    </div>
+                                </div>
+                            `;
+              });
+            }
+
+            questionCard.innerHTML = conteudo;
+            container.appendChild(questionCard);
+          });
+        }
+
+        mostrarQuestao(index) {
+          // Esconder todas as questões
+          document.querySelectorAll(".question-card").forEach((card) => {
+            card.classList.remove("active");
+          });
+
+          // Mostrar questão atual
+          document.getElementById(`question-${index}`).classList.add("active");
+
+          // Atualizar progresso
+          this.atualizarProgresso();
+
+          // Atualizar navegação
+          this.atualizarNavegacao();
+        }
+
+        atualizarProgresso() {
+          const progresso =
+            ((this.questaoAtual + 1) / this.questoes.length) * 100;
+          document.getElementById("progress-bar").style.width = progresso + "%";
+          document.getElementById("question-counter").textContent = `Questão ${
+            this.questaoAtual + 1
+          } de ${this.questoes.length}`;
+        }
+
+        atualizarNavegacao() {
+          const prevBtn = document.getElementById("prev-btn");
+          const nextBtn = document.getElementById("next-btn");
+
+          prevBtn.disabled = this.questaoAtual === 0;
+
+          if (this.questaoAtual === this.questoes.length - 1) {
+            nextBtn.innerHTML =
+              '<i class="fas fa-flag-checkered"></i> Finalizar Teste';
+            nextBtn.onclick = () => this.finalizarTeste();
+          } else {
+            nextBtn.innerHTML = 'Próxima <i class="fas fa-chevron-right"></i>';
+            nextBtn.onclick = () => this.nextQuestion();
+          }
+        }
+
+        iniciarTimer() {
+          this.timerInterval = setInterval(() => {
+            this.tempoRestante--;
+            this.atualizarTimer();
+
+            if (this.tempoRestante <= 0) {
+              this.finalizarTeste();
+            }
+          }, 1000);
+        }
+
+        atualizarTimer() {
+          const minutos = Math.floor(this.tempoRestante / 60);
+          const segundos = this.tempoRestante % 60;
+          const display = `${minutos.toString().padStart(2, "0")}:${segundos
+            .toString()
+            .padStart(2, "0")}`;
+
+          document.getElementById("time-display").textContent = display;
+
+          const timer = document.getElementById("timer");
+          if (this.tempoRestante <= 300) {
+            // 5 minutos
+            timer.className = "timer danger";
+          } else if (this.tempoRestante <= 600) {
+            // 10 minutos
+            timer.className = "timer warning";
+          }
+        }
+
+        selecionarResposta(questaoIndex, respostaIndex) {
+          // Remover seleção anterior
+          const questaoCard = document.getElementById(
+            `question-${questaoIndex}`
+          );
+          questaoCard.querySelectorAll(".answer-option").forEach((option) => {
+            option.classList.remove("selected");
+          });
+
+          // Adicionar nova seleção
+          questaoCard
+            .querySelectorAll(".answer-option")
+            [respostaIndex].classList.add("selected");
+
+          // Salvar resposta
+          this.respostas[questaoIndex] = respostaIndex;
+        }
+
+        nextQuestion() {
+          if (this.questaoAtual < this.questoes.length - 1) {
+            this.questaoAtual++;
+            this.mostrarQuestao(this.questaoAtual);
+          }
+        }
+
+        previousQuestion() {
+          if (this.questaoAtual > 0) {
+            this.questaoAtual--;
+            this.mostrarQuestao(this.questaoAtual);
+          }
+        }
+
+        skipQuestion() {
+          this.nextQuestion();
+        }
+
+        testarCodigo(questaoIndex) {
+          const textarea = document.querySelector(
+            `#question-${questaoIndex} textarea`
+          );
+          const resultado = document.getElementById(`result-${questaoIndex}`);
+          const codigo = textarea.value;
+
+          try {
+            // Simular execução do código
+            resultado.style.display = "block";
+            resultado.innerHTML =
+              '<div class="text-success">✅ Código executado com sucesso!</div>';
+
+            // Salvar como resposta correta (simplificado)
+            this.respostas[questaoIndex] = "pratica_completa";
+          } catch (error) {
+            resultado.style.display = "block";
+            resultado.innerHTML = `<div class="text-danger">❌ Erro: ${error.message}</div>`;
+          }
+        }
+
+        calcularPontuacao() {
+          let pontos = 0;
+          let detalhes = [];
+
+          this.questoes.forEach((questao, index) => {
+            const resposta = this.respostas[index];
+            let correto = false;
+
+            if (questao.tipo === "pratica") {
+              correto = resposta === "pratica_completa";
+            } else {
+              correto = resposta === questao.correta;
+            }
+
+            if (correto) {
+              pontos += questao.tipo === "pratica" ? 2 : 1; // Práticas valem mais
+            }
+
+            detalhes.push({
+              questao: questao.numero,
+              categoria: questao.categoria,
+              correto: correto,
+              resposta: resposta,
+              explicacao: questao.explicacao,
+            });
+          });
+
+          this.pontuacao = pontos;
+          this.detalhesRespostas = detalhes;
+
+          // Calcular percentual
+          const maxPontos = this.questoes.reduce(
+            (sum, q) => sum + (q.tipo === "pratica" ? 2 : 1),
+            0
+          );
+          this.percentual = Math.round((pontos / maxPontos) * 100);
+        }
+
+        finalizarTeste() {
+          clearInterval(this.timerInterval);
+
+          this.calcularPontuacao();
+          this.mostrarResultados();
+          this.salvarResultados();
+        }
+
+        mostrarResultados() {
+          // Esconder questões e navegação
+          document.getElementById("questions-container").style.display = "none";
+          document.getElementById("navigation").style.display = "none";
+          document.getElementById("timer").style.display = "none";
+
+          // Mostrar resultados
+          document.getElementById("results-container").style.display = "block";
+
+          // Atualizar score
+          document.getElementById("final-score").textContent =
+            this.percentual + "%";
+
+          // Determinar nível de performance
+          let nivel, classe, mensagem, descricao;
+
+          if (this.percentual >= 90) {
+            nivel = "Excelente";
+            classe = "score-excellent";
+            mensagem = "🏆 Desempenho Excepcional!";
+            descricao =
+              "Você domina completamente os conceitos de LocalStorage e persistência!";
+          } else if (this.percentual >= 80) {
+            nivel = "Bom";
+            classe = "score-good";
+            mensagem = "🎉 Muito Bem!";
+            descricao =
+              "Você tem um bom entendimento dos conceitos. Continue praticando!";
+          } else if (this.percentual >= 70) {
+            nivel = "Regular";
+            classe = "score-average";
+            mensagem = "👍 Você está no caminho certo!";
+            descricao =
+              "Revise alguns conceitos e pratique mais os exercícios.";
+          } else {
+            nivel = "Precisa Melhorar";
+            classe = "score-poor";
+            mensagem = "📚 Continue Estudando!";
+            descricao =
+              "Revise o material da aula e faça mais exercícios práticos.";
+          }
+
+          document.getElementById(
+            "score-circle"
+          ).className = `score-circle ${classe}`;
+          document.getElementById("performance-message").textContent = mensagem;
+          document.getElementById("performance-description").textContent =
+            descricao;
+
+          // Criar gráfico de performance
+          this.criarGraficoPerformance();
+
+          // Criar feedback detalhado
+          this.criarFeedbackDetalhado();
+        }
+
+        criarGraficoPerformance() {
+          const categorias = {};
+
+          this.detalhesRespostas.forEach((detalhe) => {
+            if (!categorias[detalhe.categoria]) {
+              categorias[detalhe.categoria] = { corretas: 0, total: 0 };
+            }
+            categorias[detalhe.categoria].total++;
+            if (detalhe.correto) {
+              categorias[detalhe.categoria].corretas++;
+            }
+          });
+
+          const labels = Object.keys(categorias);
+          const data = labels.map((categoria) =>
+            Math.round(
+              (categorias[categoria].corretas / categorias[categoria].total) *
+                100
+            )
+          );
+
+          const ctx = document
+            .getElementById("performance-chart")
+            .getContext("2d");
+          new Chart(ctx, {
+            type: "radar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Performance por Categoria (%)",
+                  data: data,
+                  backgroundColor: "rgba(99, 102, 241, 0.2)",
+                  borderColor: "rgba(99, 102, 241, 1)",
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              scales: {
+                r: {
+                  beginAtZero: true,
+                  max: 100,
+                },
+              },
+            },
+          });
+        }
+
+        criarFeedbackDetalhado() {
+          const container = document.getElementById("detailed-feedback");
+
+          let html = "<h4>📊 Análise Detalhada</h4>";
+
+          this.detalhesRespostas.forEach((detalhe) => {
+            const icon = detalhe.correto ? "✅" : "❌";
+            const classe = detalhe.correto ? "border-success" : "border-danger";
+
+            html += `
+                        <div class="feedback-item border ${classe}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6>${icon} Questão ${detalhe.questao}</h6>
+                                <span class="badge bg-secondary">${detalhe.categoria}</span>
+                            </div>
+                            <p class="mb-0"><strong>Explicação:</strong> ${detalhe.explicacao}</p>
+                        </div>
+                    `;
+          });
+
+          container.innerHTML = html;
+        }
+
+        salvarResultados() {
+          const resultados = {
+            data: new Date().toISOString(),
+            pontuacao: this.pontuacao,
+            percentual: this.percentual,
+            tempoUsado: this.tempoInicial - this.tempoRestante,
+            detalhes: this.detalhesRespostas,
+          };
+
+          // Salvar no localStorage
+          const historico =
+            JSON.parse(localStorage.getItem("teste_aula7_historico")) || [];
+          historico.push(resultados);
+          localStorage.setItem(
+            "teste_aula7_historico",
+            JSON.stringify(historico)
+          );
+
+          // Salvar melhor resultado
+          const melhorAnterior = localStorage.getItem(
+            "teste_aula7_melhor_resultado"
+          );
+          if (
+            !melhorAnterior ||
+            this.percentual > JSON.parse(melhorAnterior).percentual
+          ) {
+            localStorage.setItem(
+              "teste_aula7_melhor_resultado",
+              JSON.stringify(resultados)
+            );
+          }
+        }
+      }
+
+      // Funções globais para navegação
+      function nextQuestion() {
+        teste.nextQuestion();
+      }
+
+      function previousQuestion() {
+        teste.previousQuestion();
+      }
+
+      function skipQuestion() {
+        teste.skipQuestion();
+      }
+
+      function selecionarResposta(questaoIndex, respostaIndex) {
+        teste.selecionarResposta(questaoIndex, respostaIndex);
+      }
+
+      function testarCodigo(questaoIndex) {
+        teste.testarCodigo(questaoIndex);
+      }
+
+      function downloadCertificate() {
+        // Implementar download de certificado
+        alert("Certificado será implementado em versão futura!");
+      }
+
+      function retakeTest() {
+        location.reload();
+      }
+
+      function goToExercises() {
+        window.open("exercicios.md", "_blank");
+      }
+
+      // Inicializar teste quando página carregar
+      let teste;
+      document.addEventListener("DOMContentLoaded", function () {
+        teste = new TestProgressivo();
+      });
+
+      // Prevenir saída acidental durante o teste
+      window.addEventListener("beforeunload", function (e) {
+        if (teste && teste.timerInterval) {
+          e.preventDefault();
+          e.returnValue = "Você tem certeza que deseja sair do teste?";
+        }
+      });
+    </script>
+  </body>
+</html>

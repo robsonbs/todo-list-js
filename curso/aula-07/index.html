@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula 7: LocalStorage e Persistência - Curso JavaScript</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- CSS Personalizado -->
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .header-hero {
+        background: linear-gradient(
+          135deg,
+          rgba(99, 102, 241, 0.9) 0%,
+          rgba(139, 92, 246, 0.9) 100%
+        );
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        margin-bottom: 0.5rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+      }
+
+      .progress-indicator {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .nav-tabs .nav-link {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: #6366f1;
+        margin-right: 0.5rem;
+        border-radius: 10px 10px 0 0;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .nav-tabs .nav-link:hover {
+        background: rgba(99, 102, 241, 0.1);
+        color: #4f46e5;
+        transform: translateY(-2px);
+      }
+
+      .nav-tabs .nav-link.active {
+        background: white;
+        color: #6366f1;
+        border-bottom: 3px solid var(--primary-color);
+      }
+
+      .demo-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      }
+
+      .btn-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+
+      .form-control,
+      .form-select {
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+      }
+
+      .alert {
+        border-radius: 10px;
+        border: none;
+      }
+
+      .min-height-200 {
+        min-height: 200px;
+      }
+
+      .min-height-300 {
+        min-height: 300px;
+      }
+
+      .demo-tabs {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .demo-content {
+        padding: 2rem;
+      }
+
+      .breadcrumb {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+      }
+
+      .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      .stats-card {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(255, 255, 255, 0.7) 100%
+        );
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+      }
+
+      .code-preview {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        border-left: 4px solid var(--primary-color);
+      }
+
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 2rem;
+        }
+
+        .demo-content {
+          padding: 1rem;
+        }
+      }
+
+      /* Animações */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      /* Loading spinner */
+      .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Hero -->
+    <div class="header-hero">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h1 class="hero-title">
+              <i class="fas fa-database"></i>
+              Aula 7: LocalStorage e Persistência
+            </h1>
+            <p class="hero-subtitle">
+              Domine o armazenamento de dados no navegador e crie aplicações que
+              persistem informações
+            </p>
+
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="../">📚 Curso JavaScript</a>
+                </li>
+                <li class="breadcrumb-item">
+                  <a href="../">🎓 Aulas</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  💾 Aula 7: LocalStorage
+                </li>
+              </ol>
+            </nav>
+          </div>
+
+          <div class="col-md-4 text-center">
+            <div class="stats-card">
+              <div class="feature-icon">
+                <i class="fas fa-save text-primary"></i>
+              </div>
+              <h5>Persistência de Dados</h5>
+              <p class="mb-0">3 Demonstrações Interativas</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+          <div class="d-flex justify-content-between align-items-center">
+            <span><strong>Progresso da Aula:</strong></span>
+            <div class="progress" style="width: 200px; height: 10px">
+              <div
+                class="progress-bar bg-light"
+                role="progressbar"
+                style="width: 0%"
+                aria-valuenow="0"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                id="progresso-aula"
+              ></div>
+            </div>
+            <span id="progresso-texto">0% Completo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+      <!-- Objetivos da Aula -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">
+                <i class="fas fa-bullseye text-primary"></i>
+                Objetivos de Aprendizagem
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6>🎯 Ao final desta aula você será capaz de:</h6>
+                  <ul class="list-unstyled">
+                    <li>
+                      <i class="fas fa-check-circle text-success"></i> Entender
+                      LocalStorage vs SessionStorage
+                    </li>
+                    <li>
+                      <i class="fas fa-check-circle text-success"></i> Salvar e
+                      recuperar dados do navegador
+                    </li>
+                    <li>
+                      <i class="fas fa-check-circle text-success"></i> Trabalhar
+                      com objetos JSON no storage
+                    </li>
+                    <li>
+                      <i class="fas fa-check-circle text-success"></i> Criar
+                      sistemas de configurações
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h6>🛠️ Tecnologias utilizadas:</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary">localStorage</span>
+                    <span class="badge bg-secondary">sessionStorage</span>
+                    <span class="badge bg-success">JSON</span>
+                    <span class="badge bg-info">JavaScript ES6+</span>
+                    <span class="badge bg-warning">Storage Events</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demonstrações Interativas -->
+      <div class="demo-container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs" id="demo-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="demo1-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#demo1-pane"
+              type="button"
+              role="tab"
+              aria-controls="demo1-pane"
+              aria-selected="true"
+            >
+              <i class="fas fa-play-circle"></i>
+              1. Conceitos Básicos
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="demo2-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#demo2-pane"
+              type="button"
+              role="tab"
+              aria-controls="demo2-pane"
+              aria-selected="false"
+            >
+              <i class="fas fa-code"></i>
+              2. Objetos JSON
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="demo3-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#demo3-pane"
+              type="button"
+              role="tab"
+              aria-controls="demo3-pane"
+              aria-selected="false"
+            >
+              <i class="fas fa-cogs"></i>
+              3. Configurações
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="demo4-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#demo4-pane"
+              type="button"
+              role="tab"
+              aria-controls="demo4-pane"
+              aria-selected="false"
+            >
+              <i class="fas fa-tasks"></i>
+              4. TODO Persistente
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="demo5-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#demo5-pane"
+              type="button"
+              role="tab"
+              aria-controls="demo5-pane"
+              aria-selected="false"
+            >
+              <i class="fas fa-chart-line"></i>
+              5. Analytics
+            </button>
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content demo-content" id="demo-tabContent">
+          <!-- Demo 1: Conceitos Básicos -->
+          <div
+            class="tab-pane fade show active"
+            id="demo1-pane"
+            role="tabpanel"
+            aria-labelledby="demo1-tab"
+            tabindex="0"
+          >
+            <div class="fade-in-up">
+              <div class="mb-4">
+                <h4>
+                  <i class="fas fa-play-circle text-primary"></i>
+                  Demonstração 1: Conceitos Básicos de Storage
+                </h4>
+                <p class="text-muted">
+                  Aprenda a diferença entre LocalStorage e SessionStorage, e
+                  como usar os métodos básicos para armazenar dados.
+                </p>
+              </div>
+              <div id="demo1"></div>
+            </div>
+          </div>
+
+          <!-- Demo 2: Objetos JSON -->
+          <div
+            class="tab-pane fade"
+            id="demo2-pane"
+            role="tabpanel"
+            aria-labelledby="demo2-tab"
+            tabindex="0"
+          >
+            <div class="fade-in-up">
+              <div class="mb-4">
+                <h4>
+                  <i class="fas fa-code text-success"></i>
+                  Demonstração 2: Trabalhando com Objetos JSON
+                </h4>
+                <p class="text-muted">
+                  Descubra como serializar e deserializar objetos JavaScript
+                  para armazenamento persistente no navegador.
+                </p>
+              </div>
+              <div id="demo2"></div>
+            </div>
+          </div>
+
+          <!-- Demo 3: Configurações -->
+          <div
+            class="tab-pane fade"
+            id="demo3-pane"
+            role="tabpanel"
+            aria-labelledby="demo3-tab"
+            tabindex="0"
+          >
+            <div class="fade-in-up">
+              <div class="mb-4">
+                <h4>
+                  <i class="fas fa-cogs text-warning"></i>
+                  Demonstração 3: Sistema de Configurações
+                </h4>
+                <p class="text-muted">
+                  Crie um sistema completo de preferências do usuário com
+                  persistência automática e exportação/importação.
+                </p>
+              </div>
+              <div id="demo3"></div>
+            </div>
+          </div>
+
+          <!-- Demo 4: TODO Persistente -->
+          <div
+            class="tab-pane fade"
+            id="demo4-pane"
+            role="tabpanel"
+            aria-labelledby="demo4-tab"
+            tabindex="0"
+          >
+            <div class="fade-in-up">
+              <div class="mb-4">
+                <h4>
+                  <i class="fas fa-tasks text-info"></i>
+                  Demonstração 4: TODO List Persistente
+                </h4>
+                <p class="text-muted">
+                  Implemente um sistema completo de TODO List que mantém os
+                  dados mesmo após fechar o navegador.
+                </p>
+              </div>
+              <div id="demo4"></div>
+            </div>
+          </div>
+
+          <!-- Demo 5: Analytics -->
+          <div
+            class="tab-pane fade"
+            id="demo5-pane"
+            role="tabpanel"
+            aria-labelledby="demo5-tab"
+            tabindex="0"
+          >
+            <div class="fade-in-up">
+              <div class="mb-4">
+                <h4>
+                  <i class="fas fa-chart-line text-danger"></i>
+                  Demonstração 5: Analytics e Storage Events
+                </h4>
+                <p class="text-muted">
+                  Monitore o uso do storage, implemente analytics e reaja a
+                  mudanças em tempo real.
+                </p>
+              </div>
+              <div id="demo5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Reference -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <i class="fas fa-bookmark text-info"></i>
+                Referência Rápida: Métodos de Storage
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6>📝 Métodos Básicos</h6>
+                  <div class="code-preview">
+                    <code>
+                      localStorage.setItem('chave', 'valor');<br />
+                      localStorage.getItem('chave');<br />
+                      localStorage.removeItem('chave');<br />
+                      localStorage.clear();
+                    </code>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <h6>🔄 Trabalhando com JSON</h6>
+                  <div class="code-preview">
+                    <code>
+                      // Salvar objeto<br />
+                      localStorage.setItem('obj', JSON.stringify(data));<br />
+                      // Recuperar objeto<br />
+                      const data = JSON.parse(localStorage.getItem('obj'));
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links de Navegação -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body text-center">
+              <h5 class="card-title">
+                <i class="fas fa-compass"></i>
+                Navegação do Curso
+              </h5>
+              <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="../aula-06/" class="btn btn-outline-primary">
+                  <i class="fas fa-chevron-left"></i>
+                  Aula 6: Eventos Avançados
+                </a>
+                <a href="exercicios.md" class="btn btn-primary" target="_blank">
+                  <i class="fas fa-dumbbell"></i>
+                  Exercícios Práticos
+                </a>
+                <a
+                  href="teste-progressivo.html"
+                  class="btn btn-success"
+                  target="_blank"
+                >
+                  <i class="fas fa-clipboard-check"></i>
+                  Teste de Conhecimento
+                </a>
+                <a href="../aula-08/" class="btn btn-outline-primary">
+                  Aula 8: Recursos Avançados
+                  <i class="fas fa-chevron-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 bg-dark text-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h5>
+              <i class="fas fa-graduation-cap"></i>
+              Curso JavaScript TODO List
+            </h5>
+            <p class="mb-0">
+              Aula 7: Dominando LocalStorage e Persistência de Dados
+            </p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <small class="text-muted">
+              💻 Desenvolvido para educação em JavaScript<br />
+              📚 Material educacional open source
+            </small>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Código JavaScript da Aula -->
+    <script src="codigo-progressivo.js"></script>
+
+    <!-- Script de Inicialização -->
+    <script>
+      // Sistema de progresso da aula
+      class ProgressoAula {
+        constructor() {
+          this.demonstracoesCompletas = new Set();
+          this.totalDemonstracoes = 5;
+          this.inicializar();
+        }
+
+        inicializar() {
+          this.adicionarEventListeners();
+          this.verificarProgresso();
+        }
+
+        adicionarEventListeners() {
+          // Adicionar listeners para as abas
+          document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
+            tab.addEventListener("shown.bs.tab", (event) => {
+              const targetId = event.target.getAttribute("data-bs-target");
+              const demoNumber = targetId
+                .replace("#demo", "")
+                .replace("-pane", "");
+              this.marcarDemoComoVista(demoNumber);
+            });
+          });
+
+          // Marcar primeira demo como vista
+          this.marcarDemoComoVista("1");
+        }
+
+        marcarDemoComoVista(numeroDemo) {
+          this.demonstracoesCompletas.add(numeroDemo);
+          this.atualizarProgresso();
+        }
+
+        atualizarProgresso() {
+          const progresso =
+            (this.demonstracoesCompletas.size / this.totalDemonstracoes) * 100;
+          const progressBar = document.getElementById("progresso-aula");
+          const progressText = document.getElementById("progresso-texto");
+
+          if (progressBar && progressText) {
+            progressBar.style.width = progresso + "%";
+            progressBar.setAttribute("aria-valuenow", progresso);
+            progressText.textContent = Math.round(progresso) + "% Completo";
+          }
+        }
+
+        verificarProgresso() {
+          // Verificar localStorage para progresso salvo
+          const progressoSalvo = localStorage.getItem("aula7_progresso");
+          if (progressoSalvo) {
+            try {
+              const demos = JSON.parse(progressoSalvo);
+              demos.forEach((demo) => this.demonstracoesCompletas.add(demo));
+              this.atualizarProgresso();
+            } catch (error) {
+              console.warn("Erro ao carregar progresso salvo:", error);
+            }
+          }
+        }
+
+        salvarProgresso() {
+          const demos = Array.from(this.demonstracoesCompletas);
+          localStorage.setItem("aula7_progresso", JSON.stringify(demos));
+        }
+      }
+
+      // Utilitários gerais
+      const Utils = {
+        mostrarNotificacao(mensagem, tipo = "info", duracao = 3000) {
+          const alert = document.createElement("div");
+          alert.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
+          alert.style.cssText =
+            "top: 20px; right: 20px; z-index: 1050; max-width: 300px;";
+          alert.innerHTML = `
+                    ${mensagem}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+
+          document.body.appendChild(alert);
+
+          setTimeout(() => {
+            if (alert.parentNode) {
+              alert.remove();
+            }
+          }, duracao);
+        },
+
+        copiarCodigoParaClipboard(codigo) {
+          navigator.clipboard
+            .writeText(codigo)
+            .then(() => {
+              this.mostrarNotificacao(
+                "📋 Código copiado para a área de transferência!",
+                "success"
+              );
+            })
+            .catch(() => {
+              this.mostrarNotificacao("❌ Erro ao copiar código", "danger");
+            });
+        },
+
+        formatarTamanhoBytes(bytes) {
+          if (bytes === 0) return "0 Bytes";
+          const k = 1024;
+          const sizes = ["Bytes", "KB", "MB", "GB"];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return (
+            parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+          );
+        },
+      };
+
+      // Inicialização quando DOM estiver pronto
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log(
+          "🎯 Aula 7: LocalStorage e Persistência - Inicializando..."
+        );
+
+        // Inicializar sistema de progresso
+        const progresso = new ProgressoAula();
+
+        // Salvar progresso periodicamente
+        setInterval(() => {
+          progresso.salvarProgresso();
+        }, 5000);
+
+        // Adicionar animações de entrada
+        const elements = document.querySelectorAll(".fade-in-up");
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = "1";
+              entry.target.style.transform = "translateY(0)";
+            }
+          });
+        });
+
+        elements.forEach((el) => {
+          el.style.opacity = "0";
+          el.style.transform = "translateY(30px)";
+          el.style.transition = "all 0.6s ease-out";
+          observer.observe(el);
+        });
+
+        console.log("✅ Interface inicializada com sucesso!");
+      });
+
+      // Expor utilitários globalmente
+      window.Utils = Utils;
+    </script>
+  </body>
+</html>

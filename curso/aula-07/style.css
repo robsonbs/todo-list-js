@@ -1,0 +1,1250 @@
+/* ============================================================================
+   🎨 AULA 7: LOCALSTORAGE E PERSISTÊNCIA - ESTILOS AVANÇADOS
+   ============================================================================
+   
+   Arquivo CSS completo com animações, responsividade e temas avançados
+   para complementar as funcionalidades de LocalStorage
+   
+   Componentes incluídos:
+   • Variáveis CSS customizáveis
+   • Animações e transições suaves  
+   • Sistema de temas (claro/escuro)
+   • Layout responsivo avançado
+   • Componentes interativos
+   • Efeitos visuais modernos
+   
+   Autor: Sistema de Educação JavaScript
+   Data: Setembro 2025
+   ============================================================================ */
+
+/* ============================================================================
+   📐 VARIÁVEIS CSS E CONFIGURAÇÕES GLOBAIS
+   ============================================================================ */
+
+:root {
+  /* 🎨 Paleta de Cores Principal */
+  --color-primary      : #6366f1;
+  --color-primary-light: #818cf8;
+  --color-primary-dark : #4f46e5;
+  --color-secondary    : #8b5cf6;
+  --color-accent       : #06b6d4;
+
+  /* 🌈 Cores Semânticas */
+  --color-success      : #10b981;
+  --color-success-light: #34d399;
+  --color-warning      : #f59e0b;
+  --color-warning-light: #fbbf24;
+  --color-danger       : #ef4444;
+  --color-danger-light : #f87171;
+  --color-info         : #06b6d4;
+  --color-info-light   : #22d3ee;
+
+  /* 🌙 Cores do Tema Claro */
+  --bg-primary    : #ffffff;
+  --bg-secondary  : #f8fafc;
+  --bg-tertiary   : #f1f5f9;
+  --text-primary  : #1e293b;
+  --text-secondary: #64748b;
+  --text-muted    : #94a3b8;
+  --border-color  : #e2e8f0;
+  --shadow-color  : rgba(0, 0, 0, 0.1);
+
+  /* 📏 Espaçamentos e Tamanhos */
+  --spacing-xs : 0.25rem;
+  /* 4px */
+  --spacing-sm : 0.5rem;
+  /* 8px */
+  --spacing-md : 1rem;
+  /* 16px */
+  --spacing-lg : 1.5rem;
+  /* 24px */
+  --spacing-xl : 2rem;
+  /* 32px */
+  --spacing-2xl: 3rem;
+  /* 48px */
+  --spacing-3xl: 4rem;
+  /* 64px */
+
+  /* 🔤 Tipografia */
+  --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-family-mono: 'Fira Code', 'Courier New', monospace;
+  --font-size-xs    : 0.75rem;
+  /* 12px */
+  --font-size-sm    : 0.875rem;
+  /* 14px */
+  --font-size-base  : 1rem;
+  /* 16px */
+  --font-size-lg    : 1.125rem;
+  /* 18px */
+  --font-size-xl    : 1.25rem;
+  /* 20px */
+  --font-size-2xl   : 1.5rem;
+  /* 24px */
+  --font-size-3xl   : 1.875rem;
+  /* 30px */
+  --font-size-4xl   : 2.25rem;
+  /* 36px */
+
+  /* 🎯 Raios de Borda */
+  --radius-sm  : 0.375rem;
+  /* 6px */
+  --radius-md  : 0.5rem;
+  /* 8px */
+  --radius-lg  : 0.75rem;
+  /* 12px */
+  --radius-xl  : 1rem;
+  /* 16px */
+  --radius-2xl : 1.5rem;
+  /* 24px */
+  --radius-full: 9999px;
+
+  /* ⚡ Transições */
+  --transition-fast  : 0.15s ease-in-out;
+  --transition-normal: 0.3s ease-in-out;
+  --transition-slow  : 0.5s ease-in-out;
+
+  /* 📱 Breakpoints */
+  --breakpoint-sm : 576px;
+  --breakpoint-md : 768px;
+  --breakpoint-lg : 992px;
+  --breakpoint-xl : 1200px;
+  --breakpoint-2xl: 1400px;
+}
+
+/* 🌙 Tema Escuro */
+[data-theme="dark"] {
+  --bg-primary    : #0f172a;
+  --bg-secondary  : #1e293b;
+  --bg-tertiary   : #334155;
+  --text-primary  : #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted    : #64748b;
+  --border-color  : #334155;
+  --shadow-color  : rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+   🎯 RESET E CONFIGURAÇÕES BASE
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin    : 0;
+  padding   : 0;
+}
+
+html {
+  font-size              : 16px;
+  scroll-behavior        : smooth;
+  -webkit-font-smoothing : antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family     : var(--font-family-base);
+  font-size       : var(--font-size-base);
+  line-height     : 1.6;
+  color           : var(--text-primary);
+  background-color: var(--bg-primary);
+  transition      : background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* ============================================================================
+   🏗️ LAYOUT PRINCIPAL E CONTAINER
+   ============================================================================ */
+
+.aula-container {
+  max-width     : 1200px;
+  margin        : 0 auto;
+  padding       : var(--spacing-md);
+  min-height    : 100vh;
+  display       : flex;
+  flex-direction: column;
+}
+
+.aula-header {
+  background   : linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color        : white;
+  padding      : var(--spacing-2xl) var(--spacing-xl);
+  border-radius: var(--radius-2xl);
+  margin-bottom: var(--spacing-xl);
+  position     : relative;
+  overflow     : hidden;
+}
+
+.aula-header::before {
+  content   : '';
+  position  : absolute;
+  top       : -50%;
+  right     : -50%;
+  width     : 200%;
+  height    : 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation : floating 6s ease-in-out infinite;
+}
+
+@keyframes floating {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.aula-title {
+  font-size    : var(--font-size-4xl);
+  font-weight  : 700;
+  margin-bottom: var(--spacing-md);
+  position     : relative;
+  z-index      : 1;
+}
+
+.aula-subtitle {
+  font-size  : var(--font-size-xl);
+  font-weight: 400;
+  opacity    : 0.9;
+  position   : relative;
+  z-index    : 1;
+}
+
+/* ============================================================================
+   🎨 SISTEMA DE TEMAS E MODO ESCURO
+   ============================================================================ */
+
+.theme-toggle {
+  position       : fixed;
+  top            : var(--spacing-lg);
+  right          : var(--spacing-lg);
+  z-index        : 1000;
+  background     : var(--bg-primary);
+  border         : 2px solid var(--border-color);
+  border-radius  : var(--radius-full);
+  width          : 50px;
+  height         : 50px;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  cursor         : pointer;
+  transition     : all var(--transition-normal);
+  box-shadow     : 0 4px 20px var(--shadow-color);
+}
+
+.theme-toggle:hover {
+  transform : scale(1.1);
+  box-shadow: 0 6px 25px var(--shadow-color);
+}
+
+.theme-toggle i {
+  font-size : var(--font-size-lg);
+  color     : var(--color-primary);
+  transition: transform var(--transition-fast);
+}
+
+.theme-toggle:hover i {
+  transform: rotate(180deg);
+}
+
+/* ============================================================================
+   📋 NAVEGAÇÃO E TABS
+   ============================================================================ */
+
+.nav-tabs-custom {
+  border       : none;
+  margin-bottom: var(--spacing-xl);
+  background   : var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  padding      : var(--spacing-sm);
+  box-shadow   : 0 4px 20px var(--shadow-color);
+}
+
+.nav-tabs-custom .nav-link {
+  background   : transparent;
+  border       : none;
+  color        : var(--text-secondary);
+  font-weight  : 600;
+  padding      : var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  transition   : all var(--transition-normal);
+  position     : relative;
+  overflow     : hidden;
+}
+
+.nav-tabs-custom .nav-link::before {
+  content   : '';
+  position  : absolute;
+  top       : 0;
+  left      : -100%;
+  width     : 100%;
+  height    : 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left var(--transition-slow);
+}
+
+.nav-tabs-custom .nav-link:hover::before {
+  left: 100%;
+}
+
+.nav-tabs-custom .nav-link:hover {
+  color     : var(--color-primary);
+  background: rgba(99, 102, 241, 0.1);
+  transform : translateY(-2px);
+}
+
+.nav-tabs-custom .nav-link.active {
+  background: var(--color-primary);
+  color     : white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* ============================================================================
+   🎯 INDICADOR DE PROGRESSO
+   ============================================================================ */
+
+.progress-indicator {
+  background   : var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  padding      : var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow   : 0 4px 20px var(--shadow-color);
+}
+
+.progress-bar-custom {
+  height       : 12px;
+  background   : var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow     : hidden;
+  position     : relative;
+  margin-bottom: var(--spacing-md);
+}
+
+.progress-fill {
+  height       : 100%;
+  background   : linear-gradient(90deg, var(--color-success) 0%, var(--color-info) 100%);
+  border-radius: var(--radius-full);
+  transition   : width var(--transition-slow);
+  position     : relative;
+}
+
+.progress-fill::after {
+  content   : '';
+  position  : absolute;
+  top       : 0;
+  left      : 0;
+  right     : 0;
+  bottom    : 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  animation : shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-text {
+  display        : flex;
+  justify-content: space-between;
+  font-size      : var(--font-size-sm);
+  color          : var(--text-secondary);
+  font-weight    : 600;
+}
+
+/* ============================================================================
+   💻 DEMONSTRAÇÕES E CÓDIGO
+   ============================================================================ */
+
+.demo-section {
+  background   : var(--bg-primary);
+  border       : 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--spacing-xl);
+  overflow     : hidden;
+  transition   : all var(--transition-normal);
+  box-shadow   : 0 4px 20px var(--shadow-color);
+}
+
+.demo-section:hover {
+  transform : translateY(-4px);
+  box-shadow: 0 8px 30px var(--shadow-color);
+}
+
+.demo-header {
+  background     : linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  padding        : var(--spacing-lg);
+  border-bottom  : 1px solid var(--border-color);
+  display        : flex;
+  align-items    : center;
+  justify-content: space-between;
+}
+
+.demo-title {
+  font-size  : var(--font-size-xl);
+  font-weight: 700;
+  color      : var(--text-primary);
+  display    : flex;
+  align-items: center;
+  gap        : var(--spacing-md);
+}
+
+.demo-badge {
+  background   : var(--color-primary);
+  color        : white;
+  padding      : var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size    : var(--font-size-xs);
+  font-weight  : 600;
+}
+
+.demo-content {
+  padding: var(--spacing-xl);
+}
+
+.code-block {
+  background   : var(--bg-tertiary);
+  border       : 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding      : var(--spacing-lg);
+  margin       : var(--spacing-md) 0;
+  font-family  : var(--font-family-mono);
+  font-size    : var(--font-size-sm);
+  line-height  : 1.5;
+  overflow-x   : auto;
+  position     : relative;
+}
+
+.code-block::before {
+  content      : attr(data-language);
+  position     : absolute;
+  top          : var(--spacing-sm);
+  right        : var(--spacing-sm);
+  background   : var(--color-primary);
+  color        : white;
+  padding      : var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size    : var(--font-size-xs);
+  font-weight  : 600;
+}
+
+/* ============================================================================
+   🎮 BOTÕES E CONTROLES INTERATIVOS
+   ============================================================================ */
+
+.btn-custom {
+  background     : linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color          : white;
+  border         : none;
+  border-radius  : var(--radius-lg);
+  padding        : var(--spacing-md) var(--spacing-lg);
+  font-weight    : 600;
+  font-size      : var(--font-size-base);
+  cursor         : pointer;
+  transition     : all var(--transition-normal);
+  position       : relative;
+  overflow       : hidden;
+  display        : inline-flex;
+  align-items    : center;
+  gap            : var(--spacing-sm);
+  text-decoration: none;
+}
+
+.btn-custom::before {
+  content   : '';
+  position  : absolute;
+  top       : 0;
+  left      : -100%;
+  width     : 100%;
+  height    : 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-normal);
+}
+
+.btn-custom:hover {
+  transform : translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+.btn-custom:hover::before {
+  left: 100%;
+}
+
+.btn-custom:active {
+  transform: translateY(0);
+}
+
+/* Variações de botões */
+.btn-success {
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-light) 100%);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-light) 100%);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger-light) 100%);
+}
+
+.btn-outline {
+  background: transparent;
+  color     : var(--color-primary);
+  border    : 2px solid var(--color-primary);
+}
+
+.btn-outline:hover {
+  background: var(--color-primary);
+  color     : white;
+}
+
+/* ============================================================================
+   📊 COMPONENTES DE FEEDBACK
+   ============================================================================ */
+
+.alert-custom {
+  border-radius: var(--radius-lg);
+  padding      : var(--spacing-lg);
+  margin       : var(--spacing-md) 0;
+  border-left  : 4px solid;
+  position     : relative;
+  animation    : slideInAlert 0.5s ease-out;
+}
+
+@keyframes slideInAlert {
+  from {
+    opacity  : 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity  : 1;
+    transform: translateX(0);
+  }
+}
+
+.alert-success {
+  background       : rgba(16, 185, 129, 0.1);
+  color            : var(--color-success);
+  border-left-color: var(--color-success);
+}
+
+.alert-warning {
+  background       : rgba(245, 158, 11, 0.1);
+  color            : var(--color-warning);
+  border-left-color: var(--color-warning);
+}
+
+.alert-danger {
+  background       : rgba(239, 68, 68, 0.1);
+  color            : var(--color-danger);
+  border-left-color: var(--color-danger);
+}
+
+.alert-info {
+  background       : rgba(6, 182, 212, 0.1);
+  color            : var(--color-info);
+  border-left-color: var(--color-info);
+}
+
+/* ============================================================================
+   📱 RESPONSIVIDADE AVANÇADA
+   ============================================================================ */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .aula-container {
+    padding: var(--spacing-sm);
+  }
+
+  .aula-header {
+    padding: var(--spacing-xl) var(--spacing-lg);
+  }
+
+  .aula-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .nav-tabs-custom .nav-link {
+    padding  : var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .demo-content {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .aula-header {
+    padding   : var(--spacing-lg);
+    text-align: center;
+  }
+
+  .aula-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .aula-subtitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .nav-tabs-custom {
+    flex-direction: column;
+  }
+
+  .nav-tabs-custom .nav-link {
+    text-align   : center;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .demo-header {
+    flex-direction: column;
+    gap           : var(--spacing-sm);
+    text-align    : center;
+  }
+
+  .demo-content {
+    padding: var(--spacing-md);
+  }
+
+  .code-block {
+    font-size: var(--font-size-xs);
+  }
+
+  .theme-toggle {
+    top   : var(--spacing-sm);
+    right : var(--spacing-sm);
+    width : 40px;
+    height: 40px;
+  }
+
+  .btn-custom {
+    width          : 100%;
+    justify-content: center;
+    margin-bottom  : var(--spacing-sm);
+  }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
+  .aula-container {
+    padding: var(--spacing-xs);
+  }
+
+  .aula-header {
+    padding      : var(--spacing-md);
+    border-radius: var(--radius-lg);
+  }
+
+  .demo-section {
+    border-radius: var(--radius-lg);
+  }
+
+  .demo-content {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* ============================================================================
+   🎯 COMPONENTES ESPECÍFICOS LOCALSTORAGE
+   ============================================================================ */
+
+.storage-demo {
+  background   : var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding      : var(--spacing-lg);
+  margin       : var(--spacing-md) 0;
+}
+
+.storage-controls {
+  display              : grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap                  : var(--spacing-md);
+  margin-bottom        : var(--spacing-lg);
+}
+
+.storage-input {
+  background   : var(--bg-primary);
+  border       : 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding      : var(--spacing-md);
+  font-size    : var(--font-size-base);
+  color        : var(--text-primary);
+  transition   : all var(--transition-normal);
+}
+
+.storage-input:focus {
+  outline     : none;
+  border-color: var(--color-primary);
+  box-shadow  : 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.storage-output {
+  background   : var(--bg-tertiary);
+  border       : 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding      : var(--spacing-lg);
+  font-family  : var(--font-family-mono);
+  font-size    : var(--font-size-sm);
+  white-space  : pre-wrap;
+  max-height   : 200px;
+  overflow-y   : auto;
+}
+
+.storage-item {
+  display        : flex;
+  justify-content: space-between;
+  align-items    : center;
+  padding        : var(--spacing-sm) var(--spacing-md);
+  background     : var(--bg-primary);
+  border         : 1px solid var(--border-color);
+  border-radius  : var(--radius-md);
+  margin-bottom  : var(--spacing-sm);
+  transition     : all var(--transition-normal);
+}
+
+.storage-item:hover {
+  transform : translateX(4px);
+  box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.storage-key {
+  font-weight: 600;
+  color      : var(--color-primary);
+}
+
+.storage-value {
+  color      : var(--text-secondary);
+  font-family: var(--font-family-mono);
+  font-size  : var(--font-size-sm);
+}
+
+.storage-actions {
+  display: flex;
+  gap    : var(--spacing-sm);
+}
+
+/* ============================================================================
+   ⚡ ANIMAÇÕES PERSONALIZADAS
+   ============================================================================ */
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity  : 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity  : 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity  : 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity  : 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity  : 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity  : 1;
+    transform: translateX(0);
+  }
+}
+
+.bounce-in {
+  animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity  : 0;
+    transform: scale(0.3);
+  }
+
+  50% {
+    opacity  : 1;
+    transform: scale(1.05);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity  : 1;
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+/* ============================================================================
+   🎨 UTILITÁRIOS E HELPERS
+   ============================================================================ */
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.d-grid {
+  display: grid;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.d-none {
+  display: none;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.justify-evenly {
+  justify-content: space-evenly;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.align-end {
+  align-items: flex-end;
+}
+
+.gap-xs {
+  gap: var(--spacing-xs);
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+.gap-xl {
+  gap: var(--spacing-xl);
+}
+
+.mt-xs {
+  margin-top: var(--spacing-xs);
+}
+
+.mt-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+  margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mt-xl {
+  margin-top: var(--spacing-xl);
+}
+
+.mb-xs {
+  margin-bottom: var(--spacing-xs);
+}
+
+.mb-sm {
+  margin-bottom: var(--spacing-sm);
+}
+
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+.mb-xl {
+  margin-bottom: var(--spacing-xl);
+}
+
+.p-xs {
+  padding: var(--spacing-xs);
+}
+
+.p-sm {
+  padding: var(--spacing-sm);
+}
+
+.p-md {
+  padding: var(--spacing-md);
+}
+
+.p-lg {
+  padding: var(--spacing-lg);
+}
+
+.p-xl {
+  padding: var(--spacing-xl);
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+
+.text-info {
+  color: var(--color-info);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-success {
+  background-color: var(--color-success);
+}
+
+.bg-warning {
+  background-color: var(--color-warning);
+}
+
+.bg-danger {
+  background-color: var(--color-danger);
+}
+
+.bg-info {
+  background-color: var(--color-info);
+}
+
+.rounded-sm {
+  border-radius: var(--radius-sm);
+}
+
+.rounded-md {
+  border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+
+.rounded-xl {
+  border-radius: var(--radius-xl);
+}
+
+.rounded-full {
+  border-radius: var(--radius-full);
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px var(--shadow-color);
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px var(--shadow-color);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-rotate:hover {
+  transform: rotate(5deg);
+}
+
+.transition-all {
+  transition: all var(--transition-normal);
+}
+
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow);
+}
+
+/* ============================================================================
+   🔧 COMPONENTES ESPECÍFICOS DE FORMULÁRIO
+   ============================================================================ */
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+  display      : block;
+  font-weight  : 600;
+  color        : var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  font-size    : var(--font-size-sm);
+}
+
+.form-input {
+  width        : 100%;
+  background   : var(--bg-primary);
+  border       : 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding      : var(--spacing-md);
+  font-size    : var(--font-size-base);
+  color        : var(--text-primary);
+  transition   : all var(--transition-normal);
+}
+
+.form-input:focus {
+  outline     : none;
+  border-color: var(--color-primary);
+  box-shadow  : 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-input.error {
+  border-color: var(--color-danger);
+}
+
+.form-input.success {
+  border-color: var(--color-success);
+}
+
+.form-help {
+  font-size : var(--font-size-xs);
+  color     : var(--text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.form-error {
+  font-size : var(--font-size-xs);
+  color     : var(--color-danger);
+  margin-top: var(--spacing-xs);
+}
+
+/* ============================================================================
+   📱 MELHORIAS PARA ACESSIBILIDADE
+   ============================================================================ */
+
+.sr-only {
+  position   : absolute;
+  width      : 1px;
+  height     : 1px;
+  padding    : 0;
+  margin     : -1px;
+  overflow   : hidden;
+  clip       : rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border     : 0;
+}
+
+.focus-visible:focus-visible {
+  outline       : 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   🎯 COMPONENTES ESPECÍFICOS PARA LOCALSTORAGE DEMOS
+   ============================================================================ */
+
+.localStorage-demo-container {
+  background   : linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border-radius: var(--radius-xl);
+  padding      : var(--spacing-xl);
+  margin       : var(--spacing-lg) 0;
+  position     : relative;
+  overflow     : hidden;
+}
+
+.localStorage-demo-container::before {
+  content  : '💾';
+  position : absolute;
+  top      : var(--spacing-lg);
+  right    : var(--spacing-lg);
+  font-size: var(--font-size-2xl);
+  opacity  : 0.3;
+}
+
+.storage-status-indicator {
+  display      : inline-flex;
+  align-items  : center;
+  gap          : var(--spacing-sm);
+  padding      : var(--spacing-sm) var(--spacing-md);
+  background   : var(--color-success);
+  color        : white;
+  border-radius: var(--radius-full);
+  font-size    : var(--font-size-xs);
+  font-weight  : 600;
+}
+
+.storage-status-indicator.unavailable {
+  background: var(--color-danger);
+}
+
+.storage-quota-bar {
+  width        : 100%;
+  height       : 8px;
+  background   : var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow     : hidden;
+  margin       : var(--spacing-sm) 0;
+}
+
+.storage-quota-fill {
+  height       : 100%;
+  background   : linear-gradient(90deg, var(--color-success) 0%, var(--color-warning) 80%, var(--color-danger) 100%);
+  border-radius: var(--radius-full);
+  transition   : width var(--transition-slow);
+}
+
+/* ============================================================================
+   🏁 PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  body {
+    background: white !important;
+    color     : black !important;
+  }
+
+  .theme-toggle,
+  .btn-custom,
+  .nav-tabs-custom {
+    display: none !important;
+  }
+
+  .demo-section {
+    break-inside: avoid;
+    box-shadow  : none !important;
+    border      : 1px solid #ccc !important;
+  }
+
+  .code-block {
+    background: #f5f5f5 !important;
+    border    : 1px solid #ccc !important;
+  }
+}
