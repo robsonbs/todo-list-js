@@ -4,48 +4,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aula 3: Eventos e Interatividade | Curso JavaScript</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
     <style>
-      /* Reset e configurações básicas */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
       }
 
       body {
-        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-        line-height: 1.6;
-        color: #333;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
-        padding: 20px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
+      .main-container {
         background: white;
-        border-radius: 16px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
       }
 
       .header {
-        background: linear-gradient(135deg, #4a90e2 0%, #7b68ee 100%);
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
         color: white;
         padding: 2rem;
         text-align: center;
-      }
-
-      .header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        font-weight: 700;
-      }
-
-      .header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
       }
 
       .content {
@@ -53,24 +60,30 @@
       }
 
       .section {
-        margin-bottom: 3rem;
-        padding: 2rem;
-        background: #f8f9fa;
-        border-radius: 12px;
-        border-left: 4px solid #4a90e2;
+        background: var(--light-color);
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid var(--primary-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        transition: all 0.3s ease;
+      }
+
+      .section:hover {
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+        transform: translateY(-2px);
       }
 
       .section h2 {
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        font-size: 1.8rem;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
       }
 
       .section h3 {
-        color: #34495e;
+        color: #374151;
         margin: 1.5rem 0 1rem 0;
         font-size: 1.3rem;
       }
@@ -86,13 +99,41 @@
       }
 
       .demo-box:hover {
-        border-color: #4a90e2;
-        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
       }
 
       /* Botões estilizados */
+      .btn-demo {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-demo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+      }
+
       .btn {
-        background: linear-gradient(135deg, #4a90e2 0%, #5a6acf 100%);
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
         color: white;
         border: none;
         padding: 12px 24px;
@@ -106,7 +147,7 @@
 
       .btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(74, 144, 226, 0.3);
+        box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
       }
 
       .btn:active {
@@ -114,15 +155,27 @@
       }
 
       .btn-danger {
-        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        background: linear-gradient(
+          135deg,
+          var(--danger-color) 0%,
+          #dc2626 100%
+        );
       }
 
       .btn-success {
-        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        background: linear-gradient(
+          135deg,
+          var(--success-color) 0%,
+          #059669 100%
+        );
       }
 
       .btn-warning {
-        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        background: linear-gradient(
+          135deg,
+          var(--warning-color) 0%,
+          #d97706 100%
+        );
       }
 
       /* Formulários */
@@ -134,7 +187,7 @@
         display: block;
         margin-bottom: 0.5rem;
         font-weight: 600;
-        color: #34495e;
+        color: #374151;
       }
 
       .form-control {
@@ -148,7 +201,7 @@
 
       .form-control:focus {
         outline: none;
-        border-color: #4a90e2;
+        border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
       }
 
@@ -392,12 +445,20 @@
     </style>
   </head>
   <body>
-    <div class="container">
+    <!-- Container Principal -->
+    <div class="main-container">
+      <!-- Header -->
       <div class="header">
-        <h1>🎯 Aula 3: Eventos e Interatividade</h1>
-        <p>Capturando e respondendo a ações do usuário com JavaScript</p>
+        <h1>
+          <i class="fas fa-mouse-pointer"></i>
+          Aula 3: Eventos e Interatividade
+        </h1>
+        <p class="mb-0">
+          Capturando e respondendo a ações do usuário com JavaScript
+        </p>
       </div>
 
+      <!-- Conteúdo Principal -->
       <div class="content">
         <!-- Seção 1: Eventos Básicos -->
         <div class="section">
@@ -765,6 +826,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="codigo-progressivo.js"></script>
   </body>

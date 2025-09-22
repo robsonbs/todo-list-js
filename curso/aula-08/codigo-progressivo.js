@@ -1188,95 +1188,7 @@ class Demo6_AnimacaoAvancada {
 // 🚀 INICIALIZAÇÃO E CONTROLE GLOBAL
 // ============================================================================
 
-// Variáveis globais para acesso nas demonstrações
-let demo1, demo2, demo3, demo4, demo5, demo6;
-
-// Inicializar quando DOM estiver pronto
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("🎯 Aula 8: Manipulação Avançada do DOM carregada!");
-
-  // Inicializar demonstrações
-  demo1 = new Demo1_PerformanceOptimization();
-  demo2 = new Demo2_Observadores();
-  demo3 = new Demo3_VirtualScrolling();
-  demo4 = new Demo4_SelectionAPI();
-  demo5 = new Demo5_DragDropAvancado();
-  demo6 = new Demo6_AnimacaoAvancada();
-
-  // Configurar navegação entre demos
-  setupDemoNavigation();
-
-  console.log("✅ Todas as demonstrações inicializadas com sucesso!");
-});
-
-function setupDemoNavigation() {
-  const tabs = document.querySelectorAll(".demo-tab");
-  const panels = document.querySelectorAll(".demo-panel");
-
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const targetDemo = tab.dataset.demo;
-
-      // Remover active de todas as tabs
-      tabs.forEach((t) => t.classList.remove("active"));
-      panels.forEach((p) => p.classList.remove("active"));
-
-      // Ativar tab e panel selecionados
-      tab.classList.add("active");
-      document.getElementById(targetDemo).classList.add("active");
-
-      console.log(`📋 Navegando para: ${targetDemo}`);
-    });
-  });
-}
-
-// Funções utilitárias globais
-function resetAllDemos() {
-  console.log("🔄 Resetando todas as demonstrações...");
-
-  // Parar animações
-  if (demo6 && demo6.animationId) {
-    demo6.stopAnimation();
-  }
-
-  // Limpar listeners de mutation observer
-  if (demo2 && demo2.mutationObserver) {
-    demo2.mutationObserver.disconnect();
-  }
-
-  // Recriar instâncias
-  demo1 = new Demo1_PerformanceOptimization();
-  demo2 = new Demo2_Observadores();
-  demo3 = new Demo3_VirtualScrolling();
-  demo4 = new Demo4_SelectionAPI();
-  demo5 = new Demo5_DragDropAvancado();
-  demo6 = new Demo6_AnimacaoAvancada();
-
-  console.log("✅ Reset completo!");
-}
-
-function exportDemoData() {
-  const data = {
-    timestamp: new Date().toISOString(),
-    performanceStats: demo1.stats,
-    kanbanData: JSON.parse(localStorage.getItem("kanbanData") || "{}"),
-    particleCount: demo6.particles.length,
-  };
-
-  const dataStr = JSON.stringify(data, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "aula8-demo-data.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-  console.log("📥 Dados das demonstrações exportados");
-}
-
-// Expor para acesso global
+// Expor classes para acesso global (sem inicializar automaticamente)
 window.Aula8 = {
   Demo1_PerformanceOptimization,
   Demo2_Observadores,
@@ -1284,6 +1196,7 @@ window.Aula8 = {
   Demo4_SelectionAPI,
   Demo5_DragDropAvancado,
   Demo6_AnimacaoAvancada,
-  resetAllDemos,
-  exportDemoData,
 };
+
+// Log de carregamento das classes
+console.log("🎯 Aula 8: Classes de Manipulação Avançada do DOM carregadas!");

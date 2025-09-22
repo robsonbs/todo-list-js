@@ -1,55 +1,84 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aula 2 - DOM e Primeiras Interações</title>
+    <title>Aula 2: DOM e Primeiras Interações | Curso JavaScript</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
     <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+      }
+
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
-        color: #333;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
-      .container {
+      .main-container {
         background: white;
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
       }
 
-      h1 {
-        color: #4a5568;
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        padding: 2rem;
         text-align: center;
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
       }
-
-      .subtitle {
-        text-align: center;
-        color: #718096;
-        font-size: 1.2rem;
-        margin-bottom: 30px;
+      .content {
+        padding: 2rem;
       }
 
       .secao {
-        background: #f8fafc;
-        border-left: 5px solid #4299e1;
-        padding: 20px;
-        margin: 20px 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        background: var(--light-color);
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid var(--primary-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        transition: all 0.3s ease;
+      }
+
+      .secao:hover {
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+        transform: translateY(-2px);
       }
 
       .secao h2 {
-        color: #2d3748;
-        margin-top: 0;
-        font-size: 1.5rem;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
       .demo-area {
@@ -77,8 +106,32 @@
         transform: scale(1.05);
       }
 
+      .btn-demo {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-demo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+      }
+
       .botao {
-        background: #4299e1;
+        background: var(--primary-color);
         color: white;
         border: none;
         padding: 12px 24px;
@@ -91,25 +144,25 @@
       }
 
       .botao:hover {
-        background: #3182ce;
+        background: var(--secondary-color);
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
       .botao-secundario {
-        background: #38a169;
+        background: var(--success-color);
       }
 
       .botao-secundario:hover {
-        background: #2f855a;
+        background: #059669;
       }
 
       .botao-perigo {
-        background: #e53e3e;
+        background: var(--danger-color);
       }
 
       .botao-perigo:hover {
-        background: #c53030;
+        background: #dc2626;
       }
 
       .input-demo {
@@ -123,8 +176,8 @@
 
       .input-demo:focus {
         outline: none;
-        border-color: #4299e1;
-        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
       }
 
       .lista-demo {
@@ -143,13 +196,13 @@
       }
 
       .lista-demo li:hover {
-        background: #f7fafc;
+        background: var(--light-color);
         transform: translateX(5px);
       }
 
       .console-output {
-        background: #1a202c;
-        color: #68d391;
+        background: var(--dark-color);
+        color: var(--success-color);
         padding: 15px;
         border-radius: 8px;
         font-family: "Courier New", monospace;
@@ -160,7 +213,7 @@
       }
 
       .codigo-exemplo {
-        background: #2d3748;
+        background: var(--dark-color);
         color: #e2e8f0;
         padding: 15px;
         border-radius: 8px;
@@ -171,26 +224,26 @@
       }
 
       .alert-info {
-        background: #bee3f8;
-        border: 1px solid #90cdf4;
-        color: #2a69ac;
+        background: rgba(6, 182, 212, 0.1);
+        border: 1px solid var(--info-color);
+        color: #0e7490;
         padding: 12px;
         border-radius: 8px;
         margin: 10px 0;
       }
 
       .alert-success {
-        background: #c6f6d5;
-        border: 1px solid #9ae6b4;
-        color: #22543d;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid var(--success-color);
+        color: #065f46;
         padding: 12px;
         border-radius: 8px;
         margin: 10px 0;
       }
 
       .exercicio-ativo {
-        border: 3px solid #4299e1;
-        background: #ebf8ff;
+        border: 3px solid var(--primary-color);
+        background: rgba(99, 102, 241, 0.05);
       }
 
       .progresso {
@@ -204,7 +257,7 @@
 
       .progresso-barra {
         height: 100%;
-        background: linear-gradient(90deg, #4299e1, #38a169);
+        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
         width: 0%;
         transition: width 0.5s ease;
         border-radius: 10px;
@@ -213,32 +266,46 @@
       .contador-demo {
         font-size: 3rem;
         font-weight: bold;
-        color: #4299e1;
+        color: var(--primary-color);
         text-align: center;
         margin: 20px 0;
       }
 
+      /* Responsividade */
       @media (max-width: 768px) {
-        body {
-          padding: 10px;
+        .main-container {
+          margin: 1rem;
+          border-radius: 15px;
         }
 
-        .container {
-          padding: 20px;
+        .content {
+          padding: 1rem;
         }
 
-        h1 {
-          font-size: 2rem;
+        .header {
+          padding: 1.5rem;
+        }
+
+        .header h1 {
+          font-size: 1.8rem;
         }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>🌐 Aula 2: DOM e Primeiras Interações</h1>
-      <p class="subtitle">
-        Conectando JavaScript com HTML - Dando vida às páginas web!
-      </p>
+    <!-- Container Principal -->
+    <div class="main-container">
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          <i class="fas fa-sitemap"></i>
+          Aula 2: DOM e Primeiras Interações
+        </h1>
+        <p class="mb-0">Conectando JavaScript com HTML - Dando vida às páginas web!</p>
+      </div>
+
+      <!-- Conteúdo Principal -->
+      <div class="content">
 
       <!-- SEÇÃO 1: O QUE É DOM -->
       <div class="secao">
@@ -758,5 +825,10 @@
 
       // Ativar no console: mostrarEstruturaDom()
     </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      </div>
+    </div>
   </body>
 </html>

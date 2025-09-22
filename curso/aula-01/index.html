@@ -1,67 +1,253 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aula 1 - Primeiros Passos no JavaScript</title>
+    <title>Aula 1: Fundamentos e Estrutura | Curso JavaScript</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
     <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+      }
+
       body {
-        font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
+
+      .main-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .content {
+        padding: 2rem;
+      }
+
       .exercicio {
-        background: #f0f8ff;
-        padding: 15px;
-        border-left: 4px solid #007acc;
-        margin: 20px 0;
+        background: var(--light-color);
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid var(--primary-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        transition: all 0.3s ease;
       }
+
+      .exercicio:hover {
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .exercicio h3 {
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
       .codigo {
-        background: #f4f4f4;
-        padding: 10px;
-        border-radius: 5px;
+        background: var(--dark-color);
+        color: #e5e7eb;
+        padding: 1rem;
+        border-radius: 8px;
         font-family: "Courier New", monospace;
+        font-size: 14px;
+        overflow-x: auto;
+        border: 1px solid #374151;
+      }
+
+      .btn-demo {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-demo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+      }
+
+      .objectives-card {
+        background: var(--info-color);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .objectives-card h2 {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .objectives-card ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .objectives-card li {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .objectives-card li::before {
+        content: "✓";
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 1rem;
+          border-radius: 15px;
+        }
+
+        .content {
+          padding: 1rem;
+        }
+
+        .header {
+          padding: 1.5rem;
+        }
+
+        .header h1 {
+          font-size: 1.8rem;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>🎓 Aula 1: Fundamentos e Estrutura</h1>
+    <!-- Container Principal -->
+    <div class="main-container">
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          <i class="fas fa-play-circle"></i>
+          Aula 1: Fundamentos e Estrutura
+        </h1>
+        <p class="mb-0">Primeiros passos no mundo do JavaScript</p>
+      </div>
 
-    <h2>📚 O que aprenderemos hoje:</h2>
-    <ul>
-      <li>O que é JavaScript e para que serve</li>
-      <li>Variáveis e tipos de dados</li>
-      <li>Nossa primeira função</li>
-      <li>Como usar o console do navegador</li>
-    </ul>
+      <!-- Conteúdo Principal -->
+      <div class="content">
+        <!-- Objetivos da Aula -->
+        <div class="objectives-card">
+          <h2>
+            <i class="fas fa-graduation-cap"></i>
+            O que aprenderemos hoje:
+          </h2>
+          <ul>
+            <li>O que é JavaScript e para que serve</li>
+            <li>Variáveis e tipos de dados</li>
+            <li>Nossa primeira função</li>
+            <li>Como usar o console do navegador</li>
+          </ul>
+        </div>
 
-    <div class="exercicio">
-      <h3>🧪 Exercício 1: Variáveis Básicas</h3>
-      <p>Abra o console do navegador (F12) e teste estes códigos:</p>
-      <div class="codigo">
-        let nome = "Seu Nome Aqui";<br />
-        let idade = 25;<br />
-        let estudante = true;<br />
-        console.log("Olá, " + nome + "!");
+        <!-- Exercícios -->
+        <div class="exercicio">
+          <h3>
+            <i class="fas fa-flask"></i>
+            Exercício 1: Variáveis Básicas
+          </h3>
+          <p>Abra o console do navegador (F12) e teste estes códigos:</p>
+          <div class="codigo">
+            let nome = "Seu Nome Aqui";<br />
+            let idade = 25;<br />
+            let estudante = true;<br />
+            console.log("Olá, " + nome + "!");
+          </div>
+        </div>
+
+        <div class="exercicio">
+          <h3>
+            <i class="fas fa-code"></i>
+            Exercício 2: Primeira Função
+          </h3>
+          <p>Copie este código no console:</p>
+          <div class="codigo">
+            function saudar(nome) {<br />
+            &nbsp;&nbsp;return "Olá, " + nome + "! Bem-vindo ao JavaScript!";<br />
+            }<br />
+            <br />
+            // Teste a função<br />
+            console.log(saudar("Maria"));
+          </div>
+        </div>
+
+        <!-- Botão Interativo -->
+        <div class="text-center mt-4">
+          <button onclick="mostrarAlerta()" class="btn-demo">
+            <i class="fas fa-mouse-pointer"></i>
+            Clique para ver uma mensagem!
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="exercicio">
-      <h3>🧪 Exercício 2: Primeira Função</h3>
-      <p>Copie este código no console:</p>
-      <div class="codigo">
-        function saudar(nome) {<br />
-        &nbsp;&nbsp;return "Olá, " + nome + "! Bem-vindo ao JavaScript!";<br />
-        }<br />
-        <br />
-        // Teste a função<br />
-        console.log(saudar("Maria"));
-      </div>
-    </div>
-
-    <button onclick="mostrarAlerta()">Clique para ver uma mensagem!</button>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
       // Esta é nossa primeira função JavaScript!

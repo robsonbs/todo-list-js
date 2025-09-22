@@ -52,46 +52,89 @@ function inicializarNavegacao() {
 // === Inicialização das Demonstrações ===
 function inicializarDemonstracoes() {
   try {
+    console.log("🔧 Inicializando demonstrações...");
+
     // Demo 1: Performance Optimization
     if (typeof Demo1_PerformanceOptimization !== "undefined") {
       demo1 = new Demo1_PerformanceOptimization();
-      configurarDemo1();
+      console.log("✅ Demo1 inicializada");
+    } else {
+      console.warn("⚠️ Demo1_PerformanceOptimization não encontrada");
     }
 
     // Demo 2: Observadores
     if (typeof Demo2_Observadores !== "undefined") {
       demo2 = new Demo2_Observadores();
-      configurarDemo2();
+      console.log("✅ Demo2 inicializada");
+    } else {
+      console.warn("⚠️ Demo2_Observadores não encontrada");
     }
 
     // Demo 3: Virtual Scrolling
     if (typeof Demo3_VirtualScrolling !== "undefined") {
       demo3 = new Demo3_VirtualScrolling("virtual-scroll-container", 10000);
-      configurarDemo3();
+      console.log("✅ Demo3 inicializada");
+    } else {
+      console.warn("⚠️ Demo3_VirtualScrolling não encontrada");
     }
 
     // Demo 4: Selection API
     if (typeof Demo4_SelectionAPI !== "undefined") {
       demo4 = new Demo4_SelectionAPI();
-      configurarDemo4();
+      console.log("✅ Demo4 inicializada");
+    } else {
+      console.warn("⚠️ Demo4_SelectionAPI não encontrada");
     }
 
     // Demo 5: Drag & Drop
     if (typeof Demo5_DragDropAvancado !== "undefined") {
       demo5 = new Demo5_DragDropAvancado();
-      configurarDemo5();
+      console.log("✅ Demo5 inicializada");
+    } else {
+      console.warn("⚠️ Demo5_DragDropAvancado não encontrada");
     }
 
     // Demo 6: Animações
     if (typeof Demo6_AnimacaoAvancada !== "undefined") {
       demo6 = new Demo6_AnimacaoAvancada("animation-canvas");
-      configurarDemo6();
+      console.log("✅ Demo6 inicializada");
+    } else {
+      console.warn("⚠️ Demo6_AnimacaoAvancada não encontrada");
     }
+
+    // Configurar todas as demos
+    configurarDemo1();
+    configurarDemo2();
+    configurarDemo3();
+    configurarDemo4();
+    configurarDemo5();
+    configurarDemo6();
+
+    console.log("🎉 Todas as demonstrações foram inicializadas!");
   } catch (error) {
     console.error("❌ Erro ao inicializar demonstrações:", error);
-    exibirErroNaInterface(
-      "Erro ao carregar demonstrações. Verifique o console para mais detalhes."
-    );
+    const errorDiv = document.createElement("div");
+    errorDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff4757;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 9999;
+      max-width: 300px;
+    `;
+    errorDiv.innerHTML = `
+      <strong>⚠️ Erro na Aula 8</strong><br>
+      Algumas demonstrações podem não funcionar.<br>
+      <small>Verifique o console para detalhes.</small>
+    `;
+    document.body.appendChild(errorDiv);
+
+    setTimeout(() => {
+      errorDiv.remove();
+    }, 10000);
   }
 }
 
@@ -104,28 +147,31 @@ function configurarDemo1() {
 
   if (btnTraditional) {
     btnTraditional.addEventListener("click", () => {
-      exibirCarregamento("traditional-list");
-      demo1.exemploTradicional().then((result) => {
-        exibirResultadoPerformance("Método Tradicional", result);
-      });
+      if (demo1 && typeof demo1.demonstrarMetodoTradicional === "function") {
+        demo1.demonstrarMetodoTradicional();
+      } else {
+        console.error("Demo1 não está disponível ou método não existe");
+      }
     });
   }
 
   if (btnFragment) {
     btnFragment.addEventListener("click", () => {
-      exibirCarregamento("fragment-list");
-      demo1.exemploFragment().then((result) => {
-        exibirResultadoPerformance("DocumentFragment", result);
-      });
+      if (demo1 && typeof demo1.demonstrarDocumentFragment === "function") {
+        demo1.demonstrarDocumentFragment();
+      } else {
+        console.error("Demo1 não está disponível ou método não existe");
+      }
     });
   }
 
   if (btnBatch) {
     btnBatch.addEventListener("click", () => {
-      exibirCarregamento("batch-list");
-      demo1.exemploBatch().then((result) => {
-        exibirResultadoPerformance("Batch Updates", result);
-      });
+      if (demo1 && typeof demo1.demonstrarBatchUpdates === "function") {
+        demo1.demonstrarBatchUpdates();
+      } else {
+        console.error("Demo1 não está disponível ou método não existe");
+      }
     });
   }
 
@@ -138,12 +184,12 @@ function configurarDemo1() {
 
 // === Configuração Demo 2: Observadores ===
 function configurarDemo2() {
-  const container = document.getElementById("lazy-load-container");
-  if (container && demo2) {
-    demo2.configurarLazyLoading(container);
-    demo2.configurarMutationObserver(
-      document.getElementById("mutation-target")
-    );
+  // Demo 2 se auto-inicializa no constructor
+  // Apenas verificamos se foi criada corretamente
+  if (!demo2) {
+    console.error("Demo2 não foi inicializada corretamente");
+  } else {
+    console.log("✅ Demo 2: Observadores configurada");
   }
 }
 
@@ -161,20 +207,23 @@ function configurarDemo3() {
 
 // === Configuração Demo 4: Selection API ===
 function configurarDemo4() {
-  const editor = document.getElementById("text-editor");
-  const toolbar = document.getElementById("formatting-toolbar");
-
-  if (editor && demo4) {
-    demo4.configurarEditor(editor);
-    demo4.criarToolbar(toolbar);
+  // Demo 4 se auto-inicializa no constructor
+  // Apenas verificamos se foi criada corretamente
+  if (!demo4) {
+    console.error("Demo4 não foi inicializada corretamente");
+  } else {
+    console.log("✅ Demo 4: Selection API configurada");
   }
 }
 
 // === Configuração Demo 5: Drag & Drop ===
 function configurarDemo5() {
-  const board = document.getElementById("kanban-board");
-  if (board && demo5) {
-    demo5.configurarKanban(board);
+  // Demo 5 se auto-inicializa no constructor
+  // Apenas verificamos se foi criada corretamente
+  if (!demo5) {
+    console.error("Demo5 não foi inicializada corretamente");
+  } else {
+    console.log("✅ Demo 5: Drag & Drop configurada");
   }
 }
 
@@ -186,43 +235,73 @@ function configurarDemo6() {
   const btnClear = document.getElementById("btn-clear-particles");
 
   if (btnStart) {
-    btnStart.addEventListener("click", () => demo6.iniciar());
+    btnStart.addEventListener("click", () => {
+      if (demo6 && typeof demo6.startAnimation === "function") {
+        demo6.startAnimation();
+      }
+    });
   }
 
   if (btnStop) {
-    btnStop.addEventListener("click", () => demo6.parar());
+    btnStop.addEventListener("click", () => {
+      if (demo6 && typeof demo6.stopAnimation === "function") {
+        demo6.stopAnimation();
+      }
+    });
   }
 
   if (btnAdd) {
-    btnAdd.addEventListener("click", () => demo6.adicionarParticulas(10));
+    btnAdd.addEventListener("click", () => {
+      if (demo6 && typeof demo6.addParticles === "function") {
+        demo6.addParticles(10);
+      }
+    });
   }
 
   if (btnClear) {
-    btnClear.addEventListener("click", () => demo6.limparParticulas());
+    btnClear.addEventListener("click", () => {
+      if (demo6 && typeof demo6.clearParticles === "function") {
+        demo6.clearParticles();
+      }
+    });
   }
+
+  console.log("✅ Demo 6: Animações configurada");
 }
 
 // === Inicialização Específica por Demo ===
 function inicializarDemoEspecifico(demoId) {
-  switch (demoId) {
-    case "demo1":
-      if (demo1) demo1.reset();
-      break;
-    case "demo2":
-      if (demo2) demo2.resetObservers();
-      break;
-    case "demo3":
-      if (demo3) demo3.reset();
-      break;
-    case "demo4":
-      if (demo4) demo4.reset();
-      break;
-    case "demo5":
-      if (demo5) demo5.carregarDados();
-      break;
-    case "demo6":
-      if (demo6) demo6.redimensionarCanvas();
-      break;
+  try {
+    switch (demoId) {
+      case "demo1":
+        // Demo 1 não precisa de inicialização específica
+        console.log("📊 Demo 1: Performance ativa");
+        break;
+      case "demo2":
+        // Demo 2 se auto-gerencia com observers
+        console.log("👀 Demo 2: Observadores ativa");
+        break;
+      case "demo3":
+        // Demo 3 se auto-gerencia com virtual scrolling
+        console.log("📜 Demo 3: Virtual Scrolling ativa");
+        break;
+      case "demo4":
+        // Demo 4 se auto-gerencia com Selection API
+        console.log("✏️ Demo 4: Selection API ativa");
+        break;
+      case "demo5":
+        // Demo 5 se auto-gerencia com localStorage
+        console.log("🎯 Demo 5: Drag & Drop ativa");
+        break;
+      case "demo6":
+        if (demo6 && typeof demo6.resizeCanvas === "function") {
+          demo6.resizeCanvas();
+          console.log("🎬 Demo 6: Animações ativa");
+        }
+        break;
+    }
+  } catch (error) {
+    console.error(`❌ Erro ao inicializar ${demoId}:`, error);
   }
 }
 
@@ -270,34 +349,45 @@ async function executarBenchmarkCompleto() {
   }
 
   try {
-    const resultados = [];
+    console.log("🏁 Executando benchmark completo...");
 
-    // Executar todos os testes
-    resultados.push({
-      metodo: "Tradicional",
-      resultado: await demo1.exemploTradicional(),
-    });
+    // Executar os métodos de demonstração que realmente existem
+    if (demo1 && typeof demo1.demonstrarMetodoTradicional === "function") {
+      demo1.demonstrarMetodoTradicional();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
 
-    resultados.push({
-      metodo: "Fragment",
-      resultado: await demo1.exemploFragment(),
-    });
+    if (demo1 && typeof demo1.demonstrarDocumentFragment === "function") {
+      demo1.demonstrarDocumentFragment();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
 
-    resultados.push({
-      metodo: "Batch",
-      resultado: await demo1.exemploBatch(),
-    });
+    if (demo1 && typeof demo1.demonstrarBatchUpdates === "function") {
+      demo1.demonstrarBatchUpdates();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
 
-    // Exibir resultados comparativos
-    exibirComparacaoBenchmark(resultados);
+    // Exibir resultados
+    if (statsContainer) {
+      statsContainer.innerHTML = `
+        <h5><i class="fas fa-chart-line"></i> Benchmark Completo!</h5>
+        <div class="success-state">
+          <i class="fas fa-check-circle success-icon"></i>
+          <p>Todas as demonstrações de performance foram executadas.<br>
+          Verifique os tempos de execução acima de cada resultado.</p>
+        </div>
+      `;
+    }
   } catch (error) {
     console.error("Erro no benchmark:", error);
-    statsContainer.innerHTML = `
+    if (statsContainer) {
+      statsContainer.innerHTML = `
             <div class="error-state">
                 <i class="fas fa-exclamation-triangle error-icon"></i>
                 <p>Erro ao executar benchmark</p>
             </div>
         `;
+    }
   }
 }
 
@@ -353,7 +443,7 @@ function configurarEventosGlobais() {
   // Redimensionamento da janela
   window.addEventListener("resize", function () {
     if (demo6 && currentDemo === "demo6") {
-      demo6.redimensionarCanvas();
+      demo6.resizeCanvas();
     }
   });
 
@@ -373,33 +463,49 @@ function configurarEventosGlobais() {
 
     // ESC para parar animações
     if (e.key === "Escape" && demo6) {
-      demo6.parar();
+      demo6.stopAnimation();
     }
   });
 
   // Visibilidade da página (pausar animações quando não visível)
   document.addEventListener("visibilitychange", function () {
     if (document.hidden && demo6) {
-      demo6.parar();
+      demo6.stopAnimation();
     }
   });
 }
 
 // === Funções de Utilidade Global ===
 function resetAllDemos() {
-  Object.values({ demo1, demo2, demo3, demo4, demo5, demo6 }).forEach(
-    (demo) => {
-      if (demo && typeof demo.reset === "function") {
-        demo.reset();
-      }
-    }
-  );
+  console.log("🔄 Resetando demonstrações...");
+
+  // Parar animação se estiver rodando
+  if (demo6 && typeof demo6.stopAnimation === "function") {
+    demo6.stopAnimation();
+  }
 
   // Reset localStorage para demo 5
   localStorage.removeItem("kanban-data");
 
-  // Reinicializar demos
-  inicializarDemonstracoes();
+  // Limpar containers de resultados
+  const containers = [
+    "demo1-container",
+    "performance-stats",
+    "mutation-log",
+    "virtual-scroll-container",
+  ];
+
+  containers.forEach((id) => {
+    const container = document.getElementById(id);
+    if (container) {
+      container.innerHTML = "";
+    }
+  });
+
+  // Recriar as demonstrações
+  setTimeout(() => {
+    inicializarDemonstracoes();
+  }, 100);
 
   // Exibir confirmação
   const notification = document.createElement("div");
@@ -425,8 +531,16 @@ function exportDemoData() {
     timestamp: new Date().toISOString(),
     currentDemo: currentDemo,
     kanbanData: localStorage.getItem("kanban-data"),
-    performanceResults: demo1 ? demo1.getResults() : null,
-    virtualScrollState: demo3 ? demo3.getState() : null,
+    stats: demo1 ? demo1.stats : null,
+    particleCount: demo6 && demo6.particles ? demo6.particles.length : 0,
+    demoStatus: {
+      demo1: demo1 ? "loaded" : "not loaded",
+      demo2: demo2 ? "loaded" : "not loaded",
+      demo3: demo3 ? "loaded" : "not loaded",
+      demo4: demo4 ? "loaded" : "not loaded",
+      demo5: demo5 ? "loaded" : "not loaded",
+      demo6: demo6 ? "loaded" : "not loaded",
+    },
   };
 
   const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -449,19 +563,62 @@ if (
   window.location.hostname === "127.0.0.1"
 ) {
   window.demoDebug = {
-    demo1,
-    demo2,
-    demo3,
-    demo4,
-    demo5,
-    demo6,
+    get demo1() {
+      return demo1;
+    },
+    get demo2() {
+      return demo2;
+    },
+    get demo3() {
+      return demo3;
+    },
+    get demo4() {
+      return demo4;
+    },
+    get demo5() {
+      return demo5;
+    },
+    get demo6() {
+      return demo6;
+    },
     currentDemo: () => currentDemo,
     resetAll: resetAllDemos,
     exportData: exportDemoData,
+    status: () => {
+      console.log("📊 Status das Demonstrações:");
+      console.log(
+        "Demo1 (Performance):",
+        demo1 ? "✅ Carregada" : "❌ Não carregada"
+      );
+      console.log(
+        "Demo2 (Observadores):",
+        demo2 ? "✅ Carregada" : "❌ Não carregada"
+      );
+      console.log(
+        "Demo3 (Virtual Scroll):",
+        demo3 ? "✅ Carregada" : "❌ Não carregada"
+      );
+      console.log(
+        "Demo4 (Selection API):",
+        demo4 ? "✅ Carregada" : "❌ Não carregada"
+      );
+      console.log(
+        "Demo5 (Drag & Drop):",
+        demo5 ? "✅ Carregada" : "❌ Não carregada"
+      );
+      console.log(
+        "Demo6 (Animações):",
+        demo6 ? "✅ Carregada" : "❌ Não carregada"
+      );
+      console.log("Demo Atual:", currentDemo);
+    },
   };
 
   console.log(
     "🔧 Modo Debug ativado. Use window.demoDebug para acessar as demos."
+  );
+  console.log(
+    "💡 Digite window.demoDebug.status() para ver o status das demos"
   );
 }
 
