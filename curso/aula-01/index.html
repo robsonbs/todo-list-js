@@ -504,6 +504,7 @@
         margin-bottom: 2rem;
         overflow: hidden;
         border: 1px solid #e5e7eb;
+        padding:2rem;
       }
 
       .exercicio-header {
@@ -759,6 +760,97 @@
         min-width: 40px;
       }
 
+      /* === Navegação em Abas (Novo) === */
+      .nav-tabs-custom {
+        background: var(--light-color);
+        border: none;
+        padding: 1rem 1rem 0.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(6px);
+        background: rgba(248,250,252,0.85);
+      }
+
+      .demo-tab {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 0.6rem 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: var(--dark-color);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        position: relative;
+      }
+
+      .demo-tab:hover,
+      .demo-tab:focus-visible {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        outline: none;
+      }
+
+      .demo-tab.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      .demo-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 14px;
+        height: 14px;
+        background: var(--primary-color);
+        border-radius: 4px;
+        rotate: 45deg;
+      }
+
+      @media (max-width: 768px) {
+        .nav-tabs-custom {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .demo-tab {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      .demo-tab:focus-visible {
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.45);
+      }
+
+      /* Barra de Progresso de Rolagem */
+      .scroll-progress-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: rgba(255,255,255,0.2);
+        z-index: 100;
+      }
+      .scroll-progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        transition: width 0.15s ease-out;
+      }
+
       /* Botões de Controle de Progresso */
       .progresso-controles {
         margin-top: 1rem;
@@ -950,6 +1042,10 @@
     </style>
   </head>
   <body>
+    <!-- Barra de Progresso de Rolagem (Novo) -->
+    <div class="scroll-progress-wrapper" role="progressbar" aria-label="Progresso de leitura" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div id="scrollProgressBar" class="scroll-progress-bar"></div>
+    </div>
     <!-- Container Principal -->
     <div class="main-container">
       <!-- Header -->
@@ -959,6 +1055,30 @@
           Aula 1: Fundamentos e Estrutura
         </h1>
         <p class="mb-0">Primeiros passos no mundo do JavaScript</p>
+      </div>
+
+      <!-- Navegação por Seções (Novo - estilo inspirado na Aula 08) -->
+      <div class="nav-tabs-custom" role="tablist" aria-label="Navegação das Seções da Aula">
+        <button class="demo-tab active" data-target="introducao" role="tab" aria-selected="true" aria-controls="introducao">
+          <i class="fas fa-rocket"></i>
+          Introdução
+        </button>
+        <button class="demo-tab" data-target="conceitos" role="tab" aria-selected="false" aria-controls="conceitos">
+          <i class="fas fa-lightbulb"></i>
+          Conceitos
+        </button>
+        <button class="demo-tab" data-target="pratica" role="tab" aria-selected="false" aria-controls="pratica">
+          <i class="fas fa-dumbbell"></i>
+          Prática
+        </button>
+        <button class="demo-tab" data-target="avaliacao" role="tab" aria-selected="false" aria-controls="avaliacao">
+          <i class="fas fa-check-circle"></i>
+          Avaliação
+        </button>
+        <button class="demo-tab" data-target="navegacao" role="tab" aria-selected="false" aria-controls="navegacao">
+          <i class="fas fa-compass"></i>
+          Próximos Passos
+        </button>
       </div>
 
       <!-- Conteúdo Principal -->
@@ -2363,6 +2483,85 @@ ${mensagem}`;
         window.location.href = '../aula-02/index.html';
       }
 
+      // === SISTEMA DE ABAS DA AULA (Novo) ===
+      (function inicializarAbasAula() {
+        const tabContainer = document.querySelector('.nav-tabs-custom');
+        if (!tabContainer) return; // segurança
+        const tabs = Array.from(tabContainer.querySelectorAll('.demo-tab'));
+        const sectionIds = tabs.map(t => t.dataset.target);
+        const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+        function ativarAba(tab, foco = false) {
+          tabs.forEach(t => {
+            const ativo = t === tab;
+            t.classList.toggle('active', ativo);
+            t.setAttribute('aria-selected', ativo ? 'true' : 'false');
+            if (ativo && foco) t.focus();
+          });
+        }
+
+        // Clique nas abas
+        tabs.forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = tab.dataset.target;
+            const target = document.getElementById(targetId);
+            if (target) {
+              ativarAba(tab);
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          });
+        });
+
+        // Teclado (Setas Navegam, Home/End)
+        tabContainer.addEventListener('keydown', (e) => {
+          const currentIndex = tabs.indexOf(document.activeElement);
+          if (currentIndex === -1) return;
+          let nextIndex = null;
+          switch (e.key) {
+            case 'ArrowRight':
+            case 'ArrowDown':
+              nextIndex = (currentIndex + 1) % tabs.length; break;
+            case 'ArrowLeft':
+            case 'ArrowUp':
+              nextIndex = (currentIndex - 1 + tabs.length) % tabs.length; break;
+            case 'Home': nextIndex = 0; break;
+            case 'End': nextIndex = tabs.length - 1; break;
+          }
+          if (nextIndex !== null) {
+            e.preventDefault();
+            const nextTab = tabs[nextIndex];
+            ativarAba(nextTab, true);
+            const target = document.getElementById(nextTab.dataset.target);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+
+        // IntersectionObserver para sincronizar estado ao rolar
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const idx = sections.indexOf(entry.target);
+              if (idx >= 0) {
+                ativarAba(tabs[idx]);
+              }
+            }
+          });
+        }, { rootMargin: '0px 0px -70% 0px', threshold: 0.2 });
+
+        sections.forEach(sec => observer.observe(sec));
+
+        // Atributos de acessibilidade
+        tabs.forEach((tab, i) => {
+          tab.setAttribute('id', `tab-${sectionIds[i]}`);
+          const sec = sections[i];
+            if (sec) {
+              sec.setAttribute('role', 'region');
+              sec.setAttribute('aria-labelledby', `tab-${sectionIds[i]}`);
+            }
+        });
+      })();
+
       // === INICIALIZAÇÃO ===
 
       // Execute automaticamente quando a página carregar
@@ -2391,6 +2590,9 @@ ${mensagem}`;
         
         // Iniciar sistema de dicas contextuais
         iniciarSistemaDicas();
+
+        // Inicializar barra de progresso de rolagem
+        initScrollProgress();
       });
 
       // === SISTEMA DE DICAS CONTEXTUAIS ===
@@ -2761,6 +2963,25 @@ Conceitos aprendidos: Variáveis, Funções, Tipos de Dados e Console.
           saida.style.color = '#ef4444';
         }
       };
+
+      // === PROGRESSO DE ROLAGEM ===
+      function initScrollProgress() {
+        const barWrapper = document.querySelector('.scroll-progress-wrapper');
+        const bar = document.getElementById('scrollProgressBar');
+        if (!bar || !barWrapper) return;
+
+        function atualizar() {
+          const scrollTop = window.scrollY || document.documentElement.scrollTop;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          bar.style.width = percent + '%';
+          barWrapper.setAttribute('aria-valuenow', percent.toFixed(0));
+        }
+
+        window.addEventListener('scroll', atualizar, { passive: true });
+        window.addEventListener('resize', atualizar);
+        atualizar();
+      }
     </script>
   </body>
 </html>

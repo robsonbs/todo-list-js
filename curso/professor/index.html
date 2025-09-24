@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Professor - Curso JavaScript</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #06b6d4;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+        }
+
+        body {
+            background: var(--light-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            background: white;
+            height: calc(100vh - 76px);
+            border-right: 1px solid #e5e7eb;
+            padding: 1.5rem 0;
+            position: fixed;
+            width: 250px;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--light-color);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 0.75rem;
+            width: 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke: #e5e7eb;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .progress-ring-progress {
+            fill: none;
+            stroke: var(--success-color);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.8s ease;
+        }
+
+        .student-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.2s ease;
+        }
+
+        .student-item:hover {
+            background: var(--light-color);
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .student-progress {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .progress-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .progress-excellent {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .progress-good {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .progress-average {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .progress-poor {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .lesson-analytics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .lesson-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .lesson-number {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-hidden {
+            display: none;
+        }
+
+        .section-active {
+            display: block;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .mobile-menu-btn {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-chalkboard-teacher"></i>
+                Dashboard do Professor
+            </span>
+            <button class="navbar-toggler d-md-none mobile-menu-btn" style="display: none;" onclick="toggleSidebar()">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="active" onclick="showSection('overview')">
+                    <i class="fas fa-chart-pie"></i>
+                    Visão Geral
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('students')">
+                    <i class="fas fa-users"></i>
+                    Estudantes
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('lessons')">
+                    <i class="fas fa-book"></i>
+                    Aulas
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('exercises')">
+                    <i class="fas fa-dumbbell"></i>
+                    Exercícios
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('analytics')">
+                    <i class="fas fa-chart-line"></i>
+                    Análises
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('reports')">
+                    <i class="fas fa-file-alt"></i>
+                    Relatórios
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    Configurações
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <!-- Seção: Visão Geral -->
+        <div id="overview-section" class="section-active">
+            <h2 class="mb-4">Visão Geral do Curso</h2>
+            
+            <!-- Estatísticas Principais -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">24</div>
+                        <div class="stat-label">Estudantes Ativos</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">9</div>
+                        <div class="stat-label">Aulas Disponíveis</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Exercícios</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">87%</div>
+                        <div class="stat-label">Taxa de Conclusão</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos de Progresso -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="dashboard-card">
+                        <h5>Progresso das Aulas</h5>
+                        <canvas id="lessonsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dashboard-card">
+                        <h5>Desempenho dos Exercícios</h5>
+                        <canvas id="exercisesChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Atividade Recente -->
+            <div class="dashboard-card">
+                <h5>Atividade Recente</h5>
+                <div class="student-list">
+                    <div class="student-item">
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar">MJ</div>
+                            <div class="student-info">
+                                <div class="student-name">Maria João</div>
+                                <div class="student-progress">Concluiu Aula 5: DOM e Eventos</div>
+                            </div>
+                        </div>
+                        <small class="text-muted">2 horas atrás</small>
+                    </div>
+                    <div class="student-item">
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar">PS</div>
+                            <div class="student-info">
+                                <div class="student-name">Pedro Silva</div>
+                                <div class="student-progress">Completou exercício: Calculadora de IMC</div>
+                            </div>
+                        </div>
+                        <small class="text-muted">4 horas atrás</small>
+                    </div>
+                    <div class="student-item">
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar">AL</div>
+                            <div class="student-info">
+                                <div class="student-name">Ana Luiza</div>
+                                <div class="student-progress">Iniciou Aula 7: APIs e AJAX</div>
+                            </div>
+                        </div>
+                        <small class="text-muted">1 dia atrás</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Estudantes -->
+        <div id="students-section" class="section-hidden">
+            <h2 class="mb-4">Gerenciamento de Estudantes</h2>
+            
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Lista de Estudantes</h5>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Adicionar Estudante
+                    </button>
+                </div>
+                
+                <div class="student-list">
+                    <div class="student-item">
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar">MJ</div>
+                            <div class="student-info">
+                                <div class="student-name">Maria João Santos</div>
+                                <div class="student-progress">8 de 9 aulas concluídas</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="progress-badge progress-excellent">89%</span>
+                            <button class="btn btn-sm btn-outline-primary">Ver Detalhes</button>
+                        </div>
+                    </div>
+                    
+                    <div class="student-item">
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar">PS</div>
+                            <div class="student-info">
+                                <div class="student-name">Pedro Silva Costa</div>
+                                <div class="student-progress">6 de 9 aulas concluídas</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="progress-badge progress-good">67%</span>
+                            <button class="btn btn-sm btn-outline-primary">Ver Detalhes</button>
+                        </div>
+                    </div>
+                    
+                    <div class="student-item">
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar">AL</div>
+                            <div class="student-info">
+                                <div class="student-name">Ana Luiza Ferreira</div>
+                                <div class="student-progress">4 de 9 aulas concluídas</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="progress-badge progress-average">44%</span>
+                            <button class="btn btn-sm btn-outline-primary">Ver Detalhes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Aulas -->
+        <div id="lessons-section" class="section-hidden">
+            <h2 class="mb-4">Análise das Aulas</h2>
+            
+            <div class="lesson-analytics">
+                <div class="lesson-card">
+                    <div class="lesson-number">1</div>
+                    <h6>Fundamentos do JavaScript</h6>
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between">
+                            <span>Conclusão:</span>
+                            <strong>95%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Tempo médio:</span>
+                            <strong>2h 15min</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Dificuldade:</span>
+                            <strong>Baixa</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lesson-card">
+                    <div class="lesson-number">2</div>
+                    <h6>Estruturas de Controle</h6>
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between">
+                            <span>Conclusão:</span>
+                            <strong>88%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Tempo médio:</span>
+                            <strong>2h 45min</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Dificuldade:</span>
+                            <strong>Média</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lesson-card">
+                    <div class="lesson-number">3</div>
+                    <h6>Funções</h6>
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between">
+                            <span>Conclusão:</span>
+                            <strong>82%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Tempo médio:</span>
+                            <strong>3h 10min</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Dificuldade:</span>
+                            <strong>Média</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Exercícios -->
+        <div id="exercises-section" class="section-hidden">
+            <h2 class="mb-4">Análise dos Exercícios</h2>
+            
+            <div class="dashboard-card">
+                <h5>Desempenho por Exercício</h5>
+                <canvas id="exercisePerformanceChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Outras seções continuam aqui... -->
+        <div id="analytics-section" class="section-hidden">
+            <h2 class="mb-4">Análises Avançadas</h2>
+            <div class="dashboard-card">
+                <p>Análises detalhadas em desenvolvimento...</p>
+            </div>
+        </div>
+
+        <div id="reports-section" class="section-hidden">
+            <h2 class="mb-4">Relatórios</h2>
+            <div class="dashboard-card">
+                <p>Sistema de relatórios em desenvolvimento...</p>
+            </div>
+        </div>
+
+        <div id="settings-section" class="section-hidden">
+            <h2 class="mb-4">Configurações</h2>
+            <div class="dashboard-card">
+                <p>Configurações do sistema em desenvolvimento...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aula 5: Criação Dinâmica de Elementos | Curso JavaScript</title>
+    <title>Aula 05: Criação Dinâmica de Elementos - Curso JavaScript</title>
+    <meta name="description" content="Aprenda criação dinâmica de elementos DOM com JavaScript: createElement, appendChild, DocumentFragment e técnicas avançadas.">
+    <meta name="keywords" content="JavaScript, DOM, createElement, appendChild, DocumentFragment, Criação Dinâmica">
 
     <!-- Bootstrap CSS -->
     <link
@@ -835,18 +837,695 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* Console DOM Styles */
+      .console-container {
+        margin: 1.5rem 0;
+      }
+
+      .console-window {
+        background: #1e1e1e;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border: 1px solid #333;
+      }
+
+      .console-header {
+        background: linear-gradient(90deg, #2d2d2d, #383838);
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #444;
+      }
+
+      .console-controls {
+        display: flex;
+        gap: 0.5rem;
+        margin-right: 1rem;
+      }
+
+      .control {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .control.close { background: #ff5f57; }
+      .control.minimize { background: #ffbd2e; }
+      .control.maximize { background: #28ca42; }
+
+      .console-title {
+        color: #f0f0f0;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .console-body {
+        padding: 1rem;
+      }
+
+      .console-output {
+        background: #1e1e1e;
+        min-height: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+        margin-bottom: 1rem;
+        border-radius: 6px;
+        padding: 0.75rem;
+        border: 1px solid #444;
+      }
+
+      .console-line {
+        display: flex;
+        margin-bottom: 0.5rem;
+        align-items: flex-start;
+        line-height: 1.4;
+      }
+
+      .console-prompt {
+        color: #4CAF50;
+        margin-right: 0.75rem;
+        font-weight: bold;
+      }
+
+      .console-text {
+        color: #f0f0f0;
+        flex: 1;
+        word-break: break-word;
+      }
+
+      .console-text.example {
+        color: #64b5f6;
+        font-style: italic;
+      }
+
+      .console-text.error {
+        color: #f44336;
+      }
+
+      .console-text.success {
+        color: #4CAF50;
+      }
+
+      .console-input-container {
+        display: flex;
+        align-items: center;
+        background: #2d2d2d;
+        border-radius: 6px;
+        padding: 0.5rem;
+        border: 1px solid #444;
+      }
+
+      .console-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #f0f0f0;
+        font-family: 'Courier New', monospace;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .console-input::placeholder {
+        color: #888;
+      }
+
+      .btn-console-run {
+        background: linear-gradient(45deg, #4CAF50, #45a049);
+        border: none;
+        color: white;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 0.5rem;
+      }
+
+      .btn-console-run:hover {
+        background: linear-gradient(45deg, #45a049, #3d8b40);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+      }
+
+      .console-examples {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #444;
+      }
+
+      .console-examples h4 {
+        color: #f0f0f0;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .example-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .example-btn {
+        background: #333;
+        border: 1px solid #555;
+        color: #f0f0f0;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        font-family: 'Courier New', monospace;
+      }
+
+      .example-btn:hover {
+        background: #444;
+        border-color: #666;
+        transform: translateY(-1px);
+      }
+
+      /* Sistema de Badges */
+      .badges-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .badge {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .badge.locked {
+        background: #f8f9fa;
+        opacity: 0.7;
+        border-color: #dee2e6;
+      }
+
+      .badge.unlocked {
+        background: linear-gradient(135deg, #fff3cd 0%, #fff 100%);
+        border-color: #ffc107;
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+        animation: badgeGlow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes badgeGlow {
+        from { box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3); }
+        to { box-shadow: 0 8px 25px rgba(255, 193, 7, 0.5); }
+      }
+
+      .badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      }
+
+      .badge-icon {
+        font-size: 2rem;
+        margin-right: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 50%;
+        border: 2px solid #dee2e6;
+      }
+
+      .badge.unlocked .badge-icon {
+        background: linear-gradient(135deg, #ffc107, #ff8f00);
+        border-color: #ff8f00;
+        animation: badgeShimmer 1.5s ease-in-out infinite alternate;
+      }
+
+      @keyframes badgeShimmer {
+        from { background: linear-gradient(135deg, #ffc107, #ff8f00); }
+        to { background: linear-gradient(135deg, #ff8f00, #ffc107); }
+      }
+
+      .badge-info {
+        flex: 1;
+      }
+
+      .badge-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+        font-size: 1.1rem;
+      }
+
+      .badge-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+
+      /* Badge específicos com cores temáticas */
+      .badge.element-creator { background: linear-gradient(45deg, #3498db, #5dade2); }
+      .badge.dom-builder { background: linear-gradient(45deg, #e67e22, #f39c12); }
+      .badge.performance-optimizer { background: linear-gradient(45deg, #9b59b6, #bb6bd9); }
+      .badge.template-master { background: linear-gradient(45deg, #2ecc71, #58d68d); }
+      .badge.event-connector { background: linear-gradient(45deg, #e74c3c, #ec7063); }
+      .badge.dom-ninja { background: linear-gradient(45deg, #34495e, #566573); }
+
+      /* Notificação de Badge */
+      .badge-notification {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        z-index: 1000;
+        transform: translateX(400px);
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        border: 2px solid rgba(255,255,255,0.2);
+      }
+
+      .badge-notification.show {
+        transform: translateX(0);
+      }
+
+      .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .notification-content i {
+        font-size: 1.5rem;
+        color: #ffc107;
+      }
+
+      .notification-text {
+        font-weight: 600;
+      }
+
+      /* Responsivo */
+      @media (max-width: 768px) {
+        .console-examples {
+          display: none;
+        }
+        
+        .console-input-container {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        
+        .btn-console-run {
+          width: 100%;
+          margin-left: 0;
+        }
+        
+        .badges-container {
+          grid-template-columns: 1fr;
+        }
+        
+        .badge-notification {
+          right: 1rem;
+          left: 1rem;
+          transform: translateY(-200px);
+        }
+        
+        .badge-notification.show {
+          transform: translateY(0);
+        }
+      }
+
+      /* Sistema de Exercícios */
+      .exercises-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .exercise-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .exercise-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+      }
+
+      .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+      }
+
+      .exercise-header h3 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.2rem;
+      }
+
+      .exercise-meta {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .exercise-meta span {
+        background: #e9ecef;
+        color: #6c757d;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .exercise-demo {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .task-display {
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        border-left: 4px solid #2196f3;
+      }
+
+      .exercise-output {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 0.75rem;
+        min-height: 3rem;
+        font-family: 'Courier New', monospace;
+      }
+
+      .exercise-output.success {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .exercise-output.error {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .code-editor {
+        margin: 1rem 0;
+      }
+
+      .code-input {
+        width: 100%;
+        min-height: 150px;
+        padding: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        background: #f8f9fa;
+        resize: vertical;
+        transition: border-color 0.3s ease;
+      }
+
+      .code-input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+      }
+
+      .exercise-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+      }
+
+      .exercise-feedback {
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin-top: 1rem;
+        font-weight: 500;
+        display: none;
+      }
+
+      .exercise-feedback.show {
+        display: block;
+      }
+
+      .exercise-feedback.success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .exercise-feedback.error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+
+      .exercise-feedback.hint {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+      }
+
+      .exercise-feedback.solution {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+
+      /* Acessibilidade */
+      .visually-hidden {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
+
+      /* Focus visible para melhor acessibilidade */
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid #007bff;
+        outline-offset: 2px;
+      }
+
+      /* Responsivo para exercícios */
+      @media (max-width: 768px) {
+        .exercise-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .exercise-meta {
+          align-self: stretch;
+          justify-content: space-between;
+        }
+
+        .exercise-actions {
+          flex-direction: column;
+        }
+
+        .exercise-actions button {
+          width: 100%;
+        }
+      }
+
+      /* Sistema de Navegação */
+      .course-navigation {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-top: 2rem;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .nav-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .course-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .lesson-indicator {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .nav-progress {
+        text-align: center;
+        min-width: 200px;
+      }
+
+      .progress-bar {
+        background: rgba(255,255,255,0.2);
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-fill {
+        background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
+      .nav-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
+
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+
+      .nav-btn:hover {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+
+      .next-btn {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        border: none;
+      }
+
+      .next-btn:hover {
+        background: linear-gradient(135deg, #45a049, #3d8b40);
+        transform: translateY(-2px);
+      }
+
+      .home-btn span,
+      .prev-btn span,
+      .next-btn span {
+        font-size: 0.9rem;
+      }
+
+      /* Responsivo para navegação */
+      @media (max-width: 768px) {
+        .nav-container {
+          grid-template-columns: 1fr;
+          text-align: center;
+          gap: 1.5rem;
+        }
+
+        .nav-buttons {
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .nav-btn {
+          flex: 1;
+          min-width: 120px;
+          justify-content: center;
+        }
+
+        .home-btn {
+          order: 3;
+          flex-basis: 100%;
+        }
+      }
+
+      /* Acessibilidade */
+      .nav-btn:focus {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .nav-btn,
+        .progress-fill {
+          transition: none;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <!-- Header Section -->
-      <header class="header">
+      <header class="header" role="banner">
         <h1>🎨 Aula 5: Criação Dinâmica de Elementos</h1>
         <p class="subtitle">
           Domine a criação e manipulação dinâmica de elementos DOM
         </p>
 
-        <div class="progress-bar">
+        <div class="progress-bar" role="progressbar" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do curso">
           <div class="progress-fill"></div>
         </div>
 
@@ -856,6 +1535,150 @@
           avançados como Virtual DOM.
         </div>
       </header>
+
+      <!-- Console DOM Mini -->
+      <div class="section">
+        <h2>
+          <i class="fas fa-terminal"></i>
+          Console DOM Mini - Criação Dinâmica
+        </h2>
+        <p>Experimente código de criação dinâmica de elementos em tempo real!</p>
+        
+        <div class="console-container">
+          <div class="console-window">
+            <div class="console-header">
+              <div class="console-controls">
+                <span class="control close"></span>
+                <span class="control minimize"></span>
+                <span class="control maximize"></span>
+              </div>
+              <span class="console-title">
+                <i class="fas fa-code"></i>
+                DOM Creator Console
+              </span>
+            </div>
+            
+            <div class="console-body">
+              <div class="console-output" id="consoleOutput">
+                <div class="console-line">
+                  <span class="console-prompt">></span>
+                  <span class="console-text">Console DOM carregado! Teste criação de elementos:</span>
+                </div>
+                <div class="console-line">
+                  <span class="console-prompt">></span>
+                  <span class="console-text example">const div = document.createElement('div');</span>
+                </div>
+                <div class="console-line">
+                  <span class="console-prompt">></span>
+                  <span class="console-text example">div.textContent = 'Hello World!';</span>
+                </div>
+                <div class="console-line">
+                  <span class="console-prompt">></span>
+                  <span class="console-text example">document.body.appendChild(div);</span>
+                </div>
+              </div>
+              
+              <div class="console-input-container">
+                <span class="console-prompt">></span>
+                <input 
+                  type="text" 
+                  class="console-input" 
+                  id="consoleInput" 
+                  placeholder="Digite código DOM (ex: document.createElement('div'))"
+                  autocomplete="off"
+                  aria-label="Campo de entrada do console JavaScript para criação de elementos DOM"
+                />
+                <button class="btn-console-run" id="runConsole" title="Executar (Enter)" aria-label="Executar código JavaScript">
+                  <i class="fas fa-play"></i>
+                </button>
+              </div>
+              
+              <div class="console-examples">
+                <h4><i class="fas fa-lightbulb"></i> Exemplos Rápidos:</h4>
+                <div class="example-buttons">
+                  <button class="example-btn" onclick="insertExample('document.createElement(\'button\')')">
+                    createElement
+                  </button>
+                  <button class="example-btn" onclick="insertExample('element.appendChild(child)')">
+                    appendChild
+                  </button>
+                  <button class="example-btn" onclick="insertExample('element.setAttribute(\'class\', \'btn\')')">
+                    setAttribute
+                  </button>
+                  <button class="example-btn" onclick="insertExample('document.createDocumentFragment()')">
+                    DocumentFragment
+                  </button>
+                  <button class="example-btn" onclick="insertExample('element.cloneNode(true)')">
+                    cloneNode
+                  </button>
+                  <button class="example-btn" onclick="insertExample('element.innerHTML = \'<p>HTML</p>\'')">
+                    innerHTML
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sistema de Badges -->
+      <div class="section">
+        <h2>
+          <i class="fas fa-trophy"></i>
+          Badges de Criação DOM
+        </h2>
+        <p>Ganhe badges conforme domina os métodos de criação dinâmica!</p>
+        
+        <div class="badges-container" id="badgesContainer" role="list" aria-label="Badges de conquistas em criação DOM">
+          <div class="badge locked" data-badge="element-creator" role="listitem" aria-label="Badge Criador de Elementos - Bloqueado. Use createElement 5 vezes para desbloquear">
+            <div class="badge-icon" aria-hidden="true">🏗️</div>
+            <div class="badge-info">
+              <div class="badge-title">Criador de Elementos</div>
+              <div class="badge-description">Use createElement() 5 vezes</div>
+            </div>
+          </div>
+          
+          <div class="badge locked" data-badge="dom-builder" role="listitem" aria-label="Badge Construtor DOM - Bloqueado. Crie estruturas hierárquicas para desbloquear">
+            <div class="badge-icon" aria-hidden="true">🧱</div>
+            <div class="badge-info">
+              <div class="badge-title">Construtor DOM</div>
+              <div class="badge-description">Crie estruturas hierárquicas</div>
+            </div>
+          </div>
+          
+          <div class="badge locked" data-badge="performance-optimizer" role="listitem" aria-label="Badge Otimizador de Performance - Bloqueado. Use DocumentFragment para desbloquear">
+            <div class="badge-icon" aria-hidden="true">⚡</div>
+            <div class="badge-info">
+              <div class="badge-title">Otimizador de Performance</div>
+              <div class="badge-description">Use DocumentFragment</div>
+            </div>
+          </div>
+          
+          <div class="badge locked" data-badge="template-master" role="listitem" aria-label="Badge Mestre de Templates - Bloqueado. Crie templates reutilizáveis para desbloquear">
+            <div class="badge-icon" aria-hidden="true">📋</div>
+            <div class="badge-info">
+              <div class="badge-title">Mestre de Templates</div>
+              <div class="badge-description">Crie templates reutilizáveis</div>
+            </div>
+          </div>
+          
+          <div class="badge locked" data-badge="event-connector" role="listitem" aria-label="Badge Conectar Eventos - Bloqueado. Adicione eventos a elementos dinâmicos para desbloquear">
+            <div class="badge-icon" aria-hidden="true">🔗</div>
+            <div class="badge-info">
+              <div class="badge-title">Conectar Eventos</div>
+              <div class="badge-description">Adicione eventos a elementos</div>
+            </div>
+          </div>
+          
+          <div class="badge locked" data-badge="dom-ninja" role="listitem" aria-label="Badge Ninja DOM - Bloqueado. Complete todos os exercícios avançados para desbloquear">
+            <div class="badge-icon" aria-hidden="true">🥷</div>
+            <div class="badge-info">
+              <div class="badge-title">Ninja DOM</div>
+              <div class="badge-description">Complete exercícios avançados</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Status Display -->
       <div class="status-display" id="statusDisplay">
@@ -991,7 +1814,169 @@
       </div>
 
       <!-- Dynamic TODO System -->
-      <section class="full-width-section">
+            <!-- Exercícios Práticos -->
+      <section class="section" role="main">
+        <h2>
+          <i class="fas fa-code" aria-hidden="true"></i>
+          Exercícios Práticos - Criação Dinâmica
+        </h2>
+        <p>Pratique seus conhecimentos sobre criação dinâmica de elementos com exercícios interativos!</p>
+        
+        <div class="exercises-container" role="list" aria-label="Lista de exercícios práticos sobre criação dinâmica DOM">
+          <!-- Exercício 1 -->
+          <article class="exercise-card" data-exercise="1" role="listitem">
+            <div class="exercise-header">
+              <h3><i class="fas fa-hammer" aria-hidden="true"></i> Exercício 1: Criar Elemento Simples</h3>
+              <div class="exercise-meta">
+                <span><i class="fas fa-clock" aria-hidden="true"></i> 5 min</span>
+                <span><i class="fas fa-signal" aria-hidden="true"></i> Básico</span>
+              </div>
+            </div>
+            
+            <div class="exercise-content">
+              <p><strong>Objetivo:</strong> Use createElement() para criar um botão com texto e adicionar ao DOM.</p>
+              
+              <div class="exercise-demo">
+                <div class="task-display">Tarefa: Criar um botão com o texto "Clique aqui!" e adicioná-lo ao container</div>
+                <div class="exercise-output" id="exercise1Output" aria-live="polite">
+                  <em>Execute seu código para ver o resultado...</em>
+                </div>
+              </div>
+              
+              <h4><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
+              <div class="code-editor">
+                <label for="exercise1Code" class="visually-hidden">Editor de código para exercício 1</label>
+                <textarea 
+                  class="code-input" 
+                  id="exercise1Code" 
+                  placeholder="// Crie um botão usando createElement
+const button = document.createElement('button');
+button.textContent = 'Clique aqui!';
+// Adicione ao container..."
+                  aria-describedby="exercise1Feedback"
+                ></textarea>
+              </div>
+              
+              <div class="exercise-actions">
+                <button class="botao" onclick="runExercise(1)" aria-describedby="exercise1Output">
+                  <i class="fas fa-play" aria-hidden="true"></i> Executar
+                </button>
+                <button class="botao-secundario" onclick="showHint(1)">
+                  <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
+                </button>
+                <button class="botao-terciario" onclick="showSolution(1)">
+                  <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
+                </button>
+              </div>
+              
+              <div class="exercise-feedback" id="exercise1Feedback" aria-live="polite"></div>
+            </div>
+          </article>
+
+          <!-- Exercício 2 -->
+          <article class="exercise-card" data-exercise="2" role="listitem">
+            <div class="exercise-header">
+              <h3><i class="fas fa-layer-group" aria-hidden="true"></i> Exercício 2: Estrutura Hierárquica</h3>
+              <div class="exercise-meta">
+                <span><i class="fas fa-clock" aria-hidden="true"></i> 8 min</span>
+                <span><i class="fas fa-signal" aria-hidden="true"></i> Intermediário</span>
+              </div>
+            </div>
+            
+            <div class="exercise-content">
+              <p><strong>Objetivo:</strong> Crie uma estrutura de card com título, conteúdo e botão usando apenas createElement.</p>
+              
+              <div class="exercise-demo">
+                <div class="task-display">Tarefa: Criar div > h3 + p + button com classes e conteúdo apropriados</div>
+                <div class="exercise-output" id="exercise2Output" aria-live="polite">
+                  <em>Execute seu código para ver o resultado...</em>
+                </div>
+              </div>
+              
+              <h4><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
+              <div class="code-editor">
+                <label for="exercise2Code" class="visually-hidden">Editor de código para exercício 2</label>
+                <textarea 
+                  class="code-input" 
+                  id="exercise2Code" 
+                  placeholder="// Crie uma estrutura de card
+const card = document.createElement('div');
+card.className = 'card';
+// Adicione h3, p e button..."
+                  aria-describedby="exercise2Feedback"
+                ></textarea>
+              </div>
+              
+              <div class="exercise-actions">
+                <button class="botao" onclick="runExercise(2)" aria-describedby="exercise2Output">
+                  <i class="fas fa-play" aria-hidden="true"></i> Executar
+                </button>
+                <button class="botao-secundario" onclick="showHint(2)">
+                  <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
+                </button>
+                <button class="botao-terciario" onclick="showSolution(2)">
+                  <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
+                </button>
+              </div>
+              
+              <div class="exercise-feedback" id="exercise2Feedback" aria-live="polite"></div>
+            </div>
+          </article>
+
+          <!-- Exercício 3 -->
+          <article class="exercise-card" data-exercise="3" role="listitem">
+            <div class="exercise-header">
+              <h3><i class="fas fa-rocket" aria-hidden="true"></i> Exercício 3: DocumentFragment Otimizado</h3>
+              <div class="exercise-meta">
+                <span><i class="fas fa-clock" aria-hidden="true"></i> 12 min</span>
+                <span><i class="fas fa-signal" aria-hidden="true"></i> Avançado</span>
+              </div>
+            </div>
+            
+            <div class="exercise-content">
+              <p><strong>Objetivo:</strong> Use DocumentFragment para criar uma lista de 10 itens de forma otimizada.</p>
+              
+              <div class="exercise-demo">
+                <div class="task-display">Tarefa: Criar lista com 10 itens usando DocumentFragment para otimizar performance</div>
+                <div class="exercise-output" id="exercise3Output" aria-live="polite">
+                  <em>Execute seu código para ver o resultado...</em>
+                </div>
+              </div>
+              
+              <h4><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
+              <div class="code-editor">
+                <label for="exercise3Code" class="visually-hidden">Editor de código para exercício 3</label>
+                <textarea 
+                  class="code-input" 
+                  id="exercise3Code" 
+                  placeholder="// Use DocumentFragment para otimização
+const fragment = document.createDocumentFragment();
+const ul = document.createElement('ul');
+// Crie 10 itens e adicione ao fragment..."
+                  aria-describedby="exercise3Feedback"
+                ></textarea>
+              </div>
+              
+              <div class="exercise-actions">
+                <button class="botao" onclick="runExercise(3)" aria-describedby="exercise3Output">
+                  <i class="fas fa-play" aria-hidden="true"></i> Executar
+                </button>
+                <button class="botao-secundario" onclick="showHint(3)">
+                  <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
+                </button>
+                <button class="botao-terciario" onclick="showSolution(3)">
+                  <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
+                </button>
+              </div>
+              
+              <div class="exercise-feedback" id="exercise3Feedback" aria-live="polite"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Sistema TODO Dinâmico -->
+      <section class="todo-system">
         <h2>📋 Sistema TODO Dinâmico - Aplicação Completa</h2>
 
         <div class="concept-explanation">
@@ -1049,8 +2034,420 @@
       </div>
     </div>
 
+    <!-- Sistema de Navegação -->
+    <nav class="course-navigation">
+      <div class="nav-container">
+        <div class="nav-info">
+          <span class="course-title">
+            <i class="fas fa-graduation-cap"></i>
+            Curso JavaScript
+          </span>
+          <span class="lesson-indicator">Aula 5 de 9</span>
+        </div>
+        
+        <div class="nav-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 55.5%"></div>
+          </div>
+          <span class="progress-text">56% concluído</span>
+        </div>
+        
+        <div class="nav-buttons">
+          <a href="../aula-04/index.html" class="nav-btn prev-btn">
+            <i class="fas fa-chevron-left"></i>
+            <span>Aula Anterior</span>
+          </a>
+          
+          <a href="../" class="nav-btn home-btn">
+            <i class="fas fa-home"></i>
+            <span>Início</span>
+          </a>
+          
+          <a href="../aula-06/index.html" class="nav-btn next-btn">
+            <span>Próxima Aula</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+    </nav>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+      // Console DOM Mini
+      let commandHistory = [];
+      let historyIndex = -1;
+      let exerciseContainer = null;
+
+      function insertExample(code) {
+        const input = document.getElementById('consoleInput');
+        input.value = code;
+        input.focus();
+      }
+
+      function addToConsole(text, type = 'output') {
+        const output = document.getElementById('consoleOutput');
+        const line = document.createElement('div');
+        line.className = 'console-line';
+        
+        const prompt = document.createElement('span');
+        prompt.className = 'console-prompt';
+        prompt.textContent = type === 'input' ? '> ' : '  ';
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = `console-text ${type}`;
+        textSpan.textContent = text;
+        
+        line.appendChild(prompt);
+        line.appendChild(textSpan);
+        output.appendChild(line);
+        
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function runConsoleCode() {
+        const input = document.getElementById('consoleInput');
+        const code = input.value.trim();
+        
+        if (!code) return;
+
+        // Adicionar comando ao histórico
+        commandHistory.push(code);
+        historyIndex = commandHistory.length;
+        
+        // Mostrar comando executado
+        addToConsole(code, 'input');
+        
+        try {
+          // Criar container seguro para elementos
+          if (!exerciseContainer) {
+            exerciseContainer = document.createElement('div');
+            exerciseContainer.style.cssText = `
+              border: 2px solid #007bff;
+              border-radius: 8px;
+              padding: 1rem;
+              margin: 1rem 0;
+              background: #f8f9fa;
+              min-height: 100px;
+            `;
+            exerciseContainer.innerHTML = '<strong>Área de teste DOM:</strong><br>';
+            document.querySelector('.console-container').appendChild(exerciseContainer);
+          }
+
+          // Executar código de forma segura
+          const result = evaluateDOM(code);
+          
+          if (result !== undefined) {
+            addToConsole(String(result), 'success');
+          }
+          
+          // Verificar conquistas
+          checkDOMBadges(code);
+          
+        } catch (error) {
+          addToConsole('Erro: ' + error.message, 'error');
+        }
+        
+        input.value = '';
+      }
+
+      function evaluateDOM(code) {
+        // Mapear variáveis comuns para o contexto
+        const context = {
+          element: exerciseContainer,
+          container: exerciseContainer,
+          testArea: exerciseContainer
+        };
+        
+        // Substituir referências comuns
+        let processedCode = code
+          .replace(/document\.body/g, 'container')
+          .replace(/document\.getElementById\(['"`].*?['"`]\)/g, 'container');
+        
+        // Executar no contexto seguro
+        try {
+          const func = new Function('container', 'element', 'testArea', `
+            ${processedCode}
+          `);
+          return func(exerciseContainer, exerciseContainer, exerciseContainer);
+        } catch (error) {
+          // Tentar execução direta se não funcionar
+          return eval(code);
+        }
+      }
+
+      // Sistema de Badges
+      const badgeTracking = {
+        elementCreator: 0,
+        domBuilder: false,
+        performanceOptimizer: false,
+        templateMaster: false,
+        eventConnector: false,
+        domNinja: false
+      };
+
+      function checkDOMBadges(code) {
+        // Badge: Criador de Elementos
+        if (code.includes('createElement')) {
+          badgeTracking.elementCreator++;
+          if (badgeTracking.elementCreator >= 5) {
+            unlockBadge('element-creator');
+          }
+        }
+
+        // Badge: Construtor DOM
+        if (code.includes('appendChild') && code.includes('createElement')) {
+          badgeTracking.domBuilder = true;
+          unlockBadge('dom-builder');
+        }
+
+        // Badge: Otimizador de Performance
+        if (code.includes('DocumentFragment') || code.includes('createDocumentFragment')) {
+          badgeTracking.performanceOptimizer = true;
+          unlockBadge('performance-optimizer');
+        }
+
+        // Badge: Mestre de Templates
+        if (code.includes('cloneNode') || (code.includes('createElement') && code.includes('template'))) {
+          badgeTracking.templateMaster = true;
+          unlockBadge('template-master');
+        }
+
+        // Badge: Conectar Eventos
+        if (code.includes('addEventListener') || code.includes('onclick')) {
+          badgeTracking.eventConnector = true;
+          unlockBadge('event-connector');
+        }
+      }
+
+      function unlockBadge(badgeId) {
+        const badge = document.querySelector(`[data-badge="${badgeId}"]`);
+        if (badge && badge.classList.contains('locked')) {
+          badge.classList.remove('locked');
+          badge.classList.add('unlocked');
+          // Atualizar acessibilidade
+          const ariaLabel = badge.getAttribute('aria-label');
+          badge.setAttribute('aria-label', ariaLabel.replace('Bloqueado', 'Desbloqueado'));
+          showBadgeNotification(badgeId);
+        }
+      }
+
+      function showBadgeNotification(badgeId) {
+        const badgeNames = {
+          'element-creator': 'Criador de Elementos',
+          'dom-builder': 'Construtor DOM',
+          'performance-optimizer': 'Otimizador de Performance',
+          'template-master': 'Mestre de Templates',
+          'event-connector': 'Conectar Eventos',
+          'dom-ninja': 'Ninja DOM'
+        };
+        
+        const notification = document.createElement('div');
+        notification.className = 'badge-notification';
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'assertive');
+        notification.innerHTML = `
+          <div class="notification-content">
+            <i class="fas fa-trophy" aria-hidden="true"></i>
+            <span class="notification-text">Badge desbloqueado: ${badgeNames[badgeId]}!</span>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+
+      // Exercícios
+      function runExercise(exerciseNumber) {
+        const code = document.getElementById(`exercise${exerciseNumber}Code`).value;
+        const output = document.getElementById(`exercise${exerciseNumber}Output`);
+        const feedback = document.getElementById(`exercise${exerciseNumber}Feedback`);
+        
+        // Limpar feedback anterior
+        feedback.className = 'exercise-feedback';
+        feedback.textContent = '';
+        
+        if (!code.trim()) {
+          output.innerHTML = '<em>Por favor, digite algum código primeiro.</em>';
+          return;
+        }
+        
+        try {
+          // Criar container para o exercício
+          const exerciseContainer = document.createElement('div');
+          exerciseContainer.style.cssText = `
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+            background: white;
+            min-height: 50px;
+          `;
+          
+          output.innerHTML = '';
+          output.appendChild(exerciseContainer);
+          
+          // Avaliar exercício específico
+          const success = evaluateExercise(exerciseNumber, code, exerciseContainer);
+          
+          if (success) {
+            output.classList.add('success');
+            output.classList.remove('error');
+            feedback.className = 'exercise-feedback success show';
+            feedback.textContent = '✅ Perfeito! Exercício concluído com sucesso.';
+            
+            // Desbloquear badge relacionado
+            if (exerciseNumber === 3) unlockBadge('performance-optimizer');
+          }
+          
+        } catch (error) {
+          output.classList.add('error');
+          output.classList.remove('success');
+          output.textContent = 'Erro: ' + error.message;
+        }
+      }
+
+      function evaluateExercise(exerciseNumber, code, container) {
+        const context = {
+          container: container,
+          appendChild: container.appendChild.bind(container)
+        };
+        
+        try {
+          const func = new Function('container', `
+            ${code}
+            return container;
+          `);
+          
+          const result = func(container);
+          
+          // Validar resultado baseado no exercício
+          switch (exerciseNumber) {
+            case 1:
+              return container.querySelector('button') && 
+                     container.querySelector('button').textContent.includes('Clique');
+            case 2:
+              return container.querySelector('.card') && 
+                     container.querySelector('h3') && 
+                     container.querySelector('p');
+            case 3:
+              return container.querySelector('ul') && 
+                     container.querySelectorAll('li').length >= 10;
+            default:
+              return true;
+          }
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      function showHint(exerciseNumber) {
+        const feedback = document.getElementById(`exercise${exerciseNumber}Feedback`);
+        const hints = {
+          1: 'Dica: Use document.createElement("button"), defina textContent e use appendChild()',
+          2: 'Dica: Crie div com classe "card", depois h3, p e button. Use appendChild para cada um.',
+          3: 'Dica: Use createDocumentFragment(), crie ul, faça loop de 1 a 10 criando li elementos'
+        };
+        
+        feedback.className = 'exercise-feedback hint show';
+        feedback.textContent = hints[exerciseNumber] || 'Sem dica disponível para este exercício.';
+      }
+
+      function showSolution(exerciseNumber) {
+        const codeInput = document.getElementById(`exercise${exerciseNumber}Code`);
+        const solutions = {
+          1: `const button = document.createElement('button');
+button.textContent = 'Clique aqui!';
+button.className = 'btn btn-primary';
+container.appendChild(button);`,
+          2: `const card = document.createElement('div');
+card.className = 'card';
+
+const h3 = document.createElement('h3');
+h3.textContent = 'Título do Card';
+
+const p = document.createElement('p');
+p.textContent = 'Conteúdo do card aqui.';
+
+const button = document.createElement('button');
+button.textContent = 'Ação';
+button.className = 'btn btn-primary';
+
+card.appendChild(h3);
+card.appendChild(p);
+card.appendChild(button);
+container.appendChild(card);`,
+          3: `const fragment = document.createDocumentFragment();
+const ul = document.createElement('ul');
+
+for (let i = 1; i <= 10; i++) {
+  const li = document.createElement('li');
+  li.textContent = \`Item \${i}\`;
+  ul.appendChild(li);
+}
+
+fragment.appendChild(ul);
+container.appendChild(fragment);`
+        };
+        
+        codeInput.value = solutions[exerciseNumber] || '// Solução não disponível';
+      }
+
+      // Event Listeners
+      document.addEventListener('DOMContentLoaded', function() {
+        const consoleInput = document.getElementById('consoleInput');
+        const runButton = document.getElementById('runConsole');
+        
+        if (consoleInput && runButton) {
+          runButton.addEventListener('click', runConsoleCode);
+          
+          consoleInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              runConsoleCode();
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              if (historyIndex > 0) {
+                historyIndex--;
+                consoleInput.value = commandHistory[historyIndex];
+              }
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                consoleInput.value = commandHistory[historyIndex];
+              } else {
+                historyIndex = commandHistory.length;
+                consoleInput.value = '';
+              }
+            }
+          });
+        }
+
+        // Adicionar informações de atalhos de teclado
+        const codeInputs = document.querySelectorAll('.code-input');
+        codeInputs.forEach(input => {
+          input.setAttribute('title', 'Use Ctrl+Enter para executar o código');
+          input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+              const exerciseNumber = e.target.id.match(/exercise(\d+)Code/)?.[1];
+              if (exerciseNumber) {
+                runExercise(parseInt(exerciseNumber));
+              }
+            }
+          });
+        });
+      });
+    </script>
     
     <script src="codigo-progressivo.js"></script>
   </body>

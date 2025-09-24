@@ -4,581 +4,732 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistema de Avaliação - Curso JavaScript</title>
+
+    <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS Customizado -->
     <link rel="stylesheet" href="estilos-guia.css" />
+
+    <style>
+      .evaluation-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+      }
+
+      .rubric-table {
+        font-size: 0.9rem;
+      }
+
+      .rubric-table th {
+        background: var(--primary-color);
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      .rubric-cell {
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        vertical-align: top;
+      }
+
+      .level-excellent {
+        background-color: #d4edda;
+      }
+      .level-proficient {
+        background-color: #d1ecf1;
+      }
+      .level-developing {
+        background-color: #fff3cd;
+      }
+      .level-beginning {
+        background-color: #f8d7da;
+      }
+
+      .student-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary-color);
+      }
+
+      .student-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .progress-ring {
+        width: 60px;
+        height: 60px;
+      }
+
+      .progress-ring-circle {
+        transition: stroke-dasharray 0.35s;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+
+      .feedback-form {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+
+      .competency-meter {
+        height: 20px;
+        background: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .competency-fill {
+        height: 100%;
+        transition: width 0.8s ease;
+        border-radius: 10px;
+      }
+
+      .analytics-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+      }
+
+      .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .trend-up {
+        color: var(--success-color);
+      }
+      .trend-down {
+        color: var(--danger-color);
+      }
+      .trend-stable {
+        color: var(--warning-color);
+      }
+    </style>
   </head>
   <body>
     <!-- Header -->
-    <header class="header-guia">
-      <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-          <a class="navbar-brand" href="index.html">
-            <i class="fas fa-clipboard-check"></i>
-            Sistema de Avaliação
-          </a>
+    <div class="evaluation-header">
+      <h1><i class="fas fa-clipboard-check"></i> Sistema de Avaliação</h1>
+      <p class="mb-0">
+        Acompanhamento completo do progresso dos alunos no Curso JavaScript
+      </p>
+    </div>
+
+    <div class="container-fluid">
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-tabs nav-fill mb-4" id="evaluationTabs" role="tablist">
+        <li class="nav-item" role="presentation">
           <button
-            class="navbar-toggler"
+            class="nav-link active"
+            id="dashboard-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#dashboard"
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarAvaliacao"
           >
-            <span class="navbar-toggler-icon"></span>
+            <i class="fas fa-chart-line"></i> Dashboard
           </button>
-          <div class="collapse navbar-collapse" id="navbarAvaliacao">
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="#rubricas">
-                  <i class="fas fa-list-check"></i> Rubricas
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#progresso">
-                  <i class="fas fa-chart-line"></i> Progresso
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#relatorios">
-                  <i class="fas fa-file-chart"></i> Relatórios
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="index.html">
-                  <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-              </li>
-            </ul>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="students-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#students"
+            type="button"
+          >
+            <i class="fas fa-users"></i> Alunos
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="rubrics-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#rubrics"
+            type="button"
+          >
+            <i class="fas fa-list-check"></i> Rubricas
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="feedback-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#feedback"
+            type="button"
+          >
+            <i class="fas fa-comments"></i> Feedback
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="analytics-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#analytics"
+            type="button"
+          >
+            <i class="fas fa-chart-pie"></i> Analytics
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content" id="evaluationTabContent">
+        <!-- Dashboard Tab -->
+        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+          <div class="row">
+            <!-- Métricas Principais -->
+            <div class="col-md-3 mb-4">
+              <div class="analytics-card text-center">
+                <div class="metric-value" id="totalStudents">24</div>
+                <div class="text-muted">Total de Alunos</div>
+                <div class="trend-up mt-2">
+                  <i class="fas fa-arrow-up"></i> +3 esta semana
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="analytics-card text-center">
+                <div class="metric-value" id="averageProgress">73%</div>
+                <div class="text-muted">Progresso Médio</div>
+                <div class="trend-up mt-2">
+                  <i class="fas fa-arrow-up"></i> +8% este mês
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="analytics-card text-center">
+                <div class="metric-value" id="completionRate">85%</div>
+                <div class="text-muted">Taxa de Conclusão</div>
+                <div class="trend-stable mt-2">
+                  <i class="fas fa-minus"></i> Estável
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="analytics-card text-center">
+                <div class="metric-value" id="averageGrade">8.2</div>
+                <div class="text-muted">Nota Média</div>
+                <div class="trend-up mt-2">
+                  <i class="fas fa-arrow-up"></i> +0.3 pontos
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Gráfico de Progresso por Aula -->
+            <div class="col-md-8 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-chart-line"></i> Progresso por Aula</h5>
+                <canvas id="progressChart" height="300"></canvas>
+              </div>
+            </div>
+
+            <!-- Top Performers -->
+            <div class="col-md-4 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-trophy"></i> Top Performers</h5>
+                <div id="topPerformers">
+                  <!-- Será preenchido dinamicamente -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Alertas e Notificações -->
+            <div class="col-md-6 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-exclamation-triangle"></i> Alertas</h5>
+                <div id="alertsList">
+                  <div class="alert alert-warning">
+                    <i class="fas fa-clock"></i> 3 alunos não entregaram a
+                    Atividade 4
+                  </div>
+                  <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Nova turma iniciando na
+                    próxima semana
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Atividades Recentes -->
+            <div class="col-md-6 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-history"></i> Atividades Recentes</h5>
+                <div id="recentActivities">
+                  <!-- Será preenchido dinamicamente -->
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </nav>
-    </header>
 
-    <!-- Main Content -->
-    <main class="container-fluid">
-      <div class="row">
-        <!-- Sidebar -->
-        <aside class="col-md-3 sidebar-guia">
-          <div class="sidebar-content">
-            <h5><i class="fas fa-clipboard-check"></i> Avaliação</h5>
-            <nav class="nav flex-column">
-              <a class="nav-link" href="#intro-avaliacao">
-                <i class="fas fa-info-circle"></i> Introdução
-              </a>
-              <a class="nav-link" href="#tipos-avaliacao">
-                <i class="fas fa-layer-group"></i> Tipos de Avaliação
-              </a>
-              <a class="nav-link" href="#rubricas">
-                <i class="fas fa-list-check"></i> Rubricas Detalhadas
-              </a>
-              <a class="nav-link" href="#criterios">
-                <i class="fas fa-balance-scale"></i> Critérios
-              </a>
-              <a class="nav-link" href="#progresso">
-                <i class="fas fa-chart-line"></i> Acompanhamento
-              </a>
-              <a class="nav-link" href="#ferramentas">
-                <i class="fas fa-tools"></i> Ferramentas
-              </a>
-              <a class="nav-link" href="#relatorios">
-                <i class="fas fa-file-chart"></i> Relatórios
-              </a>
-            </nav>
+        <!-- Students Tab -->
+        <div class="tab-pane fade" id="students" role="tabpanel">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text"
+                  ><i class="fas fa-search"></i
+                ></span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="studentSearch"
+                  placeholder="Buscar aluno por nome ou email..."
+                />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="classFilter">
+                <option value="">Todas as turmas</option>
+                <option value="turma-a">Turma A</option>
+                <option value="turma-b">Turma B</option>
+                <option value="turma-c">Turma C</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-primary" onclick="addNewStudent()">
+                <i class="fas fa-plus"></i> Novo Aluno
+              </button>
+            </div>
           </div>
-        </aside>
 
-        <!-- Content Area -->
-        <section class="col-md-9 content-guia">
-          <!-- Introdução -->
-          <section id="intro-avaliacao" class="content-section">
-            <div class="section-header">
-              <h1>
-                <i class="fas fa-clipboard-check"></i> Sistema de Avaliação
-              </h1>
-              <p class="lead">
-                Ferramentas e critérios para avaliar o progresso dos alunos de
-                forma justa e abrangente
+          <div class="row" id="studentsGrid">
+            <!-- Cards dos alunos serão gerados dinamicamente -->
+          </div>
+        </div>
+
+        <!-- Rubrics Tab -->
+        <div class="tab-pane fade" id="rubrics" role="tabpanel">
+          <div class="row">
+            <div class="col-12 mb-4">
+              <h4><i class="fas fa-list-check"></i> Rubricas de Avaliação</h4>
+              <p class="text-muted">
+                Critérios detalhados para avaliação das competências em
+                JavaScript
               </p>
             </div>
+          </div>
 
-            <div class="row">
-              <div class="col-lg-8">
-                <div class="card mb-4">
-                  <div class="card-body">
-                    <h3>
-                      <i class="fas fa-target"></i> Filosofia de Avaliação
-                    </h3>
-                    <p>
-                      O sistema de avaliação do curso JavaScript segue uma
-                      abordagem <strong>formativa e inclusiva</strong>, focando
-                      no progresso individual e no desenvolvimento de
-                      competências práticas.
-                    </p>
-
-                    <div class="row">
-                      <div class="col-md-6">
-                        <h5>Princípios Fundamentais</h5>
-                        <ul>
-                          <li>
-                            <strong>Avaliação Contínua:</strong> Múltiplos
-                            pontos de verificação
-                          </li>
-                          <li>
-                            <strong>Feedback Construtivo:</strong> Orientação
-                            para melhoria
-                          </li>
-                          <li>
-                            <strong>Transparência:</strong> Critérios claros e
-                            conhecidos
-                          </li>
-                          <li>
-                            <strong>Inclusividade:</strong> Respeito às
-                            diferenças individuais
-                          </li>
-                        </ul>
-                      </div>
-                      <div class="col-md-6">
-                        <h5>Foco nas Competências</h5>
-                        <ul>
-                          <li>Pensamento computacional</li>
-                          <li>Resolução de problemas</li>
-                          <li>Sintaxe e semântica JavaScript</li>
-                          <li>Trabalho colaborativo</li>
-                          <li>Comunicação técnica</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-lg-4">
-                <div class="card status-card">
-                  <div class="card-body text-center">
-                    <h4><i class="fas fa-graduation-cap text-white"></i></h4>
-                    <h5>Distribuição da Nota</h5>
-                    <canvas id="chartNotas" width="200" height="200"></canvas>
-                    <div class="legend mt-3">
-                      <div class="legend-item text-white">
-                        <span
-                          class="color-box"
-                          style="background: #28a745"
-                        ></span>
-                        <span>Projetos (40%)</span>
-                      </div>
-                      <div class="legend-item text-white">
-                        <span
-                          class="color-box"
-                          style="background: #007bff"
-                        ></span>
-                        <span>Exercícios (30%)</span>
-                      </div>
-                      <div class="legend-item text-white">
-                        <span
-                          class="color-box"
-                          style="background: #ffc107"
-                        ></span>
-                        <span>Participação (20%)</span>
-                      </div>
-                      <div class="legend-item text-white">
-                        <span
-                          class="color-box"
-                          style="background: #dc3545"
-                        ></span>
-                        <span>Avaliações (10%)</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <!-- Rubrica de Programação -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5><i class="fas fa-code"></i> Competências de Programação</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table rubric-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Critério</th>
+                      <th style="width: 20%" class="level-excellent">
+                        Excelente (4)
+                      </th>
+                      <th style="width: 20%" class="level-proficient">
+                        Proficiente (3)
+                      </th>
+                      <th style="width: 20%" class="level-developing">
+                        Em Desenvolvimento (2)
+                      </th>
+                      <th style="width: 20%" class="level-beginning">
+                        Iniciante (1)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="rubric-cell">
+                        <strong>Sintaxe e Estrutura</strong>
+                      </td>
+                      <td class="rubric-cell level-excellent">
+                        Código limpo, bem estruturado, sem erros de sintaxe. Usa
+                        convenções apropriadas.
+                      </td>
+                      <td class="rubric-cell level-proficient">
+                        Código mostly correto, pequenos erros de sintaxe
+                        ocasionais. Boa estrutura geral.
+                      </td>
+                      <td class="rubric-cell level-developing">
+                        Alguns erros de sintaxe que impedem execução. Estrutura
+                        básica presente.
+                      </td>
+                      <td class="rubric-cell level-beginning">
+                        Muitos erros de sintaxe. Dificuldade com estrutura
+                        básica do código.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="rubric-cell">
+                        <strong>Lógica de Programação</strong>
+                      </td>
+                      <td class="rubric-cell level-excellent">
+                        Lógica clara e eficiente. Resolve problemas complexos
+                        com elegância.
+                      </td>
+                      <td class="rubric-cell level-proficient">
+                        Lógica correta para a maioria dos casos. Abordagem
+                        sistemática.
+                      </td>
+                      <td class="rubric-cell level-developing">
+                        Lógica básica funcionando. Algumas dificuldades com
+                        casos específicos.
+                      </td>
+                      <td class="rubric-cell level-beginning">
+                        Dificuldade para implementar lógica básica. Precisa de
+                        muito suporte.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="rubric-cell">
+                        <strong>Uso de Variáveis</strong>
+                      </td>
+                      <td class="rubric-cell level-excellent">
+                        Usa let/const apropriadamente. Nomes descritivos.
+                        Entende escopo completamente.
+                      </td>
+                      <td class="rubric-cell level-proficient">
+                        Boa declaração de variáveis. Entende escopo básico.
+                        Nomes adequados.
+                      </td>
+                      <td class="rubric-cell level-developing">
+                        Declara variáveis corretamente na maioria das vezes.
+                        Escopo básico.
+                      </td>
+                      <td class="rubric-cell level-beginning">
+                        Confunde var/let/const. Dificuldades com escopo e
+                        nomenclatura.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="rubric-cell"><strong>Funções</strong></td>
+                      <td class="rubric-cell level-excellent">
+                        Cria funções modulares, reutilizáveis. Usa parâmetros e
+                        return efetivamente.
+                      </td>
+                      <td class="rubric-cell level-proficient">
+                        Cria funções funcionais. Entende parâmetros e return.
+                        Boa modularização.
+                      </td>
+                      <td class="rubric-cell level-developing">
+                        Cria funções básicas. Uso limitado de parâmetros e
+                        return.
+                      </td>
+                      <td class="rubric-cell level-beginning">
+                        Dificuldade para criar funções. Não entende parâmetros
+                        ou return.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- Tipos de Avaliação -->
-          <section id="tipos-avaliacao" class="content-section">
-            <div class="section-header">
-              <h2><i class="fas fa-layer-group"></i> Tipos de Avaliação</h2>
-              <p>
-                Diferentes modalidades para capturar o aprendizado de forma
-                abrangente
-              </p>
+          <!-- Rubrica de Resolução de Problemas -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5>
+                <i class="fas fa-puzzle-piece"></i> Resolução de Problemas
+              </h5>
             </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-4">
-                <div class="card tipo-avaliacao-card formativa">
-                  <div class="card-header">
-                    <h4><i class="fas fa-seedling"></i> Avaliação Formativa</h4>
-                    <span class="badge badge-formativa">Contínua</span>
-                  </div>
-                  <div class="card-body">
-                    <p>
-                      <strong>Objetivo:</strong> Monitorar o progresso e
-                      fornecer feedback para melhoria.
-                    </p>
-
-                    <h6>Instrumentos:</h6>
-                    <ul>
-                      <li>Observação durante exercícios</li>
-                      <li>Análise de código produzido</li>
-                      <li>Participação em discussões</li>
-                      <li>Autoavaliação dos alunos</li>
-                      <li>Peer review (avaliação por pares)</li>
-                    </ul>
-
-                    <h6>Frequência:</h6>
-                    <p>A cada aula, durante todas as atividades práticas.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-4">
-                <div class="card tipo-avaliacao-card somativa">
-                  <div class="card-header">
-                    <h4><i class="fas fa-trophy"></i> Avaliação Somativa</h4>
-                    <span class="badge badge-somativa">Periódica</span>
-                  </div>
-                  <div class="card-body">
-                    <p>
-                      <strong>Objetivo:</strong> Verificar o domínio de
-                      competências ao final de módulos.
-                    </p>
-
-                    <h6>Instrumentos:</h6>
-                    <ul>
-                      <li>Projetos práticos individuais</li>
-                      <li>Projetos em grupo</li>
-                      <li>Quizzes e testes conceituais</li>
-                      <li>Apresentações técnicas</li>
-                      <li>Portfolio de trabalhos</li>
-                    </ul>
-
-                    <h6>Frequência:</h6>
-                    <p>Ao final de cada módulo (3-4 vezes no curso).</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-4">
-                <div class="card tipo-avaliacao-card diagnostica">
-                  <div class="card-header">
-                    <h4><i class="fas fa-search"></i> Avaliação Diagnóstica</h4>
-                    <span class="badge badge-diagnostica">Inicial</span>
-                  </div>
-                  <div class="card-body">
-                    <p>
-                      <strong>Objetivo:</strong> Identificar conhecimentos
-                      prévios e necessidades específicas.
-                    </p>
-
-                    <h6>Instrumentos:</h6>
-                    <ul>
-                      <li>Questionário inicial de conhecimentos</li>
-                      <li>Teste de lógica básica</li>
-                      <li>Entrevista informal</li>
-                      <li>Autoavaliação de experiência</li>
-                    </ul>
-
-                    <h6>Frequência:</h6>
-                    <p>Início do curso e início de novos módulos.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-4">
-                <div class="card tipo-avaliacao-card adaptativa">
-                  <div class="card-header">
-                    <h4><i class="fas fa-adjust"></i> Avaliação Adaptativa</h4>
-                    <span class="badge badge-adaptativa">Personalizada</span>
-                  </div>
-                  <div class="card-body">
-                    <p>
-                      <strong>Objetivo:</strong> Adaptar o nível de dificuldade
-                      conforme o progresso individual.
-                    </p>
-
-                    <h6>Instrumentos:</h6>
-                    <ul>
-                      <li>Exercícios com níveis progressivos</li>
-                      <li>Desafios opcionais avançados</li>
-                      <li>Projetos com complexidade variável</li>
-                      <li>Trilhas de aprendizado personalizadas</li>
-                    </ul>
-
-                    <h6>Frequência:</h6>
-                    <p>Conforme necessidade e ritmo individual.</p>
-                  </div>
-                </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table rubric-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Critério</th>
+                      <th style="width: 20%" class="level-excellent">
+                        Excelente (4)
+                      </th>
+                      <th style="width: 20%" class="level-proficient">
+                        Proficiente (3)
+                      </th>
+                      <th style="width: 20%" class="level-developing">
+                        Em Desenvolvimento (2)
+                      </th>
+                      <th style="width: 20%" class="level-beginning">
+                        Iniciante (1)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="rubric-cell">
+                        <strong>Análise do Problema</strong>
+                      </td>
+                      <td class="rubric-cell level-excellent">
+                        Quebra problemas complexos em partes menores. Identifica
+                        padrões e soluções otimizadas.
+                      </td>
+                      <td class="rubric-cell level-proficient">
+                        Analisa problemas sistemáticamente. Identifica
+                        componentes principais.
+                      </td>
+                      <td class="rubric-cell level-developing">
+                        Análise básica de problemas. Alguma dificuldade com
+                        problemas complexos.
+                      </td>
+                      <td class="rubric-cell level-beginning">
+                        Dificuldade para analisar problemas. Precisa de
+                        orientação constante.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="rubric-cell"><strong>Debugging</strong></td>
+                      <td class="rubric-cell level-excellent">
+                        Identifica e corrige erros eficientemente. Usa
+                        ferramentas de debug apropriadas.
+                      </td>
+                      <td class="rubric-cell level-proficient">
+                        Encontra e corrige a maioria dos erros. Estratégia
+                        básica de debugging.
+                      </td>
+                      <td class="rubric-cell level-developing">
+                        Corrige erros simples. Precisa de ajuda com erros
+                        complexos.
+                      </td>
+                      <td class="rubric-cell level-beginning">
+                        Dificuldade para identificar erros. Estratégia limitada
+                        de debugging.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- Rubricas Detalhadas -->
-          <section id="rubricas" class="content-section">
-            <div class="section-header">
-              <h2><i class="fas fa-list-check"></i> Rubricas de Avaliação</h2>
-              <p>Critérios específicos para avaliação justa e consistente</p>
-            </div>
-
-            <!-- Rubrica Principal -->
-            <div class="card rubrica-card mb-4">
-              <div class="card-header">
-                <h4>
-                  <i class="fas fa-star"></i> Rubrica Geral - Competências
-                  JavaScript
-                </h4>
-              </div>
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-striped rubrica-table">
-                    <thead>
-                      <tr>
-                        <th width="20%">Critério</th>
-                        <th width="20%">Excelente (4)</th>
-                        <th width="20%">Proficiente (3)</th>
-                        <th width="20%">Em Desenvolvimento (2)</th>
-                        <th width="20%">Iniciante (1)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><strong>Sintaxe e Estrutura</strong></td>
-                        <td class="nivel-4">
-                          Código sem erros sintáticos, estrutura clara e bem
-                          organizada
-                        </td>
-                        <td class="nivel-3">
-                          Poucos erros sintáticos, estrutura adequada
-                        </td>
-                        <td class="nivel-2">
-                          Alguns erros sintáticos, estrutura básica
-                        </td>
-                        <td class="nivel-1">
-                          Muitos erros sintáticos, estrutura confusa
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Lógica de Programação</strong></td>
-                        <td class="nivel-4">
-                          Lógica complexa implementada corretamente, soluções
-                          eficientes
-                        </td>
-                        <td class="nivel-3">
-                          Lógica adequada, soluções funcionais
-                        </td>
-                        <td class="nivel-2">
-                          Lógica básica, algumas inconsistências
-                        </td>
-                        <td class="nivel-1">
-                          Lógica simples, muitas inconsistências
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Uso de Variáveis</strong></td>
-                        <td class="nivel-4">
-                          Uso correto de let/const, nomes descritivos, escopo
-                          adequado
-                        </td>
-                        <td class="nivel-3">
-                          Uso adequado de variáveis, nomes razoáveis
-                        </td>
-                        <td class="nivel-2">
-                          Uso básico de variáveis, alguns problemas de escopo
-                        </td>
-                        <td class="nivel-1">
-                          Uso inconsistente, problemas de nomenclatura
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Funções</strong></td>
-                        <td class="nivel-4">
-                          Funções bem estruturadas, reutilizáveis, com
-                          parâmetros apropriados
-                        </td>
-                        <td class="nivel-3">
-                          Funções funcionais, estrutura adequada
-                        </td>
-                        <td class="nivel-2">
-                          Funções básicas, alguns problemas de implementação
-                        </td>
-                        <td class="nivel-1">
-                          Dificuldade com conceito de funções
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Manipulação de Arrays</strong></td>
-                        <td class="nivel-4">
-                          Uso avançado de métodos de array, implementações
-                          eficientes
-                        </td>
-                        <td class="nivel-3">Uso adequado de métodos básicos</td>
-                        <td class="nivel-2">
-                          Uso básico de arrays, alguns métodos
-                        </td>
-                        <td class="nivel-1">
-                          Dificuldade com conceitos de array
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Objetos e JSON</strong></td>
-                        <td class="nivel-4">
-                          Manipulação avançada de objetos, uso de destructuring
-                        </td>
-                        <td class="nivel-3">
-                          Criação e manipulação básica de objetos
-                        </td>
-                        <td class="nivel-2">Conceitos básicos de objetos</td>
-                        <td class="nivel-1">Dificuldade com objetos</td>
-                      </tr>
-                      <tr>
-                        <td><strong>DOM e Eventos</strong></td>
-                        <td class="nivel-4">
-                          Manipulação avançada do DOM, múltiplos tipos de
-                          eventos
-                        </td>
-                        <td class="nivel-3">
-                          Manipulação básica do DOM, eventos simples
-                        </td>
-                        <td class="nivel-2">
-                          Seleção de elementos, eventos básicos
-                        </td>
-                        <td class="nivel-1">
-                          Dificuldade com conceitos de DOM
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Debugging e Testes</strong></td>
-                        <td class="nivel-4">
-                          Uso eficiente de ferramentas de debug, testes básicos
-                        </td>
-                        <td class="nivel-3">
-                          Uso de console.log e ferramentas básicas
-                        </td>
-                        <td class="nivel-2">Identificação de erros simples</td>
-                        <td class="nivel-1">
-                          Dificuldade para identificar erros
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <!-- Rubrica de Projetos -->
-            <div class="card rubrica-card mb-4">
-              <div class="card-header">
-                <h4>
-                  <i class="fas fa-project-diagram"></i> Rubrica Específica -
-                  Projetos
-                </h4>
-              </div>
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-striped rubrica-table">
-                    <thead>
-                      <tr>
-                        <th width="20%">Aspecto</th>
-                        <th width="20%">Excelente (4)</th>
-                        <th width="20%">Proficiente (3)</th>
-                        <th width="20%">Em Desenvolvimento (2)</th>
-                        <th width="20%">Iniciante (1)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><strong>Funcionalidade</strong></td>
-                        <td class="nivel-4">
-                          Todas as funcionalidades implementadas perfeitamente
-                        </td>
-                        <td class="nivel-3">
-                          Principais funcionalidades implementadas
-                        </td>
-                        <td class="nivel-2">
-                          Funcionalidades básicas implementadas
-                        </td>
-                        <td class="nivel-1">
-                          Poucas funcionalidades funcionando
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Interface do Usuário</strong></td>
-                        <td class="nivel-4">
-                          Interface intuitiva, design atrativo, responsiva
-                        </td>
-                        <td class="nivel-3">Interface clara e funcional</td>
-                        <td class="nivel-2">
-                          Interface básica, alguns problemas
-                        </td>
-                        <td class="nivel-1">
-                          Interface confusa ou mal estruturada
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Qualidade do Código</strong></td>
-                        <td class="nivel-4">
-                          Código limpo, bem comentado, estruturado
-                        </td>
-                        <td class="nivel-3">
-                          Código organizado, comentários adequados
-                        </td>
-                        <td class="nivel-2">
-                          Código funcional, organização básica
-                        </td>
-                        <td class="nivel-1">
-                          Código desorganizado, poucos comentários
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Criatividade</strong></td>
-                        <td class="nivel-4">
-                          Soluções inovadoras, funcionalidades extras
-                        </td>
-                        <td class="nivel-3">Algumas soluções criativas</td>
-                        <td class="nivel-2">
-                          Implementação padrão com pequenas variações
-                        </td>
-                        <td class="nivel-1">
-                          Implementação básica sem personalização
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><strong>Documentação</strong></td>
-                        <td class="nivel-4">
-                          Documentação completa, README detalhado
-                        </td>
-                        <td class="nivel-3">Documentação adequada</td>
-                        <td class="nivel-2">Documentação básica</td>
-                        <td class="nivel-1">Pouca ou nenhuma documentação</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Botão para continuar -->
-          <div class="text-center mt-5">
+          <!-- Botões de Ação -->
+          <div class="text-center">
+            <button class="btn btn-primary me-2" onclick="downloadRubrics()">
+              <i class="fas fa-download"></i> Baixar Rubricas
+            </button>
             <button
-              class="btn btn-primary btn-lg"
-              onclick="carregarSistemaProgresso()"
+              class="btn btn-outline-primary"
+              onclick="customizeRubrics()"
             >
-              <i class="fas fa-chart-line"></i> Ver Sistema de Acompanhamento
+              <i class="fas fa-edit"></i> Personalizar
             </button>
           </div>
-        </section>
-      </div>
-    </main>
+        </div>
 
-    <!-- Scripts -->
+        <!-- Feedback Tab -->
+        <div class="tab-pane fade" id="feedback" role="tabpanel">
+          <div class="feedback-form">
+            <h4><i class="fas fa-comments"></i> Formulário de Feedback</h4>
+            <form id="feedbackForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="studentSelect" class="form-label"
+                    >Selecionar Aluno</label
+                  >
+                  <select class="form-select" id="studentSelect" required>
+                    <option value="">Escolher aluno...</option>
+                    <!-- Será preenchido dinamicamente -->
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="lessonSelect" class="form-label">Aula</label>
+                  <select class="form-select" id="lessonSelect" required>
+                    <option value="">Escolher aula...</option>
+                    <option value="1">Aula 1: Introdução</option>
+                    <option value="2">Aula 2: Variáveis</option>
+                    <option value="3">Aula 3: Funções</option>
+                    <option value="4">Aula 4: Arrays</option>
+                    <option value="5">Aula 5: Objetos</option>
+                    <option value="6">Aula 6: Eventos</option>
+                    <option value="7">Aula 7: DOM</option>
+                    <option value="8">Aula 8: Avançado</option>
+                    <option value="9">Aula 9: APIs</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="syntaxRating" class="form-label">Sintaxe</label>
+                  <select class="form-select" id="syntaxRating">
+                    <option value="4">Excelente (4)</option>
+                    <option value="3">Proficiente (3)</option>
+                    <option value="2">Em Desenvolvimento (2)</option>
+                    <option value="1">Iniciante (1)</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="logicRating" class="form-label">Lógica</label>
+                  <select class="form-select" id="logicRating">
+                    <option value="4">Excelente (4)</option>
+                    <option value="3">Proficiente (3)</option>
+                    <option value="2">Em Desenvolvimento (2)</option>
+                    <option value="1">Iniciante (1)</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="problemSolvingRating" class="form-label"
+                    >Resolução de Problemas</label
+                  >
+                  <select class="form-select" id="problemSolvingRating">
+                    <option value="4">Excelente (4)</option>
+                    <option value="3">Proficiente (3)</option>
+                    <option value="2">Em Desenvolvimento (2)</option>
+                    <option value="1">Iniciante (1)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="feedbackText" class="form-label"
+                  >Feedback Detalhado</label
+                >
+                <textarea
+                  class="form-control"
+                  id="feedbackText"
+                  rows="4"
+                  placeholder="Escreva feedback específico e construtivo..."
+                ></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label for="improvementSuggestions" class="form-label"
+                  >Sugestões de Melhoria</label
+                >
+                <textarea
+                  class="form-control"
+                  id="improvementSuggestions"
+                  rows="3"
+                  placeholder="Sugestões específicas para desenvolvimento..."
+                ></textarea>
+              </div>
+
+              <div class="text-center">
+                <button type="submit" class="btn btn-success me-2">
+                  <i class="fas fa-save"></i> Salvar Feedback
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  onclick="clearFeedbackForm()"
+                >
+                  <i class="fas fa-undo"></i> Limpar
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Histórico de Feedbacks -->
+          <div class="mt-4">
+            <h5><i class="fas fa-history"></i> Histórico de Feedbacks</h5>
+            <div id="feedbackHistory">
+              <!-- Será preenchido dinamicamente -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div class="tab-pane fade" id="analytics" role="tabpanel">
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-chart-pie"></i> Distribuição de Notas</h5>
+                <canvas id="gradesChart" height="300"></canvas>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-chart-bar"></i> Competências por Aula</h5>
+                <canvas id="competenciesChart" height="300"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-line-chart"></i> Evolução Temporal</h5>
+                <canvas id="timelineChart" height="300"></canvas>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="analytics-card">
+                <h5><i class="fas fa-bullseye"></i> Metas vs Realidade</h5>
+                <div id="goalsMetrics">
+                  <!-- Métricas de metas -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Modal de Detalhes do Aluno -->
+    <div class="modal fade" id="studentModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-user"></i> Detalhes do Aluno
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body" id="studentModalBody">
+            <!-- Conteúdo será preenchido dinamicamente -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Fechar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="saveStudentChanges()"
+            >
+              Salvar Alterações
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Scripts customizados -->
     <script src="scripts-avaliacao.js"></script>
   </body>
 </html>

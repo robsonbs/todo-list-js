@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aula 4: Arrays e Manipulação de Dados | Curso JavaScript</title>
+    <title>Aula 04: Arrays Avançados - Curso JavaScript</title>
+    <meta name="description" content="Aprenda métodos avançados de arrays em JavaScript: map, filter, reduce, sort e muito mais com exercícios práticos.">
+    <meta name="keywords" content="JavaScript, Arrays, Map, Filter, Reduce, Sort, Programming">
 
     <!-- Bootstrap CSS -->
     <link
@@ -400,26 +402,796 @@
           flex-direction: column;
         }
       }
+
+      /* Console DOM Mini */
+      .console-container {
+        background: #1e1e1e;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        margin: 1.5rem 0;
+        font-family: 'Courier New', Monaco, monospace;
+      }
+
+      .console-header {
+        background: #2d2d2d;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #404040;
+      }
+
+      .console-controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      .console-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .console-dot.red { background: #ff5f57; }
+      .console-dot.yellow { background: #ffbd2e; }
+      .console-dot.green { background: #28ca42; }
+
+      .console-title {
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .btn-console-clear {
+        background: none;
+        border: none;
+        color: #888;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .btn-console-clear:hover {
+        background: #404040;
+        color: #fff;
+      }
+
+      .console-content {
+        background: #1e1e1e;
+        color: #ffffff;
+      }
+
+      .console-output {
+        padding: 16px;
+        max-height: 300px;
+        overflow-y: auto;
+        border-bottom: 1px solid #404040;
+      }
+
+      .console-line {
+        margin: 8px 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        line-height: 1.4;
+      }
+
+      .console-prompt {
+        color: #61dafb;
+        font-weight: bold;
+        flex-shrink: 0;
+      }
+
+      .console-text {
+        flex: 1;
+        word-break: break-word;
+      }
+
+      .console-line.welcome .console-text {
+        color: #98d982;
+      }
+
+      .console-line.input .console-text {
+        color: #ffffff;
+      }
+
+      .console-line.output .console-text {
+        color: #f39c12;
+      }
+
+      .console-line.error .console-text {
+        color: #e74c3c;
+      }
+
+      .console-line.log .console-text {
+        color: #3498db;
+      }
+
+      .console-input-container {
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #252525;
+      }
+
+      .console-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .console-input::placeholder {
+        color: #888;
+      }
+
+      .btn-console-run {
+        background: #61dafb;
+        color: #1e1e1e;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .btn-console-run:hover {
+        background: #4fa8c5;
+        transform: scale(1.05);
+      }
+
+      .console-examples {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .console-examples h4 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+      }
+
+      .example-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .btn-example {
+        background: #e9ecef;
+        color: #495057;
+        border: 1px solid #ced4da;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: 'Courier New', monospace;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-example:hover {
+        background: #6366f1;
+        color: white;
+        border-color: #6366f1;
+      }
+
+      /* Sistema de Badges */
+      .badges-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+
+      .badge {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .badge.locked {
+        opacity: 0.6;
+        filter: grayscale(1);
+      }
+
+      .badge.unlocked {
+        border-color: #ffd700;
+        background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+        filter: grayscale(0);
+        opacity: 1;
+      }
+
+      .badge.unlocked::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+        animation: shimmer 2s ease-in-out;
+      }
+
+      @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+      }
+
+      .badge-icon {
+        font-size: 2rem;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .badge.unlocked .badge-icon {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        animation: pulse 2s infinite;
+      }
+
+      .badge-info {
+        flex: 1;
+      }
+
+      .badge-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+        font-size: 1.1rem;
+      }
+
+      .badge-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.3;
+      }
+
+      .badge.unlocked .badge-title {
+        color: #b8860b;
+      }
+
+      /* Notificação de badge desbloqueado */
+      .badge-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        color: #8b7914;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        z-index: 1000;
+        animation: slideInRight 0.5s ease-out;
+        border: 2px solid #e6c200;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .badge-notification .notification-icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+      }
+
+      .badge-notification .notification-text {
+        font-weight: 600;
+      }
+
+      /* Sistema de Exercícios */
+      .exercises-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .exercise-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .exercise-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+      }
+
+      .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+      }
+
+      .exercise-header h3 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.2rem;
+      }
+
+      .exercise-meta {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .exercise-meta span {
+        background: #e9ecef;
+        color: #6c757d;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .exercise-demo {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .array-display {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .exercise-output {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 0.75rem;
+        min-height: 2rem;
+        font-family: 'Courier New', monospace;
+      }
+
+      .exercise-output.success {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .exercise-output.error {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .code-editor {
+        margin: 1rem 0;
+      }
+
+      .code-input {
+        width: 100%;
+        min-height: 120px;
+        padding: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        background: #f8f9fa;
+        resize: vertical;
+        transition: border-color 0.3s ease;
+      }
+
+      .code-input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+      }
+
+      .exercise-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+      }
+
+      .exercise-feedback {
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin-top: 1rem;
+        font-weight: 500;
+        display: none;
+      }
+
+      .exercise-feedback.show {
+        display: block;
+      }
+
+      .exercise-feedback.success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .exercise-feedback.error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+
+      .exercise-feedback.hint {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+      }
+
+      .exercise-feedback.solution {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+
+      /* Responsivo para exercícios */
+      @media (max-width: 768px) {
+        .exercise-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .exercise-meta {
+          align-self: stretch;
+          justify-content: space-between;
+        }
+
+        .exercise-actions {
+          flex-direction: column;
+        }
+
+        .exercise-actions button {
+          width: 100%;
+        }
+      }
+
+      /* Sistema de Navegação */
+      .course-navigation {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-top: 2rem;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .nav-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .course-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .lesson-indicator {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .nav-progress {
+        text-align: center;
+        min-width: 200px;
+      }
+
+      .progress-bar {
+        background: rgba(255,255,255,0.2);
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-fill {
+        background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
+      .nav-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
+
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+
+      .nav-btn:hover {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+
+      .next-btn {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        border: none;
+      }
+
+      .next-btn:hover {
+        background: linear-gradient(135deg, #45a049, #3d8b40);
+        transform: translateY(-2px);
+      }
+
+      .home-btn span,
+      .prev-btn span,
+      .next-btn span {
+        font-size: 0.9rem;
+      }
+
+      /* Responsivo para navegação */
+      @media (max-width: 768px) {
+        .nav-container {
+          grid-template-columns: 1fr;
+          text-align: center;
+          gap: 1.5rem;
+        }
+
+        .nav-buttons {
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .nav-btn {
+          flex: 1;
+          min-width: 120px;
+          justify-content: center;
+        }
+
+        .home-btn {
+          order: 3;
+          flex-basis: 100%;
+        }
+      }
+
+      /* Acessibilidade */
+      .nav-btn:focus {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .nav-btn,
+        .progress-fill {
+          transition: none;
+        }
+      }
+
+      /* Acessibilidade */
+      .visually-hidden {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
+
+      /* Focus visible para melhor acessibilidade */
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid #007bff;
+        outline-offset: 2px;
+      }
     </style>
   </head>
   <body>
     <!-- Container Principal -->
     <div class="main-container">
       <!-- Header -->
-      <div class="header">
+      <header class="header" role="banner">
         <h1>
-          <i class="fas fa-list"></i>
+          <i class="fas fa-list" aria-hidden="true"></i>
           Aula 4: Arrays e Manipulação de Dados
         </h1>
         <p class="mb-0">Domine todos os métodos de arrays do JavaScript</p>
         
-        <div class="progress-bar mt-3">
+        <div class="progress-bar mt-3" role="progressbar" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do curso">
           <div class="progress-fill"></div>
         </div>
-      </div>
+      </header>
 
       <!-- Conteúdo Principal -->
       <div class="content">
+        <!-- Console DOM Mini -->
+        <div class="section">
+          <h2>
+            <i class="fas fa-terminal"></i>
+            Console Arrays Lab
+          </h2>
+          <p>Execute código JavaScript em tempo real e experimente métodos de arrays!</p>
+          
+          <div class="console-container">
+            <div class="console-header">
+              <div class="console-controls">
+                <div class="console-dot red"></div>
+                <div class="console-dot yellow"></div>
+                <div class="console-dot green"></div>
+              </div>
+              <span class="console-title">Arrays JavaScript Console</span>
+              <button class="btn-console-clear" id="clearConsole" title="Limpar Console">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            
+            <div class="console-content">
+              <div class="console-output" id="consoleOutput">
+                <div class="console-line welcome">
+                  <span class="console-prompt">></span>
+                  <span class="console-text">Console Arrays carregado! Array exemplo: [1, 2, 3, 4, 5]</span>
+                </div>
+              </div>
+              
+              <div class="console-input-container">
+                <span class="console-prompt">></span>
+                <input 
+                  type="text" 
+                  class="console-input" 
+                  id="consoleInput" 
+                  placeholder="Digite código com arrays (ex: arr.map(x => x * 2))"
+                  autocomplete="off"
+                  aria-label="Campo de entrada do console JavaScript para arrays"
+                />
+                <button class="btn-console-run" id="runConsole" title="Executar (Enter)" aria-label="Executar código JavaScript">
+                  <i class="fas fa-play" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="console-examples">
+            <h4><i class="fas fa-lightbulb"></i> Exemplos de Arrays para testar:</h4>
+            <div class="example-buttons">
+              <button class="btn-example" data-code="arr.push(6)">push(6)</button>
+              <button class="btn-example" data-code="arr.filter(x => x > 2)">filter > 2</button>
+              <button class="btn-example" data-code="arr.map(x => x * 2)">map * 2</button>
+              <button class="btn-example" data-code="arr.reduce((a,b) => a+b, 0)">reduce soma</button>
+              <button class="btn-example" data-code="arr.sort((a,b) => b-a)">sort desc</button>
+              <button class="btn-example" data-code="[...arr, 10, 11]">spread operator</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sistema de Badges -->
+        <div class="section">
+          <h2>
+            <i class="fas fa-trophy"></i>
+            Sistema de Conquistas - Arrays Master
+          </h2>
+          <p>Ganhe badges conforme domina os métodos de arrays!</p>
+          
+          <div class="badges-container" id="badgesContainer" role="list" aria-label="Badges de conquistas em arrays">
+            <div class="badge locked" data-badge="array-explorer" role="listitem" aria-label="Badge Explorador de Arrays - Bloqueado. Use 5 métodos diferentes de arrays para desbloquear">
+              <div class="badge-icon" aria-hidden="true">🔍</div>
+              <div class="badge-info">
+                <div class="badge-title">Explorador de Arrays</div>
+                <div class="badge-description">Use 5 métodos diferentes de arrays</div>
+              </div>
+            </div>
+            
+            <div class="badge locked" data-badge="filter-master" role="listitem" aria-label="Badge Mestre dos Filtros - Bloqueado. Complete exercícios de filter para desbloquear">
+              <div class="badge-icon" aria-hidden="true">🔬</div>
+              <div class="badge-info">
+                <div class="badge-title">Mestre dos Filtros</div>
+                <div class="badge-description">Use filter 3 vezes</div>
+              </div>
+            </div>
+            
+            <div class="badge locked" data-badge="map-wizard" role="listitem" aria-label="Badge Mago das Transformações - Bloqueado. Use map e reduce para desbloquear">
+              <div class="badge-icon" aria-hidden="true">🗺️</div>
+              <div class="badge-info">
+                <div class="badge-title">Mago das Transformações</div>
+                <div class="badge-description">Use map e reduce</div>
+              </div>
+            </div>
+            
+            <div class="badge locked" data-badge="sort-specialist" role="listitem" aria-label="Badge Especialista em Ordenação - Bloqueado. Use sort com diferentes critérios para desbloquear">
+              <div class="badge-icon" aria-hidden="true">📊</div>
+              <div class="badge-info">
+                <div class="badge-title">Especialista em Ordenação</div>
+                <div class="badge-description">Use sort com diferentes critérios</div>
+              </div>
+            </div>
+            
+            <div class="badge locked" data-badge="performance-guru" role="listitem" aria-label="Badge Guru da Performance - Bloqueado. Execute operações avançadas para desbloquear">
+              <div class="badge-icon" aria-hidden="true">⚡</div>
+              <div class="badge-info">
+                <div class="badge-title">Guru da Performance</div>
+                <div class="badge-description">Execute operações avançadas</div>
+              </div>
+            </div>
+            
+            <div class="badge locked" data-badge="console-master" role="listitem" aria-label="Badge Mestre do Console - Bloqueado. Execute 10 comandos no console para desbloquear">
+              <div class="badge-icon" aria-hidden="true">💻</div>
+              <div class="badge-info">
+                <div class="badge-title">Mestre do Console</div>
+                <div class="badge-description">Execute 10 comandos no console</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Objetivo da Aula -->
         <div class="lesson-info">
           <strong><i class="fas fa-graduation-cap"></i> Objetivo:</strong> Aprender manipulação completa de arrays,
@@ -576,6 +1348,177 @@
         </section>
       </div>
 
+      <!-- Exercícios Práticos -->
+      <section class="section" role="main">
+        <h2>
+          <i class="fas fa-code" aria-hidden="true"></i>
+          Exercícios Práticos - Arrays
+        </h2>
+        <p>Pratique seus conhecimentos sobre arrays com exercícios interativos!</p>
+        
+        <div class="exercises-container" role="list" aria-label="Lista de exercícios práticos sobre arrays">
+          <!-- Exercício 1 -->
+          <article class="exercise-card" data-exercise="1" role="listitem">
+            <div class="exercise-header">
+              <h3><i class="fas fa-filter" aria-hidden="true"></i> Exercício 1: Filtrar Números Pares</h3>
+              <div class="exercise-meta">
+                <span><i class="fas fa-clock" aria-hidden="true"></i> 5 min</span>
+                <span><i class="fas fa-signal" aria-hidden="true"></i> Básico</span>
+              </div>
+            </div>
+            
+            <div class="exercise-content">
+              <p><strong>Objetivo:</strong> Use filter() para encontrar todos os números pares do array [1,2,3,4,5,6,7,8,9,10].</p>
+              
+              <div class="exercise-demo">
+                <div class="array-display">Array: [1,2,3,4,5,6,7,8,9,10]</div>
+                <div class="exercise-output" id="exercise1Output" aria-live="polite">
+                  <em>Execute seu código para ver o resultado...</em>
+                </div>
+              </div>
+              
+              <h4><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
+              <div class="code-editor">
+                <label for="exercise1Code" class="visually-hidden">Editor de código para exercício 1</label>
+                <textarea 
+                  class="code-input" 
+                  id="exercise1Code" 
+                  placeholder="// Use filter() para encontrar números pares
+const numeros = [1,2,3,4,5,6,7,8,9,10];
+const pares = numeros.filter(num => {
+    // Seu código aqui...
+});
+console.log(pares);"
+                  aria-describedby="exercise1Feedback"
+                ></textarea>
+              </div>
+              
+              <div class="exercise-actions">
+                <button class="botao" onclick="runExercise(1)" aria-describedby="exercise1Output">
+                  <i class="fas fa-play" aria-hidden="true"></i> Executar
+                </button>
+                <button class="botao-secundario" onclick="showHint(1)">
+                  <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
+                </button>
+                <button class="botao-terciario" onclick="showSolution(1)">
+                  <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
+                </button>
+              </div>
+              
+              <div class="exercise-feedback" id="exercise1Feedback" aria-live="polite"></div>
+            </div>
+          </article>
+
+          <!-- Exercício 2 -->
+          <div class="exercise-card" data-exercise="2">
+            <div class="exercise-header">
+              <h3><i class="fas fa-calculator"></i> Exercício 2: Somar com Reduce</h3>
+              <div class="exercise-meta">
+                <span><i class="fas fa-clock"></i> 8 min</span>
+                <span><i class="fas fa-signal"></i> Intermediário</span>
+              </div>
+            </div>
+            
+            <div class="exercise-content">
+              <p><strong>Objetivo:</strong> Use reduce() para calcular a soma total dos preços no array de produtos.</p>
+              
+              <div class="exercise-demo">
+                <div class="array-display">Produtos: [{nome: 'Notebook', preco: 2500}, {nome: 'Mouse', preco: 50}, {nome: 'Teclado', preco: 150}]</div>
+                <div class="exercise-output" id="exercise2Output">
+                  <em>Execute seu código para ver o resultado...</em>
+                </div>
+              </div>
+              
+              <h4><i class="fas fa-keyboard"></i> Digite seu código:</h4>
+              <div class="code-editor">
+                <textarea 
+                  class="code-input" 
+                  id="exercise2Code" 
+                  placeholder="// Use reduce() para somar os preços
+const produtos = [
+    {nome: 'Notebook', preco: 2500},
+    {nome: 'Mouse', preco: 50},
+    {nome: 'Teclado', preco: 150}
+];
+const total = produtos.reduce((soma, produto) => {
+    // Seu código aqui...
+}, 0);
+console.log('Total: R$ ' + total);"
+                ></textarea>
+              </div>
+              
+              <div class="exercise-actions">
+                <button class="botao" onclick="runExercise(2)">
+                  <i class="fas fa-play"></i> Executar
+                </button>
+                <button class="botao-secundario" onclick="showHint(2)">
+                  <i class="fas fa-lightbulb"></i> Dica
+                </button>
+                <button class="botao-terciario" onclick="showSolution(2)">
+                  <i class="fas fa-eye"></i> Ver Solução
+                </button>
+              </div>
+              
+              <div class="exercise-feedback" id="exercise2Feedback"></div>
+            </div>
+          </div>
+
+          <!-- Exercício 3 -->
+          <div class="exercise-card" data-exercise="3">
+            <div class="exercise-header">
+              <h3><i class="fas fa-sort"></i> Exercício 3: Ordenar por Critério</h3>
+              <div class="exercise-meta">
+                <span><i class="fas fa-clock"></i> 10 min</span>
+                <span><i class="fas fa-signal"></i> Avançado</span>
+              </div>
+            </div>
+            
+            <div class="exercise-content">
+              <p><strong>Objetivo:</strong> Use sort() para ordenar pessoas por idade (do mais novo para o mais velho).</p>
+              
+              <div class="exercise-demo">
+                <div class="array-display">Pessoas: [{nome: 'Ana', idade: 25}, {nome: 'João', idade: 30}, {nome: 'Maria', idade: 20}]</div>
+                <div class="exercise-output" id="exercise3Output">
+                  <em>Execute seu código para ver o resultado...</em>
+                </div>
+              </div>
+              
+              <h4><i class="fas fa-keyboard"></i> Digite seu código:</h4>
+              <div class="code-editor">
+                <textarea 
+                  class="code-input" 
+                  id="exercise3Code" 
+                  placeholder="// Use sort() para ordenar por idade
+const pessoas = [
+    {nome: 'Ana', idade: 25},
+    {nome: 'João', idade: 30},
+    {nome: 'Maria', idade: 20}
+];
+const ordenadas = pessoas.sort((a, b) => {
+    // Seu código aqui...
+});
+console.log(ordenadas);"
+                ></textarea>
+              </div>
+              
+              <div class="exercise-actions">
+                <button class="botao" onclick="runExercise(3)">
+                  <i class="fas fa-play"></i> Executar
+                </button>
+                <button class="botao-secundario" onclick="showHint(3)">
+                  <i class="fas fa-lightbulb"></i> Dica
+                </button>
+                <button class="botao-terciario" onclick="showSolution(3)">
+                  <i class="fas fa-eye"></i> Ver Solução
+                </button>
+              </div>
+              
+              <div class="exercise-feedback" id="exercise3Feedback"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- TODO System Implementation -->
       <section class="todo-system">
         <h2>📋 Sistema TODO - Aplicação Prática</h2>
@@ -647,8 +1590,262 @@
       </div>
     </div>
 
+    <!-- Sistema de Navegação -->
+    <nav class="course-navigation">
+      <div class="nav-container">
+        <div class="nav-info">
+          <span class="course-title">
+            <i class="fas fa-graduation-cap"></i>
+            Curso JavaScript
+          </span>
+          <span class="lesson-indicator">Aula 4 de 9</span>
+        </div>
+        
+        <div class="nav-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 44.4%"></div>
+          </div>
+          <span class="progress-text">44% concluído</span>
+        </div>
+        
+        <div class="nav-buttons">
+          <a href="../aula-03/index.html" class="nav-btn prev-btn">
+            <i class="fas fa-chevron-left"></i>
+            <span>Aula Anterior</span>
+          </a>
+          
+          <a href="../" class="nav-btn home-btn">
+            <i class="fas fa-home"></i>
+            <span>Início</span>
+          </a>
+          
+          <a href="../aula-05/index.html" class="nav-btn next-btn">
+            <span>Próxima Aula</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+    </nav>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+      // Sistema de Exercícios
+      const exercises = {
+        1: {
+          solution: `const numeros = [1,2,3,4,5,6,7,8,9,10];
+const pares = numeros.filter(num => num % 2 === 0);
+console.log(pares);`,
+          expected: [2,4,6,8,10],
+          hints: [
+            "Use o operador % (módulo) para verificar se um número é par",
+            "Um número par tem resto 0 quando dividido por 2: num % 2 === 0",
+            "A função filter() retorna um novo array com elementos que passam no teste"
+          ]
+        },
+        2: {
+          solution: `const produtos = [
+    {nome: 'Notebook', preco: 2500},
+    {nome: 'Mouse', preco: 50},
+    {nome: 'Teclado', preco: 150}
+];
+const total = produtos.reduce((soma, produto) => soma + produto.preco, 0);
+console.log('Total: R$ ' + total);`,
+          expected: 2700,
+          hints: [
+            "O reduce() precisa de uma função que recebe (acumulador, item atual)",
+            "Acesse o preço do produto com produto.preco",
+            "Some o preço atual ao acumulador: soma + produto.preco"
+          ]
+        },
+        3: {
+          solution: `const pessoas = [
+    {nome: 'Ana', idade: 25},
+    {nome: 'João', idade: 30},
+    {nome: 'Maria', idade: 20}
+];
+const ordenadas = pessoas.sort((a, b) => a.idade - b.idade);
+console.log(ordenadas);`,
+          expected: [{nome: 'Maria', idade: 20}, {nome: 'Ana', idade: 25}, {nome: 'João', idade: 30}],
+          hints: [
+            "A função sort() recebe uma função de comparação (a, b)",
+            "Para ordem crescente: return a.idade - b.idade",
+            "Para ordem decrescente seria: return b.idade - a.idade"
+          ]
+        }
+      };
+
+      function runExercise(exerciseNumber) {
+        const codeInput = document.getElementById(`exercise${exerciseNumber}Code`);
+        const output = document.getElementById(`exercise${exerciseNumber}Output`);
+        const feedback = document.getElementById(`exercise${exerciseNumber}Feedback`);
+        
+        clearFeedback(feedback);
+        
+        const code = codeInput.value.trim();
+        if (!code) {
+          showFeedback(feedback, 'Por favor, digite seu código antes de executar.', 'error');
+          return;
+        }
+
+        try {
+          // Capturar console.log
+          const originalLog = console.log;
+          let capturedOutput = [];
+          console.log = (...args) => {
+            capturedOutput.push(args.join(' '));
+          };
+
+          // Executar código
+          eval(code);
+          
+          // Restaurar console.log
+          console.log = originalLog;
+          
+          // Mostrar resultado
+          if (capturedOutput.length > 0) {
+            output.innerHTML = capturedOutput.join('<br>');
+            output.className = 'exercise-output success';
+            
+            // Verificar se está correto
+            if (isCorrectSolution(exerciseNumber, code, capturedOutput)) {
+              showFeedback(feedback, '🎉 Parabéns! Solução correta!', 'success');
+              unlockBadge('array-explorer');
+            } else {
+              showFeedback(feedback, '✅ Código executado com sucesso! Verifique se o resultado está correto.', 'hint');
+            }
+          } else {
+            output.innerHTML = 'Nenhum output gerado';
+            output.className = 'exercise-output';
+          }
+          
+        } catch (error) {
+          output.innerHTML = `Erro: ${error.message}`;
+          output.className = 'exercise-output error';
+          showFeedback(feedback, `❌ Erro na execução: ${error.message}`, 'error');
+        }
+      }
+
+      function isCorrectSolution(exerciseNumber, code, output) {
+        const exercise = exercises[exerciseNumber];
+        if (!exercise) return false;
+        
+        // Verificações específicas por exercício
+        switch(exerciseNumber) {
+          case 1:
+            return code.includes('filter') && code.includes('%') && 
+                   output.some(line => line.includes('[2,4,6,8,10]') || line.includes('2,4,6,8,10'));
+          case 2:
+            return code.includes('reduce') && code.includes('preco') && 
+                   output.some(line => line.includes('2700'));
+          case 3:
+            return code.includes('sort') && code.includes('idade') && 
+                   output.some(line => line.includes('Maria') && line.includes('20'));
+          default:
+            return false;
+        }
+      }
+
+      function showHint(exerciseNumber) {
+        const feedback = document.getElementById(`exercise${exerciseNumber}Feedback`);
+        const exercise = exercises[exerciseNumber];
+        
+        if (exercise && exercise.hints.length > 0) {
+          const randomHint = exercise.hints[Math.floor(Math.random() * exercise.hints.length)];
+          showFeedback(feedback, `💡 Dica: ${randomHint}`, 'hint');
+        }
+      }
+
+      function showSolution(exerciseNumber) {
+        const codeInput = document.getElementById(`exercise${exerciseNumber}Code`);
+        const feedback = document.getElementById(`exercise${exerciseNumber}Feedback`);
+        const exercise = exercises[exerciseNumber];
+        
+        if (exercise && exercise.solution) {
+          codeInput.value = exercise.solution;
+          showFeedback(feedback, '🔍 Solução carregada! Clique em "Executar" para ver o resultado.', 'solution');
+        }
+      }
+
+      function showFeedback(element, message, type) {
+        element.textContent = message;
+        element.className = `exercise-feedback show ${type}`;
+      }
+
+      function clearFeedback(element) {
+        element.className = 'exercise-feedback';
+        element.textContent = '';
+      }
+
+      // Integração com sistema de badges
+      function unlockBadge(badgeId) {
+        const badge = document.querySelector(`[data-badge="${badgeId}"]`);
+        if (badge && badge.classList.contains('locked')) {
+          badge.classList.remove('locked');
+          badge.classList.add('unlocked');
+          // Atualizar acessibilidade
+          const ariaLabel = badge.getAttribute('aria-label');
+          badge.setAttribute('aria-label', ariaLabel.replace('Bloqueado', 'Desbloqueado'));
+          showBadgeNotification(badgeId);
+        }
+      }
+
+      function showBadgeNotification(badgeId) {
+        const badgeNames = {
+          'array-explorer': 'Explorador de Arrays',
+          'filter-master': 'Mestre do Filter',
+          'map-wizard': 'Mago do Map',
+          'sort-specialist': 'Especialista em Sort',
+          'performance-guru': 'Guru da Performance',
+          'console-master': 'Mestre do Console'
+        };
+        
+        const notification = document.createElement('div');
+        notification.className = 'badge-notification';
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'assertive');
+        notification.innerHTML = `
+          <div class="notification-content">
+            <i class="fas fa-trophy" aria-hidden="true"></i>
+            <span class="notification-text">Badge desbloqueado: ${badgeNames[badgeId]}!</span>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+
+      // Suporte a teclado
+      document.addEventListener('keydown', function(e) {
+        // Enter em textarea executa o exercício
+        if (e.key === 'Enter' && e.ctrlKey && e.target.classList.contains('code-input')) {
+          const exerciseNumber = e.target.id.match(/exercise(\d+)Code/)?.[1];
+          if (exerciseNumber) {
+            runExercise(parseInt(exerciseNumber));
+          }
+        }
+      });
+
+      // Inicialização
+      document.addEventListener('DOMContentLoaded', function() {
+        // Adicionar informações de atalhos de teclado
+        const codeInputs = document.querySelectorAll('.code-input');
+        codeInputs.forEach(input => {
+          input.setAttribute('title', 'Use Ctrl+Enter para executar o código');
+        });
+      });
+    </script>
     
     <script src="codigo-progressivo.js"></script>
   </body>

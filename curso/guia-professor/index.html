@@ -106,6 +106,10 @@
               <a class="nav-link" href="#avaliacao">
                 <i class="fas fa-clipboard-check"></i> Sistema de Avaliação
               </a>
+              <a class="nav-link" href="sistema-avaliacao.html" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Abrir Sistema de
+                Avaliação
+              </a>
               <a class="nav-link" href="#recursos">
                 <i class="fas fa-tools"></i> Recursos Adicionais
               </a>
@@ -522,11 +526,18 @@
                     </h5>
                   </div>
                   <div class="card-body">
-                    <canvas
-                      id="chartAtividades"
-                      width="300"
-                      height="200"
-                    ></canvas>
+                    <div
+                      class="chart-container"
+                      style="
+                        position: relative;
+                        height: 300px;
+                        width: 100%;
+                        max-width: 400px;
+                        margin: 0 auto;
+                      "
+                    >
+                      <canvas id="chartAtividades"></canvas>
+                    </div>
                     <div class="legend mt-3">
                       <div class="legend-item">
                         <span
@@ -555,6 +566,1484 @@
                           style="background: #dc3545"
                         ></span>
                         <span>Avaliação (10%)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Planos de Aula Detalhados -->
+          <section id="planos-aula" class="content-section">
+            <div class="section-header">
+              <h2>
+                <i class="fas fa-calendar-alt"></i> Planos de Aula Detalhados
+              </h2>
+              <p>
+                Guias específicos para cada aula do curso com objetivos,
+                atividades e materiais
+              </p>
+            </div>
+
+            <div class="accordion" id="accordionPlanosAula">
+              <!-- Aula 1: Introdução ao JavaScript -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula1"
+                  >
+                    <i class="fas fa-play-circle me-2 text-primary"></i>
+                    <strong>Aula 1: Introdução ao JavaScript</strong>
+                    <span class="badge bg-primary ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula1"
+                  class="accordion-collapse collapse show"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>
+                            Compreender o que é JavaScript e sua importância
+                          </li>
+                          <li>Configurar ambiente de desenvolvimento</li>
+                          <li>Escrever e executar primeiro programa</li>
+                          <li>Entender console do navegador e DevTools</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-15min</span>
+                            <span class="descricao"
+                              >Apresentação e introdução ao JavaScript</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">15-30min</span>
+                            <span class="descricao"
+                              >Setup do ambiente (DevTools, editor)</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">30-75min</span>
+                            <span class="descricao"
+                              >Primeiro programa: "Hello World" interativo</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">75-90min</span>
+                            <span class="descricao"
+                              >Experimentação livre e Q&A</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Computador com navegador atualizado</li>
+                          <li>Editor de código (VS Code recomendado)</li>
+                          <li>Slides introdutórios</li>
+                          <li>Exemplos de sites usando JavaScript</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Observação durante
+                          execução dos exercícios
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> Criação de página HTML
+                          simples com JavaScript básico
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>
+                          Explorar 3 sites diferentes e identificar onde
+                          JavaScript está sendo usado
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(1)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(1)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 2: Variáveis e Tipos de Dados -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula2"
+                  >
+                    <i class="fas fa-database me-2 text-info"></i>
+                    <strong>Aula 2: Variáveis e Tipos de Dados</strong>
+                    <span class="badge bg-info ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula2"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Declarar variáveis com let, const e var</li>
+                          <li>Identificar tipos de dados primitivos</li>
+                          <li>Realizar conversões entre tipos</li>
+                          <li>Usar operadores básicos</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-20min</span>
+                            <span class="descricao"
+                              >Review aula anterior + conceitos de
+                              variáveis</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">20-45min</span>
+                            <span class="descricao"
+                              >Exercícios de declaração e tipos</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">45-75min</span>
+                            <span class="descricao"
+                              >Projeto: Calculadora simples</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">75-90min</span>
+                            <span class="descricao"
+                              >Debugging e compartilhamento</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Exemplos práticos de cada tipo</li>
+                          <li>Exercícios progressivos</li>
+                          <li>Template da calculadora</li>
+                          <li>Debugger do navegador</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Quiz rápido sobre tipos de
+                          dados
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> Calculadora de IMC
+                          funcional
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>
+                          Criar conversor de temperaturas (Celsius/Fahrenheit)
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(2)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(2)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 3: Funções -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula3"
+                  >
+                    <i class="fas fa-cogs me-2 text-warning"></i>
+                    <strong>Aula 3: Funções</strong>
+                    <span class="badge bg-warning ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula3"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Criar e chamar funções</li>
+                          <li>Usar parâmetros e argumentos</li>
+                          <li>Entender return e escopo</li>
+                          <li>Aplicar boas práticas de nomenclatura</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-15min</span>
+                            <span class="descricao"
+                              >Review + introdução a funções</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">15-40min</span>
+                            <span class="descricao"
+                              >Biblioteca de funções matemáticas</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">40-70min</span>
+                            <span class="descricao"
+                              >Projeto: Validador de formulários</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">70-90min</span>
+                            <span class="descricao"
+                              >Refatoração e otimização</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Templates de funções</li>
+                          <li>Exercícios progressivos</li>
+                          <li>Formulário HTML base</li>
+                          <li>Casos de uso reais</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Peer review das funções
+                          criadas
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> Sistema de validação
+                          completo
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>Criar 5 funções utilitárias diferentes</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(3)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(3)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 4: Arrays e Métodos -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula4"
+                  >
+                    <i class="fas fa-list me-2 text-danger"></i>
+                    <strong>Aula 4: Arrays e Métodos</strong>
+                    <span class="badge bg-danger ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula4"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Criar e manipular arrays</li>
+                          <li>
+                            Usar métodos essenciais (push, pop, map, filter)
+                          </li>
+                          <li>Implementar loops com arrays</li>
+                          <li>Resolver problemas com estruturas de dados</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-20min</span>
+                            <span class="descricao"
+                              >Conceitos de arrays e demonstrações</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">20-50min</span>
+                            <span class="descricao"
+                              >Exercícios com métodos de array</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">50-80min</span>
+                            <span class="descricao"
+                              >Projeto: Lista de compras interativa</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">80-90min</span>
+                            <span class="descricao"
+                              >Apresentação dos projetos</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Datasets para exercícios</li>
+                          <li>Template da lista de compras</li>
+                          <li>Referência de métodos</li>
+                          <li>Exemplos práticos</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Execução correta dos
+                          métodos
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> Lista de compras com
+                          filtros
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>Implementar sistema de notas de alunos com médias</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(4)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(4)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 5: Objetos e JSON -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula5"
+                  >
+                    <i class="fas fa-cube me-2 text-success"></i>
+                    <strong>Aula 5: Objetos e JSON</strong>
+                    <span class="badge bg-success ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula5"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Criar e manipular objetos</li>
+                          <li>Acessar propriedades e métodos</li>
+                          <li>Trabalhar com JSON</li>
+                          <li>Implementar estruturas de dados complexas</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-25min</span>
+                            <span class="descricao"
+                              >Objetos: criação e manipulação</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">25-45min</span>
+                            <span class="descricao"
+                              >JSON: parse e stringify</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">45-80min</span>
+                            <span class="descricao"
+                              >Projeto: Catálogo de produtos</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">80-90min</span>
+                            <span class="descricao"
+                              >Debugging e otimização</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Exemplos de objetos reais</li>
+                          <li>Dados JSON de produtos</li>
+                          <li>Template do catálogo</li>
+                          <li>LocalStorage para persistência</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Manipulação correta de
+                          objetos
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> Catálogo com busca e
+                          filtros
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>Criar agenda de contatos com localStorage</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(5)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(5)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 6: Eventos e Listeners -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula6"
+                  >
+                    <i class="fas fa-mouse-pointer me-2 text-purple"></i>
+                    <strong>Aula 6: Eventos e Listeners</strong>
+                    <span class="badge bg-dark ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula6"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Compreender sistema de eventos</li>
+                          <li>Adicionar event listeners</li>
+                          <li>Trabalhar com diferentes tipos de eventos</li>
+                          <li>Implementar interatividade básica</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-20min</span>
+                            <span class="descricao"
+                              >Conceitos de eventos e demonstrações</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">20-45min</span>
+                            <span class="descricao"
+                              >Exercícios com diferentes eventos</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">45-80min</span>
+                            <span class="descricao"
+                              >Projeto: Galeria de imagens interativa</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">80-90min</span>
+                            <span class="descricao">Testes e melhorias</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Conjunto de imagens</li>
+                          <li>Template da galeria</li>
+                          <li>Referência de eventos</li>
+                          <li>Exemplos de interfaces interativas</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Implementação correta de
+                          listeners
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> Galeria com navegação e
+                          zoom
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>Criar formulário com validação em tempo real</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(6)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(6)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 7: Manipulação do DOM -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula7"
+                  >
+                    <i class="fas fa-code me-2 text-info"></i>
+                    <strong>Aula 7: Manipulação do DOM</strong>
+                    <span class="badge bg-info ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula7"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Selecionar elementos do DOM</li>
+                          <li>Modificar conteúdo e atributos</li>
+                          <li>Criar e remover elementos</li>
+                          <li>Alterar estilos dinamicamente</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-20min</span>
+                            <span class="descricao"
+                              >DOM: conceitos e seletores</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">20-50min</span>
+                            <span class="descricao"
+                              >Exercícios de manipulação</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">50-85min</span>
+                            <span class="descricao"
+                              >Projeto: To-Do List dinâmica</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">85-90min</span>
+                            <span class="descricao"
+                              >Demonstrações e feedback</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Página HTML estruturada</li>
+                          <li>CSS para estilização</li>
+                          <li>Template do To-Do List</li>
+                          <li>Ferramentas de DevTools</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Manipulação eficiente do
+                          DOM
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> To-Do List com persistência
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>Criar calculadora visual interativa</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(7)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(7)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 8: Manipulação Avançada do DOM -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula8"
+                  >
+                    <i class="fas fa-magic me-2 text-warning"></i>
+                    <strong>Aula 8: Manipulação Avançada do DOM</strong>
+                    <span class="badge bg-warning ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula8"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Trabalhar com delegação de eventos</li>
+                          <li>Implementar animações CSS via JavaScript</li>
+                          <li>Usar setTimeout e setInterval</li>
+                          <li>Criar interfaces dinâmicas complexas</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-25min</span>
+                            <span class="descricao"
+                              >Conceitos avançados e delegação</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">25-50min</span>
+                            <span class="descricao">Animações e timers</span>
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">50-85min</span>
+                            <span class="descricao"
+                              >Projeto: Jogo da memória</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">85-90min</span>
+                            <span class="descricao"
+                              >Competição e premiação</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>Sprites e imagens do jogo</li>
+                          <li>CSS para animações</li>
+                          <li>Template do jogo</li>
+                          <li>Sistema de pontuação</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p>
+                          <strong>Formativa:</strong> Implementação de
+                          funcionalidades
+                        </p>
+                        <p>
+                          <strong>Sumativa:</strong> Jogo completo e funcional
+                        </p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>Personalizar jogo com novos recursos</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(8)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(8)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aula 9: Web APIs Modernas -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#aula9"
+                  >
+                    <i class="fas fa-rocket me-2 text-success"></i>
+                    <strong>Aula 9: Web APIs Modernas</strong>
+                    <span class="badge bg-success ms-auto me-2">2h</span>
+                  </button>
+                </h2>
+                <div
+                  id="aula9"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordionPlanosAula"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-bullseye text-primary"></i> Objetivos
+                          de Aprendizagem
+                        </h5>
+                        <ul>
+                          <li>Fazer requisições com fetch API</li>
+                          <li>Trabalhar com Promises e async/await</li>
+                          <li>Usar geolocalização e outras APIs</li>
+                          <li>Integrar APIs externas</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-tasks text-info"></i> Atividades (90
+                          min)
+                        </h5>
+                        <div class="timeline-atividade">
+                          <div class="atividade-item">
+                            <span class="tempo">0-30min</span>
+                            <span class="descricao"
+                              >APIs e fetch: conceitos</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">30-55min</span>
+                            <span class="descricao"
+                              >Exercícios com APIs públicas</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">55-85min</span>
+                            <span class="descricao"
+                              >Projeto final: App do clima</span
+                            >
+                          </div>
+                          <div class="atividade-item">
+                            <span class="tempo">85-90min</span>
+                            <span class="descricao"
+                              >Apresentações e celebração</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h5>
+                          <i class="fas fa-toolbox text-warning"></i> Materiais
+                          Necessários
+                        </h5>
+                        <ul>
+                          <li>API keys para serviços</li>
+                          <li>Lista de APIs públicas</li>
+                          <li>Template do app clima</li>
+                          <li>Documentação de APIs</li>
+                        </ul>
+
+                        <h5>
+                          <i class="fas fa-clipboard-check text-success"></i>
+                          Avaliação
+                        </h5>
+                        <p><strong>Formativa:</strong> Uso correto de APIs</p>
+                        <p><strong>Sumativa:</strong> App clima funcional</p>
+
+                        <h5>
+                          <i class="fas fa-home text-secondary"></i> Tarefa de
+                          Casa
+                        </h5>
+                        <p>Explorar outras APIs e criar mini-projeto</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="baixarPlanoAula(9)"
+                      >
+                        <i class="fas fa-download"></i> Baixar Plano
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-info ms-2"
+                        onclick="visualizarAula(9)"
+                      >
+                        <i class="fas fa-eye"></i> Ver Aula
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Controle -->
+            <div class="text-center mt-4">
+              <button
+                class="btn btn-outline-primary"
+                onclick="expandirTodosPlanos()"
+              >
+                <i class="fas fa-expand-alt"></i> Expandir Todos os Planos
+              </button>
+              <button
+                class="btn btn-outline-secondary ms-2"
+                onclick="recolherTodosPlanos()"
+              >
+                <i class="fas fa-compress-alt"></i> Recolher Todos os Planos
+              </button>
+              <button
+                class="btn btn-outline-success ms-2"
+                onclick="baixarTodosPlanos()"
+              >
+                <i class="fas fa-download"></i> Baixar Todos os Planos
+              </button>
+            </div>
+          </section>
+
+          <!-- Sistema de Avaliação -->
+          <section id="avaliacao" class="content-section">
+            <div class="section-header">
+              <h2>
+                <i class="fas fa-clipboard-check"></i> Sistema de Avaliação
+              </h2>
+              <p>
+                Ferramentas e metodologias para avaliar o progresso dos alunos
+              </p>
+            </div>
+
+            <div class="row">
+              <div class="col-md-8 mb-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h4>
+                      <i class="fas fa-chart-line"></i> Plataforma de
+                      Acompanhamento
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      O sistema de avaliação oferece uma plataforma completa
+                      para acompanhar o progresso individual e coletivo dos
+                      alunos.
+                    </p>
+
+                    <h6>
+                      <i class="fas fa-star"></i> Funcionalidades Principais:
+                    </h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <ul>
+                          <li>
+                            <strong>Dashboard Interativo:</strong> Visão geral
+                            das métricas
+                          </li>
+                          <li>
+                            <strong>Gestão de Alunos:</strong> Perfis
+                            individuais completos
+                          </li>
+                          <li>
+                            <strong>Rubricas Detalhadas:</strong> Critérios de
+                            avaliação claros
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="col-md-6">
+                        <ul>
+                          <li>
+                            <strong>Sistema de Feedback:</strong> Comentários
+                            estruturados
+                          </li>
+                          <li>
+                            <strong>Analytics Avançados:</strong> Gráficos e
+                            relatórios
+                          </li>
+                          <li>
+                            <strong>Histórico Completo:</strong> Evolução
+                            temporal
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <a
+                        href="sistema-avaliacao.html"
+                        class="btn btn-primary"
+                        target="_blank"
+                      >
+                        <i class="fas fa-external-link-alt"></i> Abrir Sistema
+                        de Avaliação
+                      </a>
+                      <button
+                        class="btn btn-outline-secondary ms-2"
+                        onclick="baixarRubricas()"
+                      >
+                        <i class="fas fa-download"></i> Baixar Rubricas
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card mt-3">
+                  <div class="card-header">
+                    <h4>
+                      <i class="fas fa-list-check"></i> Competências Avaliadas
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>🎯 Competências Técnicas</h6>
+                        <ul class="list-unstyled">
+                          <li>
+                            <i class="fas fa-code text-primary"></i>
+                            <strong>Sintaxe:</strong> Conhecimento da linguagem
+                          </li>
+                          <li>
+                            <i class="fas fa-brain text-info"></i>
+                            <strong>Lógica:</strong> Raciocínio computacional
+                          </li>
+                          <li>
+                            <i class="fas fa-puzzle-piece text-warning"></i>
+                            <strong>Resolução:</strong> Solução de problemas
+                          </li>
+                          <li>
+                            <i class="fas fa-bug text-danger"></i>
+                            <strong>Debug:</strong> Identificação de erros
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>📊 Níveis de Avaliação</h6>
+                        <ul class="list-unstyled">
+                          <li>
+                            <span class="badge bg-success">4 - Excelente</span>
+                            Domínio completo
+                          </li>
+                          <li>
+                            <span class="badge bg-info">3 - Proficiente</span>
+                            Bom conhecimento
+                          </li>
+                          <li>
+                            <span class="badge bg-warning"
+                              >2 - Desenvolvendo</span
+                            >
+                            Em progresso
+                          </li>
+                          <li>
+                            <span class="badge bg-secondary"
+                              >1 - Iniciante</span
+                            >
+                            Conceitos básicos
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5><i class="fas fa-lightbulb"></i> Dicas de Avaliação</h5>
+
+                    <div class="alert alert-info">
+                      <i class="fas fa-info-circle"></i>
+                      <strong>Avaliação Formativa:</strong> Avalie
+                      constantemente durante as aulas para ajustar o ensino.
+                    </div>
+
+                    <div class="alert alert-success">
+                      <i class="fas fa-check-circle"></i>
+                      <strong>Feedback Positivo:</strong> Reconheça progressos e
+                      esforços dos alunos.
+                    </div>
+
+                    <div class="alert alert-warning">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <strong>Identificação Precoce:</strong> Detecte
+                      dificuldades rapidamente.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card mt-3">
+                  <div class="card-body">
+                    <h6><i class="fas fa-tools"></i> Recursos Disponíveis</h6>
+                    <div class="d-grid gap-2">
+                      <button
+                        class="btn btn-outline-primary btn-sm"
+                        onclick="verRubricas()"
+                      >
+                        <i class="fas fa-list"></i> Ver Rubricas
+                      </button>
+                      <button
+                        class="btn btn-outline-info btn-sm"
+                        onclick="verExemplos()"
+                      >
+                        <i class="fas fa-eye"></i> Exemplos de Avaliação
+                      </button>
+                      <button
+                        class="btn btn-outline-success btn-sm"
+                        onclick="verTemplates()"
+                      >
+                        <i class="fas fa-file-alt"></i> Templates de Feedback
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recursos Adicionais -->
+          <section id="recursos" class="content-section">
+            <div class="section-header">
+              <h2><i class="fas fa-tools"></i> Recursos Adicionais</h2>
+              <p>Materiais complementares e ferramentas de apoio</p>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5><i class="fas fa-book"></i> Bibliografia</h5>
+                  </div>
+                  <div class="card-body">
+                    <ul class="list-unstyled">
+                      <li><strong>📚 Livros Recomendados:</strong></li>
+                      <li>• "Eloquent JavaScript" - Marijn Haverbeke</li>
+                      <li>
+                        • "JavaScript: The Good Parts" - Douglas Crockford
+                      </li>
+                      <li>• "You Don't Know JS" - Kyle Simpson</li>
+                    </ul>
+                    <hr />
+                    <ul class="list-unstyled">
+                      <li><strong>🌐 Recursos Online:</strong></li>
+                      <li>• MDN Web Docs</li>
+                      <li>• JavaScript.info</li>
+                      <li>• Codecademy</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5><i class="fas fa-wrench"></i> Ferramentas</h5>
+                  </div>
+                  <div class="card-body">
+                    <ul class="list-unstyled">
+                      <li><strong>💻 Editores de Código:</strong></li>
+                      <li>• Visual Studio Code</li>
+                      <li>• CodePen (online)</li>
+                      <li>• Repl.it (online)</li>
+                    </ul>
+                    <hr />
+                    <ul class="list-unstyled">
+                      <li><strong>🔧 Extensões Úteis:</strong></li>
+                      <li>• Live Server</li>
+                      <li>• Prettier</li>
+                      <li>• ESLint</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5><i class="fas fa-question-circle"></i> Suporte</h5>
+                  </div>
+                  <div class="card-body">
+                    <ul class="list-unstyled">
+                      <li><strong>🆘 Troubleshooting:</strong></li>
+                      <li>• Guia de erros comuns</li>
+                      <li>• FAQ dos alunos</li>
+                      <li>• Soluções rápidas</li>
+                    </ul>
+                    <hr />
+                    <ul class="list-unstyled">
+                      <li><strong>📧 Contato:</strong></li>
+                      <li>• Email do desenvolvedor</li>
+                      <li>• Fórum de discussão</li>
+                      <li>• Canal do Discord</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Troubleshooting -->
+          <section id="troubleshooting" class="content-section">
+            <div class="section-header">
+              <h2><i class="fas fa-wrench"></i> Troubleshooting</h2>
+              <p>Soluções para problemas comuns durante as aulas</p>
+            </div>
+
+            <div class="accordion" id="troubleshootingAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne"
+                  >
+                    <i
+                      class="fas fa-exclamation-triangle text-warning me-2"
+                    ></i>
+                    Erros de Sintaxe Frequentes
+                  </button>
+                </h2>
+                <div
+                  id="collapseOne"
+                  class="accordion-collapse collapse show"
+                  data-bs-parent="#troubleshootingAccordion"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>❌ Problemas Comuns:</h6>
+                        <ul>
+                          <li>Parênteses não fechados</li>
+                          <li>Ponto e vírgula ausente</li>
+                          <li>Aspas não fechadas</li>
+                          <li>Variáveis não declaradas</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>✅ Soluções:</h6>
+                        <ul>
+                          <li>Usar editor com destaque de sintaxe</li>
+                          <li>Verificar Console do navegador</li>
+                          <li>Ensinar debugging básico</li>
+                          <li>Pair programming</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo"
+                  >
+                    <i class="fas fa-laptop text-info me-2"></i>
+                    Problemas Técnicos
+                  </button>
+                </h2>
+                <div
+                  id="collapseTwo"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#troubleshootingAccordion"
+                >
+                  <div class="accordion-body">
+                    <div class="alert alert-info">
+                      <strong>Navegador não atualizado:</strong> Orientar sobre
+                      como atualizar o navegador.
+                    </div>
+                    <div class="alert alert-warning">
+                      <strong>JavaScript desabilitado:</strong> Verificar
+                      configurações do navegador.
+                    </div>
+                    <div class="alert alert-danger">
+                      <strong>Cache problemático:</strong> Ensinar como limpar
+                      cache e dados do navegador.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseThree"
+                  >
+                    <i class="fas fa-users text-success me-2"></i>
+                    Dificuldades Pedagógicas
+                  </button>
+                </h2>
+                <div
+                  id="collapseThree"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#troubleshootingAccordion"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>🎯 Alunos com Dificuldade:</h6>
+                        <ul>
+                          <li>Atividades extras simples</li>
+                          <li>Explicações individuais</li>
+                          <li>Mentoria por pares</li>
+                          <li>Revisão de conceitos básicos</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>🚀 Alunos Avançados:</h6>
+                        <ul>
+                          <li>Desafios extras</li>
+                          <li>Projetos mais complexos</li>
+                          <li>Mentoria de outros alunos</li>
+                          <li>Tópicos avançados opcionais</li>
+                        </ul>
                       </div>
                     </div>
                   </div>

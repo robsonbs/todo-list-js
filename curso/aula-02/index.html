@@ -270,7 +270,44 @@
         text-align: center;
         margin: 20px 0;
       }
+ .objectives-card {
+        background: var(--info-color);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
 
+      .objectives-card h2 {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .objectives-card ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .objectives-card li {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .objectives-card li::before {
+        content: "✓";
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
       /* Responsividade */
       @media (max-width: 768px) {
         .main-container {
@@ -306,7 +343,40 @@
 
       <!-- Conteúdo Principal -->
       <div class="content">
+<!-- Card de Objetivos (igual aula-01) -->
+      <div class="objectives-card">
+        <h2>
+          <i class="fas fa-bullseye"></i>
+          Objetivos da Aula
+        </h2>
+        <ul>
+          <li>🌳 Compreender o DOM como árvore de elementos</li>
+          <li>🎯 Selecionar elementos HTML com JavaScript</li>
+          <li>✏️ Modificar conteúdo e estilos dinamicamente</li>
+          <li>🖱️ Implementar event listeners básicos</li>
+          <li>🚀 Criar interações simples usuário-página</li>
+        </ul>
+      </div>
 
+      <!-- Barra de Progresso (igual aula-01) -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card bg-light">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-route"></i>
+                Progresso da Aula
+              </h5>
+              <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar bg-info" id="barra-progresso" role="progressbar" style="width: 0%"></div>
+              </div>
+              <div class="alert-success" id="status-progresso">
+                🎯 Complete todos os exercícios para finalizar a aula!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- SEÇÃO 1: O QUE É DOM -->
       <div class="secao">
         <h2>📚 1. O que é DOM?</h2>
@@ -342,11 +412,13 @@
         <p>Antes de modificar elementos, precisamos "pegá-los" primeiro!</p>
 
         <div class="codigo-exemplo">
-          // 1. Por ID (único) const titulo =
-          document.getElementById("meu-titulo"); // 2. Por classe (pode ter
-          vários) const botoes = document.getElementsByClassName("botao"); // 3.
-          Seletor CSS moderno (recomendado) const botao =
-          document.querySelector("#meu-botao"); const todosBotoes =
+          // 1. Por ID (único)<br> const titulo =
+          document.getElementById("meu-titulo");<br><br>
+          // 2. Por classe (pode ter
+          vários)<br> const botoes = document.getElementsByClassName("botao"); <br><br>
+          // 3. Seletor CSS moderno (recomendado)<br> const botao =
+          document.querySelector("#meu-botao");<br>
+           const todosBotoes =
           document.querySelectorAll(".botao");
         </div>
 
@@ -375,10 +447,12 @@
         <p>Agora vamos mudar o que está escrito nos elementos!</p>
 
         <div class="codigo-exemplo">
-          // Mudando texto simples elemento.textContent = "Novo texto aqui"; //
-          Mudando HTML (com tags) elemento.innerHTML = "&lt;strong&gt;Texto em
-          negrito&lt;/strong&gt;"; // Mudando atributos
-          elemento.setAttribute("class", "nova-classe"); elemento.id =
+          // Mudando texto simples<br> elemento.textContent = "Novo texto aqui";<br><br>
+          // Mudando HTML (com tags)<br> elemento.innerHTML = "&lt;strong&gt;Texto em
+          Mudando HTML (com tags) elemento.innerHTML = '&lt;strong&gt;Texto em
+          negrito&lt;/strong&gt;'";<br><br>
+          // Mudando atributos<br>
+          elemento.setAttribute("class", "nova-classe");<br> elemento.id =
           "novo-id";
         </div>
 

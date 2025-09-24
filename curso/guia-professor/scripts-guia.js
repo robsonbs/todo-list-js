@@ -3,9 +3,21 @@
  * Funcionalidades interativas e navegação
  */
 
+// Flag para controlar inicialização
+let guiaInicializado = false;
+
 // === Inicialização ===
 document.addEventListener("DOMContentLoaded", function () {
+  // Evitar inicialização dupla
+  if (guiaInicializado) {
+    console.log("⚠️ Guia já foi inicializado, pulando...");
+    return;
+  }
+
   console.log("🎓 Guia do Professor carregado!");
+
+  // Marcar como inicializado
+  guiaInicializado = true;
 
   // Inicializar componentes
   inicializarNavegacao();
@@ -86,6 +98,12 @@ function inicializarGraficos() {
   // Gráfico de distribuição de atividades
   const ctx = document.getElementById("chartAtividades");
   if (ctx) {
+    // Verificar se já existe uma instância do gráfico e destruí-la
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
     new Chart(ctx, {
       type: "doughnut",
       data: {
@@ -101,7 +119,11 @@ function inicializarGraficos() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 1,
+        layout: {
+          padding: 10,
+        },
         plugins: {
           legend: {
             display: false,
@@ -115,6 +137,14 @@ function inicializarGraficos() {
           },
         },
         cutout: "60%",
+        elements: {
+          arc: {
+            borderWidth: 0,
+          },
+        },
+        interaction: {
+          intersect: false,
+        },
       },
     });
   }
@@ -433,7 +463,7 @@ function configurarEventos() {
   window.addEventListener(
     "resize",
     debounce(() => {
-      // Reajustar gráficos se necessário
+      // Reajustar gráficos se necessário (sem recriar)
       const chart = Chart.getChart("chartAtividades");
       if (chart) {
         chart.resize();
@@ -493,6 +523,40 @@ window.visualizarAula = function (numero) {
   const url = `../aula-0${numero}/index.html`;
   window.open(url, "_blank");
   mostrarNotificacao(`👁️ Abrindo Aula ${numero} em nova aba...`, "info");
+};
+
+// === Controle dos Planos de Aula ===
+window.expandirTodosPlanos = function () {
+  document
+    .querySelectorAll("#accordionPlanosAula .accordion-collapse")
+    .forEach((collapse) => {
+      if (!collapse.classList.contains("show")) {
+        const bsCollapse = new bootstrap.Collapse(collapse, { show: true });
+      }
+    });
+  mostrarNotificacao("📖 Todos os planos expandidos!", "info");
+};
+
+window.recolherTodosPlanos = function () {
+  document
+    .querySelectorAll("#accordionPlanosAula .accordion-collapse.show")
+    .forEach((collapse) => {
+      const bsCollapse = bootstrap.Collapse.getInstance(collapse);
+      if (bsCollapse) bsCollapse.hide();
+    });
+  mostrarNotificacao("📚 Todos os planos recolhidos!", "info");
+};
+
+window.baixarTodosPlanos = function () {
+  mostrarNotificacao("📦 Preparando download de todos os planos...", "info");
+
+  setTimeout(() => {
+    mostrarNotificacao(
+      "✅ Pacote completo de planos de aula baixado!",
+      "success"
+    );
+    // Aqui seria implementado o download real do ZIP com todos os planos
+  }, 2500);
 };
 
 // === Debug ===

@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Curso JavaScript Progressivo - Navegação Principal</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --info-color: #06b6d4;
+        --danger-color: #ef4444;
+
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .main-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 1400px;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+      }
+
+      .header-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .course-stats {
+        background: var(--light-color);
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .lessons-grid {
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+      }
+
+      .lesson-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+      }
+
+      .lesson-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-color);
+      }
+
+      .lesson-header {
+        padding: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--info-color) 0%,
+          var(--primary-color) 100%
+        );
+        color: white;
+        position: relative;
+      }
+
+      .lesson-number {
+        position: absolute;
+        top: -10px;
+        right: 15px;
+        background: white;
+        color: var(--primary-color);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .lesson-content {
+        padding: 1.5rem;
+      }
+
+      .lesson-topics {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0;
+      }
+
+      .lesson-topics li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .lesson-topics li:last-child {
+        border-bottom: none;
+      }
+
+      .lesson-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .btn-lesson {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary-lesson {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+      }
+
+      .btn-secondary-lesson {
+        background: var(--light-color);
+        color: var(--dark-color);
+        border: 2px solid #e5e7eb;
+      }
+
+      .btn-lesson:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .difficulty-badge {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .difficulty-beginner {
+        background: var(--success-color);
+        color: white;
+      }
+
+      .difficulty-intermediate {
+        background: var(--warning-color);
+        color: white;
+      }
+
+      .difficulty-advanced {
+        background: var(--danger-color);
+        color: white;
+      }
+
+      .progress-section {
+        background: var(--light-color);
+        padding: 2rem;
+        margin: 2rem 0;
+      }
+
+      .progress-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+      }
+
+      .progress-bar-custom {
+        height: 12px;
+        border-radius: 6px;
+        background: #e5e7eb;
+        overflow: hidden;
+        margin: 1rem 0;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--success-color) 0%,
+          var(--info-color) 100%
+        );
+        border-radius: 6px;
+        transition: width 0.8s ease;
+      }
+
+      .course-features {
+        background: var(--dark-color);
+        color: white;
+        padding: 3rem 2rem;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .feature-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--info-color);
+      }
+
+      .footer {
+        background: var(--light-color);
+        padding: 2rem;
+        text-align: center;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 1rem;
+          border-radius: 15px;
+        }
+
+        .lessons-grid {
+          grid-template-columns: 1fr;
+          padding: 1rem;
+        }
+
+        .course-stats {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+
+        .lesson-actions {
+          flex-direction: column;
+        }
+      }
+
+      /* Animações */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .lesson-card {
+        animation: fadeInUp 0.6s ease forwards;
+      }
+
+      .lesson-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .lesson-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .lesson-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .lesson-card:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+      .lesson-card:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+      .lesson-card:nth-child(6) {
+        animation-delay: 0.6s;
+      }
+      .lesson-card:nth-child(7) {
+        animation-delay: 0.7s;
+      }
+      .lesson-card:nth-child(8) {
+        animation-delay: 0.8s;
+      }
+      .lesson-card:nth-child(9) {
+        animation-delay: 0.9s;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <!-- Header Principal -->
+      <div class="header">
+        <div class="header-content">
+          <h1>
+            <i class="fas fa-code"></i>
+            Curso JavaScript Progressivo
+          </h1>
+          <p class="lead mb-0">
+            Do básico ao avançado - Uma jornada completa de aprendizado
+          </p>
+          <p class="mt-2">
+            <i class="fas fa-users"></i> Para estudantes e educadores
+            <span class="mx-3">|</span>
+            <i class="fas fa-certificate"></i> Conteúdo certificado
+            <span class="mx-3">|</span>
+            <i class="fas fa-mobile-alt"></i> 100% responsivo
+          </p>
+        </div>
+      </div>
+
+      <!-- Estatísticas do Curso -->
+      <div class="course-stats">
+        <div class="stat-card">
+          <div class="stat-icon text-primary">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h3>9</h3>
+          <p class="mb-0">Aulas Completas</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon text-success">
+            <i class="fas fa-code"></i>
+          </div>
+          <h3>50+</h3>
+          <p class="mb-0">Exercícios Práticos</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon text-info">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3>20h</h3>
+          <p class="mb-0">Conteúdo Total</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon text-warning">
+            <i class="fas fa-project-diagram"></i>
+          </div>
+          <h3>3</h3>
+          <p class="mb-0">Projetos Completos</p>
+        </div>
+      </div>
+
+      <!-- Progresso do Curso -->
+      <div class="progress-section">
+        <div class="progress-card">
+          <h3>
+            <i class="fas fa-chart-line"></i>
+            Seu Progresso
+          </h3>
+          <p class="text-muted">
+            Acompanhe seu desenvolvimento através das aulas
+          </p>
+          <div class="progress-bar-custom">
+            <div
+              class="progress-fill"
+              style="width: 90%"
+              id="progress-fill"
+            ></div>
+          </div>
+          <div class="d-flex justify-content-between mt-2">
+            <span><strong>8 de 9</strong> aulas concluídas</span>
+            <span><strong>90%</strong> completo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de Aulas -->
+      <div class="lessons-grid">
+        <!-- Aula 1: Fundamentos -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-beginner">Iniciante</div>
+            <div class="lesson-number">1</div>
+            <h4>
+              <i class="fas fa-seedling"></i>
+              Fundamentos do JavaScript
+            </h4>
+            <p class="mb-0">Primeiros passos na linguagem</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li>
+                <i class="fas fa-check text-success"></i> Variáveis e tipos de
+                dados
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Operadores básicos
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Estruturas
+                condicionais
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Primeiro programa
+              </li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-01/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-01/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 2: Estruturas de Controle -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-beginner">Iniciante</div>
+            <div class="lesson-number">2</div>
+            <h4>
+              <i class="fas fa-code-branch"></i>
+              Estruturas de Controle
+            </h4>
+            <p class="mb-0">Loops e condições</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li>
+                <i class="fas fa-check text-success"></i> Estruturas de
+                repetição
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> for, while, do-while
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> break e continue
+              </li>
+              <li><i class="fas fa-check text-success"></i> Loops aninhados</li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-02/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-02/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 3: Funções -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-beginner">Iniciante</div>
+            <div class="lesson-number">3</div>
+            <h4>
+              <i class="fas fa-puzzle-piece"></i>
+              Funções
+            </h4>
+            <p class="mb-0">Modularização e reutilização</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li>
+                <i class="fas fa-check text-success"></i> Declaração de funções
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Parâmetros e
+                argumentos
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Escopo de variáveis
+              </li>
+              <li><i class="fas fa-check text-success"></i> Arrow functions</li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-03/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-03/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 4: Arrays e Objetos -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-intermediate">
+              Intermediário
+            </div>
+            <div class="lesson-number">4</div>
+            <h4>
+              <i class="fas fa-database"></i>
+              Arrays e Objetos
+            </h4>
+            <p class="mb-0">Estruturas de dados</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li>
+                <i class="fas fa-check text-success"></i> Arrays
+                multidimensionais
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Métodos de array
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Objetos e propriedades
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> JSON e manipulação
+              </li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-04/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-04/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 5: DOM e Eventos -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-intermediate">
+              Intermediário
+            </div>
+            <div class="lesson-number">5</div>
+            <h4>
+              <i class="fas fa-mouse-pointer"></i>
+              DOM e Eventos
+            </h4>
+            <p class="mb-0">Interação com página</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li><i class="fas fa-check text-success"></i> Seletores DOM</li>
+              <li>
+                <i class="fas fa-check text-success"></i> Manipulação de
+                elementos
+              </li>
+              <li><i class="fas fa-check text-success"></i> Event listeners</li>
+              <li>
+                <i class="fas fa-check text-success"></i> Formulários e
+                validação
+              </li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-05/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-05/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 6: Programação Assíncrona -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-intermediate">
+              Intermediário
+            </div>
+            <div class="lesson-number">6</div>
+            <h4>
+              <i class="fas fa-sync-alt"></i>
+              Programação Assíncrona
+            </h4>
+            <p class="mb-0">Promises, async/await</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li>
+                <i class="fas fa-check text-success"></i> Callbacks e problemas
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Promises e .then()
+              </li>
+              <li><i class="fas fa-check text-success"></i> async/await</li>
+              <li><i class="fas fa-check text-success"></i> Fetch API</li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-06/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-06/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 7: APIs e AJAX -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-advanced">Avançado</div>
+            <div class="lesson-number">7</div>
+            <h4>
+              <i class="fas fa-exchange-alt"></i>
+              APIs e AJAX
+            </h4>
+            <p class="mb-0">Comunicação com servidores</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li><i class="fas fa-check text-success"></i> REST APIs</li>
+              <li><i class="fas fa-check text-success"></i> HTTP methods</li>
+              <li>
+                <i class="fas fa-check text-success"></i> Headers e autenticação
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Tratamento de erros
+              </li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-07/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-07/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 8: DOM Avançado -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-advanced">Avançado</div>
+            <div class="lesson-number">8</div>
+            <h4>
+              <i class="fas fa-cogs"></i>
+              DOM Avançado
+            </h4>
+            <p class="mb-0">Técnicas avançadas de manipulação</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li>
+                <i class="fas fa-check text-success"></i> Performance e
+                otimização
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Observers e APIs
+              </li>
+              <li>
+                <i class="fas fa-check text-success"></i> Virtual scrolling
+              </li>
+              <li><i class="fas fa-check text-success"></i> Drag and drop</li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-08/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-08/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aula 9: Web APIs Modernas -->
+        <div class="lesson-card">
+          <div class="lesson-header">
+            <div class="difficulty-badge difficulty-advanced">Avançado</div>
+            <div class="lesson-number">9</div>
+            <h4>
+              <i class="fas fa-globe-americas"></i>
+              Web APIs Modernas
+            </h4>
+            <p class="mb-0">APIs nativas do navegador</p>
+          </div>
+          <div class="lesson-content">
+            <ul class="lesson-topics">
+              <li><i class="fas fa-check text-success"></i> Geolocation API</li>
+              <li><i class="fas fa-check text-success"></i> Web Speech API</li>
+              <li><i class="fas fa-check text-success"></i> MediaStream API</li>
+              <li><i class="fas fa-check text-success"></i> Service Workers</li>
+            </ul>
+            <div class="lesson-actions">
+              <a
+                href="aula-09/index.html"
+                class="btn-lesson btn-primary-lesson"
+              >
+                <i class="fas fa-play"></i>
+                Iniciar Aula
+              </a>
+              <a
+                href="aula-09/README.md"
+                class="btn-lesson btn-secondary-lesson"
+              >
+                <i class="fas fa-book"></i>
+                Documentação
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recursos do Curso -->
+      <div class="course-features">
+        <div class="container">
+          <h2 class="text-center mb-4">
+            <i class="fas fa-star"></i>
+            Recursos do Curso
+          </h2>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-graduation-cap"></i>
+              </div>
+              <h5>Progressivo</h5>
+              <p>Do básico ao avançado com progressão lógica</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-code"></i>
+              </div>
+              <h5>Prático</h5>
+              <p>Exercícios e projetos reais em cada aula</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <h5>Responsivo</h5>
+              <p>Acesse de qualquer dispositivo</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h5>Colaborativo</h5>
+              <p>Material para estudantes e professores</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links Rápidos -->
+      <div class="course-features">
+        <div class="container">
+          <h2 class="text-center mb-4">
+            <i class="fas fa-link"></i>
+            Acesso Rápido
+          </h2>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-dumbbell"></i>
+              </div>
+              <h5>Exercícios</h5>
+              <p>Pratique com exercícios interativos</p>
+              <a href="exercicios/" class="btn btn-light mt-2">
+                <i class="fas fa-arrow-right"></i>
+                Acessar
+              </a>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+              </div>
+              <h5>Dashboard Professor</h5>
+              <p>Gerencie estudantes e progresso</p>
+              <a href="professor/" class="btn btn-light mt-2">
+                <i class="fas fa-arrow-right"></i>
+                Acessar
+              </a>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-book-open"></i>
+              </div>
+              <h5>Guia do Professor</h5>
+              <p>Metodologias e planos de aula</p>
+              <a href="GUIA_PROFESSOR.md" class="btn btn-light mt-2">
+                <i class="fas fa-arrow-right"></i>
+                Acessar
+              </a>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-tasks"></i>
+              </div>
+              <h5>Exercícios Progressivos</h5>
+              <p>Exercícios organizados por nível</p>
+              <a href="EXERCICIOS_PROGRESSIVOS.md" class="btn btn-light mt-2">
+                <i class="fas fa-arrow-right"></i>
+                Acessar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="row">
+          <div class="col-md-4">
+            <h6><i class="fas fa-book"></i> Para Estudantes</h6>
+            <p class="small text-muted">
+              Material estruturado do básico ao avançado
+            </p>
+            <a href="exercicios/" class="btn btn-outline-primary btn-sm"
+              >Exercícios</a
+            >
+          </div>
+          <div class="col-md-4">
+            <h6><i class="fas fa-chalkboard-teacher"></i> Para Professores</h6>
+            <p class="small text-muted">Planos de aula e exercícios prontos</p>
+            <a href="professor/" class="btn btn-outline-primary btn-sm"
+              >Dashboard</a
+            >
+          </div>
+          <div class="col-md-4">
+            <h6><i class="fas fa-code"></i> Para Desenvolvedores</h6>
+            <p class="small text-muted">Código limpo e bem documentado</p>
+            <a href="../" class="btn btn-outline-primary btn-sm"
+              >Projeto Principal</a
+            >
+          </div>
+        </div>
+        <hr />
+        <div class="text-center">
+          <p class="text-muted small mb-2">
+            <i class="fas fa-heart text-danger"></i>
+            Criado com amor para a comunidade de desenvolvedores
+          </p>
+          <p class="text-muted small mb-0">
+            <a
+              href="https://github.com/robsonbs/todo-list-js"
+              class="text-decoration-none"
+            >
+              <i class="fab fa-github"></i>
+              Contribua no GitHub
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Simulação de progresso baseado em localStorage
+      document.addEventListener("DOMContentLoaded", function () {
+        // Simular progresso salvo
+        const completedLessons =
+          JSON.parse(localStorage.getItem("completedLessons")) || [];
+        const totalLessons = 9;
+        const progressPercentage =
+          (completedLessons.length / totalLessons) * 100;
+
+        // Atualizar barra de progresso
+        const progressFill = document.getElementById("progress-fill");
+        if (progressFill) {
+          setTimeout(() => {
+            progressFill.style.width = `${progressPercentage}%`;
+          }, 500);
+        }
+
+        // Marcar aulas como concluídas
+        completedLessons.forEach((lessonNumber) => {
+          const lessonCard = document.querySelector(
+            `.lesson-number:contains('${lessonNumber}')`
+          );
+          if (lessonCard) {
+            lessonCard.parentElement.parentElement.classList.add("completed");
+          }
+        });
+      });
+
+      // Função para marcar aula como concluída
+      function markLessonComplete(lessonNumber) {
+        let completedLessons =
+          JSON.parse(localStorage.getItem("completedLessons")) || [];
+        if (!completedLessons.includes(lessonNumber)) {
+          completedLessons.push(lessonNumber);
+          localStorage.setItem(
+            "completedLessons",
+            JSON.stringify(completedLessons)
+          );
+        }
+      }
+
+      // Adicionar event listeners aos botões das aulas
+      document.querySelectorAll(".btn-primary-lesson").forEach((button) => {
+        button.addEventListener("click", function () {
+          const lessonCard = this.closest(".lesson-card");
+          const lessonNumber =
+            lessonCard.querySelector(".lesson-number").textContent;
+          markLessonComplete(parseInt(lessonNumber));
+        });
+      });
+    </script>
+  </body>
+</html>
