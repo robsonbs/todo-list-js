@@ -315,19 +315,26 @@
         text-transform: uppercase;
       }
 
+      /* Melhorando contraste de cores para acessibilidade */
       .priority.high {
         background: #fed7d7;
-        color: #c53030;
+        color: #9B2C2C;
+        border: 1px solid #c53030;
+        font-weight: 600;
       }
 
       .priority.medium {
         background: #feebc8;
-        color: #dd6b20;
+        color: #9C4221;
+        border: 1px solid #dd6b20;
+        font-weight: 600;
       }
 
       .priority.low {
         background: #e6fffa;
-        color: #00b5d8;
+        color: #086F83;
+        border: 1px solid #0694a2;
+        font-weight: 600;
       }
 
       .advanced-section {
@@ -1028,9 +1035,30 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .nav-btn,
-        .progress-fill {
-          transition: none;
+        *,
+        ::before,
+        ::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        
+        .badge.unlocked::before {
+          animation: none !important;
+        }
+        
+        .demo-btn:hover,
+        .btn-demo:hover,
+        .badge.unlocked .badge-icon,
+        .nav-btn:hover,
+        .exercise-card:hover {
+          transform: none !important;
+          animation: none !important;
+        }
+        
+        .badge-notification {
+          animation: none !important;
         }
       }
 
@@ -1046,17 +1074,57 @@
         white-space: nowrap !important;
         border: 0 !important;
       }
+      
+      /* Skip links para navegação por teclado */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        padding: 8px 16px;
+        background-color: var(--primary-color);
+        color: white;
+        z-index: 100;
+        transition: top 0.2s;
+        border-radius: 0 0 4px 0;
+      }
+      
+      .skip-link:focus {
+        top: 0;
+      }
 
       /* Focus visible para melhor acessibilidade */
+      *:focus-visible {
+        outline: 3px solid #007bff;
+        outline-offset: 3px;
+        border-radius: 2px;
+        z-index: 10;
+        position: relative;
+      }
+      
+      /* Estilo de foco específico para links e botões */
       button:focus-visible,
       input:focus-visible,
-      textarea:focus-visible {
-        outline: 2px solid #007bff;
-        outline-offset: 2px;
+      textarea:focus-visible,
+      a:focus-visible,
+      .btn-example:focus-visible,
+      .demo-btn:focus-visible,
+      .botao:focus-visible,
+      .botao-secundario:focus-visible,
+      .botao-terciario:focus-visible {
+        outline: 3px solid #007bff;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
       }
     </style>
   </head>
   <body>
+    <!-- Skip links para acessibilidade -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+    <a href="#console-arrays" class="skip-link">Pular para o console</a>
+    <a href="#exercicios" class="skip-link">Pular para os exercícios</a>
+    <a href="#todo-system" class="skip-link">Pular para o sistema TODO</a>
+    <a href="#course-navigation" class="skip-link">Pular para a navegação</a>
+    
     <!-- Container Principal -->
     <div class="main-container">
       <!-- Header -->
@@ -1067,44 +1135,56 @@
         </h1>
         <p class="mb-0">Domine todos os métodos de arrays do JavaScript</p>
         
-        <div class="progress-bar mt-3" role="progressbar" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do curso">
+        <div class="progress-bar mt-3" role="progressbar" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do curso: 44%">
           <div class="progress-fill"></div>
+          <span class="visually-hidden">44% do curso concluído</span>
         </div>
       </header>
 
       <!-- Conteúdo Principal -->
-      <div class="content">
+      <main id="main-content" class="content" role="main">
         <!-- Console DOM Mini -->
-        <div class="section">
+        <div id="console-arrays" class="section">
           <h2>
             <i class="fas fa-terminal"></i>
             Console Arrays Lab
           </h2>
           <p>Execute código JavaScript em tempo real e experimente métodos de arrays!</p>
           
-          <div class="console-container">
+          <div class="console-container" role="application" aria-label="Console JavaScript para arrays">
             <div class="console-header">
-              <div class="console-controls">
+              <div class="console-controls" aria-hidden="true">
                 <div class="console-dot red"></div>
                 <div class="console-dot yellow"></div>
                 <div class="console-dot green"></div>
               </div>
-              <span class="console-title">Arrays JavaScript Console</span>
-              <button class="btn-console-clear" id="clearConsole" title="Limpar Console">
-                <i class="fas fa-trash"></i>
+              <span class="console-title" id="console-title">Arrays JavaScript Console</span>
+              <button 
+                class="btn-console-clear" 
+                id="clearConsole" 
+                title="Limpar Console"
+                aria-label="Limpar saída do console">
+                <i class="fas fa-trash" aria-hidden="true"></i>
               </button>
             </div>
             
             <div class="console-content">
-              <div class="console-output" id="consoleOutput">
+              <div 
+                class="console-output" 
+                id="consoleOutput" 
+                role="log" 
+                aria-live="polite" 
+                aria-atomic="false" 
+                aria-relevant="additions"
+                aria-labelledby="console-title">
                 <div class="console-line welcome">
-                  <span class="console-prompt">></span>
+                  <span class="console-prompt" aria-hidden="true">></span>
                   <span class="console-text">Console Arrays carregado! Array exemplo: [1, 2, 3, 4, 5]</span>
                 </div>
               </div>
               
               <div class="console-input-container">
-                <span class="console-prompt">></span>
+                <span class="console-prompt" aria-hidden="true">></span>
                 <input 
                   type="text" 
                   class="console-input" 
@@ -1113,36 +1193,46 @@
                   autocomplete="off"
                   aria-label="Campo de entrada do console JavaScript para arrays"
                 />
-                <button class="btn-console-run" id="runConsole" title="Executar (Enter)" aria-label="Executar código JavaScript">
+                <button 
+                  class="btn-console-run" 
+                  id="runConsole" 
+                  title="Executar (Enter)" 
+                  aria-label="Executar código JavaScript"
+                  aria-controls="consoleOutput">
                   <i class="fas fa-play" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
           </div>
 
-          <div class="console-examples">
-            <h4><i class="fas fa-lightbulb"></i> Exemplos de Arrays para testar:</h4>
-            <div class="example-buttons">
-              <button class="btn-example" data-code="arr.push(6)">push(6)</button>
-              <button class="btn-example" data-code="arr.filter(x => x > 2)">filter > 2</button>
-              <button class="btn-example" data-code="arr.map(x => x * 2)">map * 2</button>
-              <button class="btn-example" data-code="arr.reduce((a,b) => a+b, 0)">reduce soma</button>
-              <button class="btn-example" data-code="arr.sort((a,b) => b-a)">sort desc</button>
-              <button class="btn-example" data-code="[...arr, 10, 11]">spread operator</button>
+          <div class="console-examples" role="region" aria-labelledby="exemplos-titulo">
+            <h4 id="exemplos-titulo"><i class="fas fa-lightbulb" aria-hidden="true"></i> Exemplos de Arrays para testar:</h4>
+            <div class="example-buttons" role="toolbar" aria-label="Botões de exemplo de código">
+              <button class="btn-example" data-code="arr.push(6)" aria-label="Inserir código para push(6)">push(6)</button>
+              <button class="btn-example" data-code="arr.filter(x => x > 2)" aria-label="Inserir código para filter maior que 2">filter &gt; 2</button>
+              <button class="btn-example" data-code="arr.map(x => x * 2)" aria-label="Inserir código para map multiplicado por 2">map * 2</button>
+              <button class="btn-example" data-code="arr.reduce((a,b) => a+b, 0)" aria-label="Inserir código para reduce soma">reduce soma</button>
+              <button class="btn-example" data-code="arr.sort((a,b) => b-a)" aria-label="Inserir código para sort descendente">sort desc</button>
+              <button class="btn-example" data-code="[...arr, 10, 11]" aria-label="Inserir código para spread operator">spread operator</button>
             </div>
           </div>
         </div>
 
         <!-- Sistema de Badges -->
-        <div class="section">
-          <h2>
-            <i class="fas fa-trophy"></i>
+        <div class="section" id="badges-section">
+          <h2 id="badges-heading">
+            <i class="fas fa-trophy" aria-hidden="true"></i>
             Sistema de Conquistas - Arrays Master
           </h2>
           <p>Ganhe badges conforme domina os métodos de arrays!</p>
           
-          <div class="badges-container" id="badgesContainer" role="list" aria-label="Badges de conquistas em arrays">
-            <div class="badge locked" data-badge="array-explorer" role="listitem" aria-label="Badge Explorador de Arrays - Bloqueado. Use 5 métodos diferentes de arrays para desbloquear">
+          <div class="badges-container" id="badgesContainer" role="list" aria-label="Badges de conquistas em arrays" aria-describedby="badges-heading">
+            <div class="badge locked" 
+                data-badge="array-explorer" 
+                role="listitem" 
+                aria-label="Badge Explorador de Arrays - Bloqueado. Use 5 métodos diferentes de arrays para desbloquear"
+                aria-expanded="false"
+                tabindex="0">
               <div class="badge-icon" aria-hidden="true">🔍</div>
               <div class="badge-info">
                 <div class="badge-title">Explorador de Arrays</div>
@@ -1150,7 +1240,12 @@
               </div>
             </div>
             
-            <div class="badge locked" data-badge="filter-master" role="listitem" aria-label="Badge Mestre dos Filtros - Bloqueado. Complete exercícios de filter para desbloquear">
+            <div class="badge locked" 
+                data-badge="filter-master" 
+                role="listitem" 
+                aria-label="Badge Mestre dos Filtros - Bloqueado. Complete exercícios de filter para desbloquear"
+                aria-expanded="false"
+                tabindex="0">
               <div class="badge-icon" aria-hidden="true">🔬</div>
               <div class="badge-info">
                 <div class="badge-title">Mestre dos Filtros</div>
@@ -1158,7 +1253,12 @@
               </div>
             </div>
             
-            <div class="badge locked" data-badge="map-wizard" role="listitem" aria-label="Badge Mago das Transformações - Bloqueado. Use map e reduce para desbloquear">
+            <div class="badge locked" 
+                data-badge="map-wizard" 
+                role="listitem" 
+                aria-label="Badge Mago das Transformações - Bloqueado. Use map e reduce para desbloquear"
+                aria-expanded="false"
+                tabindex="0">
               <div class="badge-icon" aria-hidden="true">🗺️</div>
               <div class="badge-info">
                 <div class="badge-title">Mago das Transformações</div>
@@ -1166,7 +1266,12 @@
               </div>
             </div>
             
-            <div class="badge locked" data-badge="sort-specialist" role="listitem" aria-label="Badge Especialista em Ordenação - Bloqueado. Use sort com diferentes critérios para desbloquear">
+            <div class="badge locked" 
+                data-badge="sort-specialist" 
+                role="listitem" 
+                aria-label="Badge Especialista em Ordenação - Bloqueado. Use sort com diferentes critérios para desbloquear"
+                aria-expanded="false"
+                tabindex="0">
               <div class="badge-icon" aria-hidden="true">📊</div>
               <div class="badge-info">
                 <div class="badge-title">Especialista em Ordenação</div>
@@ -1174,7 +1279,12 @@
               </div>
             </div>
             
-            <div class="badge locked" data-badge="performance-guru" role="listitem" aria-label="Badge Guru da Performance - Bloqueado. Execute operações avançadas para desbloquear">
+            <div class="badge locked" 
+                data-badge="performance-guru" 
+                role="listitem" 
+                aria-label="Badge Guru da Performance - Bloqueado. Execute operações avançadas para desbloquear"
+                aria-expanded="false"
+                tabindex="0">
               <div class="badge-icon" aria-hidden="true">⚡</div>
               <div class="badge-info">
                 <div class="badge-title">Guru da Performance</div>
@@ -1182,7 +1292,12 @@
               </div>
             </div>
             
-            <div class="badge locked" data-badge="console-master" role="listitem" aria-label="Badge Mestre do Console - Bloqueado. Execute 10 comandos no console para desbloquear">
+            <div class="badge locked" 
+                data-badge="console-master" 
+                role="listitem" 
+                aria-label="Badge Mestre do Console - Bloqueado. Execute 10 comandos no console para desbloquear"
+                aria-expanded="false"
+                tabindex="0">
               <div class="badge-icon" aria-hidden="true">💻</div>
               <div class="badge-info">
                 <div class="badge-title">Mestre do Console</div>
@@ -1349,8 +1464,8 @@
       </div>
 
       <!-- Exercícios Práticos -->
-      <section class="section" role="main">
-        <h2>
+      <section id="exercicios" class="section" role="region" aria-labelledby="exercicios-heading">
+        <h2 id="exercicios-heading">
           <i class="fas fa-code" aria-hidden="true"></i>
           Exercícios Práticos - Arrays
         </h2>
@@ -1358,9 +1473,9 @@
         
         <div class="exercises-container" role="list" aria-label="Lista de exercícios práticos sobre arrays">
           <!-- Exercício 1 -->
-          <article class="exercise-card" data-exercise="1" role="listitem">
+          <article class="exercise-card" data-exercise="1" role="listitem" aria-labelledby="exercise1-title" aria-describedby="exercise1-description">
             <div class="exercise-header">
-              <h3><i class="fas fa-filter" aria-hidden="true"></i> Exercício 1: Filtrar Números Pares</h3>
+              <h3 id="exercise1-title"><i class="fas fa-filter" aria-hidden="true"></i> Exercício 1: Filtrar Números Pares</h3>
               <div class="exercise-meta">
                 <span><i class="fas fa-clock" aria-hidden="true"></i> 5 min</span>
                 <span><i class="fas fa-signal" aria-hidden="true"></i> Básico</span>
@@ -1368,18 +1483,18 @@
             </div>
             
             <div class="exercise-content">
-              <p><strong>Objetivo:</strong> Use filter() para encontrar todos os números pares do array [1,2,3,4,5,6,7,8,9,10].</p>
+              <p id="exercise1-description"><strong>Objetivo:</strong> Use filter() para encontrar todos os números pares do array [1,2,3,4,5,6,7,8,9,10].</p>
               
               <div class="exercise-demo">
-                <div class="array-display">Array: [1,2,3,4,5,6,7,8,9,10]</div>
-                <div class="exercise-output" id="exercise1Output" aria-live="polite">
+                <div class="array-display" aria-label="Array de entrada">Array: [1,2,3,4,5,6,7,8,9,10]</div>
+                <div class="exercise-output" id="exercise1Output" aria-live="polite" role="status">
                   <em>Execute seu código para ver o resultado...</em>
                 </div>
               </div>
               
-              <h4><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
+              <h4 id="exercise1-code-label"><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
               <div class="code-editor">
-                <label for="exercise1Code" class="visually-hidden">Editor de código para exercício 1</label>
+                <label for="exercise1Code" class="visually-hidden">Editor de código para exercício 1 - filtrar números pares</label>
                 <textarea 
                   class="code-input" 
                   id="exercise1Code" 
@@ -1389,48 +1504,66 @@ const pares = numeros.filter(num => {
     // Seu código aqui...
 });
 console.log(pares);"
-                  aria-describedby="exercise1Feedback"
+                  aria-describedby="exercise1-description exercise1Feedback"
+                  aria-labelledby="exercise1-code-label"
                 ></textarea>
               </div>
               
-              <div class="exercise-actions">
-                <button class="botao" onclick="runExercise(1)" aria-describedby="exercise1Output">
+              <div class="exercise-actions" role="group" aria-label="Ações do exercício 1">
+                <button 
+                  class="botao" 
+                  onclick="runExercise(1)" 
+                  aria-describedby="exercise1Output" 
+                  aria-label="Executar código do exercício 1">
                   <i class="fas fa-play" aria-hidden="true"></i> Executar
                 </button>
-                <button class="botao-secundario" onclick="showHint(1)">
+                <button 
+                  class="botao-secundario" 
+                  onclick="showHint(1)" 
+                  aria-controls="exercise1Feedback"
+                  id="hint-button-1"
+                  aria-expanded="false"
+                  aria-label="Mostrar dica para o exercício 1">
                   <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
                 </button>
-                <button class="botao-terciario" onclick="showSolution(1)">
+                <button 
+                  class="botao-terciario" 
+                  onclick="showSolution(1)"
+                  aria-controls="exercise1Code"
+                  id="solution-button-1"
+                  aria-expanded="false"
+                  aria-label="Mostrar solução para o exercício 1">
                   <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
                 </button>
               </div>
               
-              <div class="exercise-feedback" id="exercise1Feedback" aria-live="polite"></div>
+              <div class="exercise-feedback" id="exercise1Feedback" aria-live="assertive" role="alert"></div>
             </div>
           </article>
 
           <!-- Exercício 2 -->
-          <div class="exercise-card" data-exercise="2">
+          <article class="exercise-card" data-exercise="2" role="listitem" aria-labelledby="exercise2-title" aria-describedby="exercise2-description">
             <div class="exercise-header">
-              <h3><i class="fas fa-calculator"></i> Exercício 2: Somar com Reduce</h3>
+              <h3 id="exercise2-title"><i class="fas fa-calculator" aria-hidden="true"></i> Exercício 2: Somar com Reduce</h3>
               <div class="exercise-meta">
-                <span><i class="fas fa-clock"></i> 8 min</span>
-                <span><i class="fas fa-signal"></i> Intermediário</span>
+                <span><i class="fas fa-clock" aria-hidden="true"></i> 8 min</span>
+                <span><i class="fas fa-signal" aria-hidden="true"></i> Intermediário</span>
               </div>
             </div>
             
             <div class="exercise-content">
-              <p><strong>Objetivo:</strong> Use reduce() para calcular a soma total dos preços no array de produtos.</p>
+              <p id="exercise2-description"><strong>Objetivo:</strong> Use reduce() para calcular a soma total dos preços no array de produtos.</p>
               
               <div class="exercise-demo">
-                <div class="array-display">Produtos: [{nome: 'Notebook', preco: 2500}, {nome: 'Mouse', preco: 50}, {nome: 'Teclado', preco: 150}]</div>
-                <div class="exercise-output" id="exercise2Output">
+                <div class="array-display" aria-label="Array de produtos">Produtos: [{nome: 'Notebook', preco: 2500}, {nome: 'Mouse', preco: 50}, {nome: 'Teclado', preco: 150}]</div>
+                <div class="exercise-output" id="exercise2Output" aria-live="polite" role="status">
                   <em>Execute seu código para ver o resultado...</em>
                 </div>
               </div>
               
-              <h4><i class="fas fa-keyboard"></i> Digite seu código:</h4>
+              <h4 id="exercise2-code-label"><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
               <div class="code-editor">
+                <label for="exercise2Code" class="visually-hidden">Editor de código para exercício 2 - somar preços com reduce</label>
                 <textarea 
                   class="code-input" 
                   id="exercise2Code" 
@@ -1444,47 +1577,66 @@ const total = produtos.reduce((soma, produto) => {
     // Seu código aqui...
 }, 0);
 console.log('Total: R$ ' + total);"
+                  aria-describedby="exercise2-description exercise2Feedback"
+                  aria-labelledby="exercise2-code-label"
                 ></textarea>
               </div>
               
-              <div class="exercise-actions">
-                <button class="botao" onclick="runExercise(2)">
-                  <i class="fas fa-play"></i> Executar
+              <div class="exercise-actions" role="group" aria-label="Ações do exercício 2">
+                <button 
+                  class="botao" 
+                  onclick="runExercise(2)" 
+                  aria-describedby="exercise2Output"
+                  aria-label="Executar código do exercício 2">
+                  <i class="fas fa-play" aria-hidden="true"></i> Executar
                 </button>
-                <button class="botao-secundario" onclick="showHint(2)">
-                  <i class="fas fa-lightbulb"></i> Dica
+                <button 
+                  class="botao-secundario" 
+                  onclick="showHint(2)"
+                  aria-controls="exercise2Feedback"
+                  id="hint-button-2"
+                  aria-expanded="false"
+                  aria-label="Mostrar dica para o exercício 2">
+                  <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
                 </button>
-                <button class="botao-terciario" onclick="showSolution(2)">
-                  <i class="fas fa-eye"></i> Ver Solução
+                <button 
+                  class="botao-terciario" 
+                  onclick="showSolution(2)"
+                  aria-controls="exercise2Code"
+                  id="solution-button-2"
+                  aria-expanded="false"
+                  aria-label="Mostrar solução para o exercício 2">
+                  <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
                 </button>
               </div>
               
-              <div class="exercise-feedback" id="exercise2Feedback"></div>
+              <div class="exercise-feedback" id="exercise2Feedback" aria-live="assertive" role="alert"></div>
             </div>
-          </div>
+          </article>
 
           <!-- Exercício 3 -->
-          <div class="exercise-card" data-exercise="3">
+          <article class="exercise-card" data-exercise="3" role="listitem" aria-labelledby="exercise3-title" aria-describedby="exercise3-description">
             <div class="exercise-header">
-              <h3><i class="fas fa-sort"></i> Exercício 3: Ordenar por Critério</h3>
+              <h3 id="exercise3-title"><i class="fas fa-sort" aria-hidden="true"></i> Exercício 3: Ordenar por Critério</h3>
               <div class="exercise-meta">
-                <span><i class="fas fa-clock"></i> 10 min</span>
-                <span><i class="fas fa-signal"></i> Avançado</span>
+                <span><i class="fas fa-clock" aria-hidden="true"></i> 10 min</span>
+                <span><i class="fas fa-signal" aria-hidden="true"></i> Avançado</span>
               </div>
             </div>
             
             <div class="exercise-content">
-              <p><strong>Objetivo:</strong> Use sort() para ordenar pessoas por idade (do mais novo para o mais velho).</p>
+              <p id="exercise3-description"><strong>Objetivo:</strong> Use sort() para ordenar pessoas por idade (do mais novo para o mais velho).</p>
               
               <div class="exercise-demo">
-                <div class="array-display">Pessoas: [{nome: 'Ana', idade: 25}, {nome: 'João', idade: 30}, {nome: 'Maria', idade: 20}]</div>
-                <div class="exercise-output" id="exercise3Output">
+                <div class="array-display" aria-label="Array de pessoas">Pessoas: [{nome: 'Ana', idade: 25}, {nome: 'João', idade: 30}, {nome: 'Maria', idade: 20}]</div>
+                <div class="exercise-output" id="exercise3Output" aria-live="polite" role="status">
                   <em>Execute seu código para ver o resultado...</em>
                 </div>
               </div>
               
-              <h4><i class="fas fa-keyboard"></i> Digite seu código:</h4>
+              <h4 id="exercise3-code-label"><i class="fas fa-keyboard" aria-hidden="true"></i> Digite seu código:</h4>
               <div class="code-editor">
+                <label for="exercise3Code" class="visually-hidden">Editor de código para exercício 3 - ordenar por idade</label>
                 <textarea 
                   class="code-input" 
                   id="exercise3Code" 
@@ -1498,30 +1650,48 @@ const ordenadas = pessoas.sort((a, b) => {
     // Seu código aqui...
 });
 console.log(ordenadas);"
+                  aria-describedby="exercise3-description exercise3Feedback"
+                  aria-labelledby="exercise3-code-label"
                 ></textarea>
               </div>
               
-              <div class="exercise-actions">
-                <button class="botao" onclick="runExercise(3)">
-                  <i class="fas fa-play"></i> Executar
+              <div class="exercise-actions" role="group" aria-label="Ações do exercício 3">
+                <button 
+                  class="botao" 
+                  onclick="runExercise(3)" 
+                  aria-describedby="exercise3Output"
+                  aria-label="Executar código do exercício 3">
+                  <i class="fas fa-play" aria-hidden="true"></i> Executar
                 </button>
-                <button class="botao-secundario" onclick="showHint(3)">
-                  <i class="fas fa-lightbulb"></i> Dica
+                <button 
+                  class="botao-secundario" 
+                  onclick="showHint(3)"
+                  aria-controls="exercise3Feedback"
+                  id="hint-button-3"
+                  aria-expanded="false"
+                  aria-label="Mostrar dica para o exercício 3">
+                  <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
                 </button>
-                <button class="botao-terciario" onclick="showSolution(3)">
-                  <i class="fas fa-eye"></i> Ver Solução
+                <button 
+                  class="botao-terciario" 
+                  onclick="showSolution(3)"
+                  aria-controls="exercise3Code"
+                  id="solution-button-3"
+                  aria-expanded="false"
+                  aria-label="Mostrar solução para o exercício 3">
+                  <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
                 </button>
               </div>
               
-              <div class="exercise-feedback" id="exercise3Feedback"></div>
+              <div class="exercise-feedback" id="exercise3Feedback" aria-live="assertive" role="alert"></div>
             </div>
           </article>
         </div>
       </section>
 
       <!-- TODO System Implementation -->
-      <section class="todo-system">
-        <h2>📋 Sistema TODO - Aplicação Prática</h2>
+      <section id="todo-system" class="todo-system" role="region" aria-labelledby="todo-system-heading">
+        <h2 id="todo-system-heading">📋 Sistema TODO - Aplicação Prática</h2>
 
         <div class="concept-explanation">
           <h4>Arrays na Prática</h4>
@@ -1531,17 +1701,27 @@ console.log(ordenadas);"
           </p>
         </div>
 
-        <div class="todo-input-container">
+        <div class="todo-input-container" role="form" aria-label="Adicionar nova tarefa">
+          <label for="todoInput" class="visually-hidden">Digite uma nova tarefa</label>
           <input
             type="text"
             class="todo-input"
             id="todoInput"
             placeholder="Digite uma nova tarefa..."
+            aria-describedby="todo-input-hint"
           />
-          <button class="add-btn" id="addTodoBtn">➕ Adicionar</button>
+          <div id="todo-input-hint" class="visually-hidden">Pressione Enter ou clique em Adicionar após digitar sua tarefa</div>
+          <button 
+            class="add-btn" 
+            id="addTodoBtn" 
+            aria-label="Adicionar tarefa"
+            aria-controls="todoSystemResult"
+          >
+            <span aria-hidden="true">➕</span> Adicionar
+          </button>
         </div>
 
-        <div id="todoSystemResult">
+        <div id="todoSystemResult" role="region" aria-live="polite" aria-atomic="true">
           <!-- Todo list will be populated here -->
         </div>
       </section>
@@ -1591,37 +1771,37 @@ console.log(ordenadas);"
     </div>
 
     <!-- Sistema de Navegação -->
-    <nav class="course-navigation">
+    <nav id="course-navigation" class="course-navigation" role="navigation" aria-label="Navegação do curso">
       <div class="nav-container">
         <div class="nav-info">
           <span class="course-title">
-            <i class="fas fa-graduation-cap"></i>
+            <i class="fas fa-graduation-cap" aria-hidden="true"></i>
             Curso JavaScript
           </span>
           <span class="lesson-indicator">Aula 4 de 9</span>
         </div>
         
         <div class="nav-progress">
-          <div class="progress-bar">
+          <div class="progress-bar" role="progressbar" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100" aria-label="44% do curso concluído">
             <div class="progress-fill" style="width: 44.4%"></div>
           </div>
-          <span class="progress-text">44% concluído</span>
+          <span class="progress-text" id="progress-description">44% concluído</span>
         </div>
         
-        <div class="nav-buttons">
-          <a href="../aula-03/index.html" class="nav-btn prev-btn">
-            <i class="fas fa-chevron-left"></i>
+        <div class="nav-buttons" role="group" aria-label="Navegação entre aulas">
+          <a href="../aula-03/index.html" class="nav-btn prev-btn" aria-label="Ir para aula anterior (Aula 3)">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
             <span>Aula Anterior</span>
           </a>
           
-          <a href="../" class="nav-btn home-btn">
-            <i class="fas fa-home"></i>
+          <a href="../" class="nav-btn home-btn" aria-label="Voltar para a página inicial do curso">
+            <i class="fas fa-home" aria-hidden="true"></i>
             <span>Início</span>
           </a>
           
-          <a href="../aula-05/index.html" class="nav-btn next-btn">
+          <a href="../aula-05/index.html" class="nav-btn next-btn" aria-label="Ir para próxima aula (Aula 5)">
             <span>Próxima Aula</span>
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
           </a>
         </div>
       </div>
@@ -1695,6 +1875,8 @@ console.log(ordenadas);`,
           let capturedOutput = [];
           console.log = (...args) => {
             capturedOutput.push(args.join(' '));
+            // Também loga no console original para debug
+            originalLog.apply(console, args);
           };
 
           // Executar código
@@ -1712,6 +1894,18 @@ console.log(ordenadas);`,
             if (isCorrectSolution(exerciseNumber, code, capturedOutput)) {
               showFeedback(feedback, '🎉 Parabéns! Solução correta!', 'success');
               unlockBadge('array-explorer');
+              
+              // Anunciar conclusão para leitores de tela
+              const exerciseAnnouncement = document.createElement('div');
+              exerciseAnnouncement.className = 'visually-hidden';
+              exerciseAnnouncement.setAttribute('aria-live', 'assertive');
+              exerciseAnnouncement.textContent = `Exercício ${exerciseNumber} concluído com sucesso!`;
+              document.body.appendChild(exerciseAnnouncement);
+              
+              // Remover depois de anunciar
+              setTimeout(() => {
+                exerciseAnnouncement.parentNode.removeChild(exerciseAnnouncement);
+              }, 1000);
             } else {
               showFeedback(feedback, '✅ Código executado com sucesso! Verifique se o resultado está correto.', 'hint');
             }
@@ -1749,33 +1943,61 @@ console.log(ordenadas);`,
 
       function showHint(exerciseNumber) {
         const feedback = document.getElementById(`exercise${exerciseNumber}Feedback`);
+        const hintButton = document.getElementById(`hint-button-${exerciseNumber}`);
         const exercise = exercises[exerciseNumber];
         
         if (exercise && exercise.hints.length > 0) {
           const randomHint = exercise.hints[Math.floor(Math.random() * exercise.hints.length)];
           showFeedback(feedback, `💡 Dica: ${randomHint}`, 'hint');
+          
+          // Atualizar estado ARIA para acessibilidade
+          if (hintButton) {
+            hintButton.setAttribute('aria-expanded', 'true');
+          }
         }
       }
 
       function showSolution(exerciseNumber) {
         const codeInput = document.getElementById(`exercise${exerciseNumber}Code`);
         const feedback = document.getElementById(`exercise${exerciseNumber}Feedback`);
+        const solutionButton = document.getElementById(`solution-button-${exerciseNumber}`);
         const exercise = exercises[exerciseNumber];
         
         if (exercise && exercise.solution) {
           codeInput.value = exercise.solution;
           showFeedback(feedback, '🔍 Solução carregada! Clique em "Executar" para ver o resultado.', 'solution');
+          
+          // Atualizar estado ARIA para acessibilidade
+          if (solutionButton) {
+            solutionButton.setAttribute('aria-expanded', 'true');
+          }
+          
+          // Anunciar para leitores de tela
+          codeInput.setAttribute('aria-label', `Solução para o exercício ${exerciseNumber} carregada no editor. Pressione Executar para testá-la.`);
+          
+          // Focar no botão de execução
+          setTimeout(() => {
+            const runButton = document.querySelector(`[onclick="runExercise(${exerciseNumber})"]`);
+            if (runButton) {
+              runButton.focus();
+            }
+          }, 100);
         }
       }
 
       function showFeedback(element, message, type) {
         element.textContent = message;
         element.className = `exercise-feedback show ${type}`;
+        
+        // Garantir que o feedback seja anunciado pelos leitores de tela
+        element.setAttribute('aria-live', 'assertive');
+        element.setAttribute('role', 'alert');
       }
 
       function clearFeedback(element) {
         element.className = 'exercise-feedback';
         element.textContent = '';
+        element.removeAttribute('aria-live');
       }
 
       // Integração com sistema de badges
@@ -1784,11 +2006,44 @@ console.log(ordenadas);`,
         if (badge && badge.classList.contains('locked')) {
           badge.classList.remove('locked');
           badge.classList.add('unlocked');
+          
           // Atualizar acessibilidade
           const ariaLabel = badge.getAttribute('aria-label');
           badge.setAttribute('aria-label', ariaLabel.replace('Bloqueado', 'Desbloqueado'));
+          
+          // Atualizar role para indicar mudança de estado
+          badge.setAttribute('aria-expanded', 'true');
+          
+          // Notificar o usuário
           showBadgeNotification(badgeId);
+          
+          // Anunciar para leitores de tela
+          announceBadgeUnlock(badgeId);
         }
+      }
+      
+      function announceBadgeUnlock(badgeId) {
+        const badgeNames = {
+          'array-explorer': 'Explorador de Arrays',
+          'filter-master': 'Mestre do Filter',
+          'map-wizard': 'Mago do Map',
+          'sort-specialist': 'Especialista em Sort',
+          'performance-guru': 'Guru da Performance',
+          'console-master': 'Mestre do Console'
+        };
+        
+        const announcement = document.createElement('div');
+        announcement.className = 'visually-hidden';
+        announcement.setAttribute('aria-live', 'assertive');
+        announcement.setAttribute('role', 'status');
+        announcement.textContent = `Parabéns! Você desbloqueou a conquista: ${badgeNames[badgeId]}!`;
+        
+        document.body.appendChild(announcement);
+        
+        // Remover após anunciar para evitar duplicatas
+        setTimeout(() => {
+          document.body.removeChild(announcement);
+        }, 3000);
       }
 
       function showBadgeNotification(badgeId) {
@@ -1804,7 +2059,7 @@ console.log(ordenadas);`,
         const notification = document.createElement('div');
         notification.className = 'badge-notification';
         notification.setAttribute('role', 'alert');
-        notification.setAttribute('aria-live', 'assertive');
+        notification.setAttribute('aria-live', 'off'); // Usamos o anúncio separado para leitores de tela
         notification.innerHTML = `
           <div class="notification-content">
             <i class="fas fa-trophy" aria-hidden="true"></i>

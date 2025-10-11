@@ -696,6 +696,9 @@ function createTodoSystem() {
     };
     todos.push(newTodo);
     updateTodoDisplay();
+    
+    // Anunciar para leitores de tela
+    announceTodoAction('add', newTodo);
     return newTodo;
   }
 
@@ -704,6 +707,9 @@ function createTodoSystem() {
     if (index !== -1) {
       const removed = todos.splice(index, 1)[0];
       updateTodoDisplay();
+      
+      // Anunciar para leitores de tela
+      announceTodoAction('remove', removed);
       return removed;
     }
     return null;
@@ -714,6 +720,9 @@ function createTodoSystem() {
     if (todo) {
       todo.completed = !todo.completed;
       updateTodoDisplay();
+      
+      // Anunciar para leitores de tela
+      announceTodoAction('toggle', todo);
       return todo;
     }
     return null;
@@ -722,11 +731,47 @@ function createTodoSystem() {
   function updateTodo(id, updates) {
     const index = todos.findIndex((todo) => todo.id === id);
     if (index !== -1) {
+      const oldTodo = {...todos[index]};
       todos[index] = { ...todos[index], ...updates };
       updateTodoDisplay();
+      
+      // Anunciar para leitores de tela
+      announceTodoAction('update', todos[index], oldTodo);
       return todos[index];
     }
     return null;
+  }
+
+  // Anúncios de acessibilidade
+  function announceTodoAction(action, todo, oldTodo = null) {
+    const announcement = document.createElement('div');
+    announcement.className = 'visually-hidden';
+    announcement.setAttribute('aria-live', 'assertive');
+    announcement.setAttribute('role', 'status');
+    
+    let message = '';
+    switch (action) {
+      case 'add':
+        message = `Tarefa adicionada: ${todo.text}.`;
+        break;
+      case 'remove':
+        message = `Tarefa removida: ${todo.text}.`;
+        break;
+      case 'toggle':
+        message = `Tarefa ${todo.text} ${todo.completed ? 'marcada como concluída' : 'marcada como pendente'}.`;
+        break;
+      case 'update':
+        message = `Tarefa atualizada de "${oldTodo.text}" para "${todo.text}".`;
+        break;
+    }
+    
+    announcement.textContent = message;
+    document.body.appendChild(announcement);
+    
+    // Remover após anunciar
+    setTimeout(() => {
+      document.body.removeChild(announcement);
+    }, 1000);
   }
 
   // Filtering e Searching
@@ -785,31 +830,46 @@ function createTodoSystem() {
     const display = document.getElementById("todoSystemResult");
     if (display) {
       display.innerHTML = `
-                <div class="todo-stats">
-                    <h4>📊 Estatísticas:</h4>
-                    <p>Total: ${stats.total} | Concluídas: ${
-        stats.completed
-      } | Ativas: ${stats.active}</p>
-                    <p>Taxa de conclusão: ${stats.completionRate}%</p>
+        <div class="todo-stats" role="region" aria-labelledby="todo-stats-heading">
+            <h4 id="todo-stats-heading">📊 Estatísticas:</h4>
+            <p>Total: ${stats.total} | Concluídas: ${stats.completed} | Ativas: ${stats.active}</p>
+            <p>Taxa de conclusão: ${stats.completionRate}%</p>
+        </div>
+        <div class="todo-list" role="region" aria-labelledby="todo-list-heading">
+            <h4 id="todo-list-heading">📝 Lista de Tarefas:</h4>
+            <div role="list" aria-label="Lista de tarefas">
+            ${todos.map((todo) => `
+                <div class="todo-item ${todo.completed ? "completed" : ""}" 
+                     role="listitem" 
+                     aria-label="Tarefa: ${todo.text}, ${todo.completed ? 'concluída' : 'pendente'}, prioridade ${todo.priority}"
+                     tabindex="0">
+                    <span aria-hidden="true">${todo.completed ? "✅" : "⭕"}</span> ${todo.text} 
+                    <span class="priority ${todo.priority}" aria-label="prioridade ${todo.priority}">[${
+                        todo.priority === 'high' ? 'Alta' : 
+                        (todo.priority === 'medium' ? 'Média' : 'Baixa')
+                    }]</span>
                 </div>
-                <div class="todo-list">
-                    <h4>📝 Lista de Tarefas:</h4>
-                    ${todos
-                      .map(
-                        (todo) => `
-                        <div class="todo-item ${
-                          todo.completed ? "completed" : ""
-                        }">
-                            ${todo.completed ? "✅" : "⭕"} ${todo.text} 
-                            <span class="priority ${todo.priority}">[${
-                          todo.priority
-                        }]</span>
-                        </div>
-                    `
-                      )
-                      .join("")}
-                </div>
-            `;
+            `).join("")}
+            </div>
+        </div>
+      `;
+      
+      // Adicionar interatividade para keyboard
+      const todoItems = display.querySelectorAll('.todo-item');
+      todoItems.forEach((item, index) => {
+        item.setAttribute('data-todo-id', todos[index].id);
+        
+        item.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleTodo(todos[index].id);
+          }
+        });
+        
+        item.addEventListener('click', function() {
+          toggleTodo(todos[index].id);
+        });
+      });
     }
   }
 
@@ -1015,23 +1075,93 @@ document.addEventListener("DOMContentLoaded", function () {
   Object.entries(demos).forEach(([buttonId, demoFunction]) => {
     const button = document.getElementById(buttonId);
     if (button) {
+      // Melhorar acessibilidade
+      if (!button.getAttribute('aria-label')) {
+        const buttonText = button.textContent.trim();
+        button.setAttribute('aria-label', `Executar demonstração: ${buttonText}`);
+      }
+      
+      // Navegação por teclado
+      button.setAttribute('tabindex', '0');
+      
+      // Adicionar listeners
       button.addEventListener("click", function () {
-        try {
-          console.clear();
-          console.log(`🎯 Executando demonstração: ${buttonId}`);
-          demoFunction();
-
-          // Feedback visual
-          this.classList.add("success");
-          setTimeout(() => this.classList.remove("success"), 1000);
-        } catch (error) {
-          console.error(`❌ Erro na demonstração ${buttonId}:`, error);
-          this.classList.add("error");
-          setTimeout(() => this.classList.remove("error"), 1000);
+        executeDemo(this, buttonId, demoFunction);
+      });
+      
+      // Suporte a teclas Enter e Space
+      button.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          executeDemo(this, buttonId, demoFunction);
         }
       });
     }
   });
+  
+  // Função para executar demonstração
+  function executeDemo(button, buttonId, demoFunction) {
+    try {
+      console.clear();
+      console.log(`🎯 Executando demonstração: ${buttonId}`);
+      demoFunction();
+
+      // Feedback visual
+      button.classList.add("success");
+      setTimeout(() => button.classList.remove("success"), 1000);
+      
+      // Feedback para leitores de tela
+      const resultEl = document.getElementById(buttonId.replace('Btn', 'Result'));
+      if (resultEl) {
+        resultEl.setAttribute('aria-live', 'polite');
+        resultEl.setAttribute('role', 'status');
+      }
+    } catch (error) {
+      console.error(`❌ Erro na demonstração ${buttonId}:`, error);
+      button.classList.add("error");
+      setTimeout(() => button.classList.remove("error"), 1000);
+    }
+  }
+
+  // Melhorar acessibilidade do console
+  const consoleInput = document.getElementById("consoleInput");
+  const runConsole = document.getElementById("runConsole");
+  const clearConsole = document.getElementById("clearConsole");
+  
+  if (consoleInput && runConsole) {
+    // Manipulador para tecla Enter no console
+    consoleInput.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        runConsole.click();
+      }
+    });
+    
+    // Foco automático ao clicar no container do console
+    const consoleContainer = document.querySelector('.console-container');
+    if (consoleContainer) {
+      consoleContainer.addEventListener('click', function(event) {
+        if (event.target === this) {
+          consoleInput.focus();
+        }
+      });
+    }
+    
+    // Adicionar teclas de acessibilidade aos botões de exemplo
+    const exampleButtons = document.querySelectorAll('.btn-example');
+    exampleButtons.forEach(button => {
+      button.addEventListener('keydown', function(event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          const code = this.getAttribute('data-code');
+          if (consoleInput && code) {
+            consoleInput.value = code;
+            consoleInput.focus();
+          }
+        }
+      });
+    });
+  }
 
   // Inicializar sistema TODO
   window.todoSystem = createTodoSystem();
@@ -1046,11 +1176,22 @@ document.addEventListener("DOMContentLoaded", function () {
       if (text) {
         window.todoSystem.addTodo(text);
         todoInput.value = "";
+        
+        // Feedback para leitores de tela
+        const statusDisplay = document.getElementById("statusDisplay");
+        if (statusDisplay) {
+          statusDisplay.setAttribute('aria-live', 'polite');
+          statusDisplay.textContent = `Tarefa adicionada: ${text}`;
+          setTimeout(() => {
+            statusDisplay.textContent = "Sistema de arrays carregado! Clique nos botões para ver as demonstrações.";
+          }, 2000);
+        }
       }
     });
 
-    todoInput.addEventListener("keypress", (e) => {
+    todoInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
+        e.preventDefault();
         addTodoBtn.click();
       }
     });

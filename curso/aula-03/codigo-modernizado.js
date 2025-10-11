@@ -437,6 +437,21 @@ class ExerciseSystem {
         setTimeout(() => {
           feedback.style.display = "none";
         }, 5000);
+
+        // Disparar evento de exercício completo para o sistema de progresso
+        document.dispatchEvent(
+          new CustomEvent("exerciseCompleted", {
+            detail: { id: exerciseId },
+          })
+        );
+      }
+
+      // Atualizar os atributos ARIA nos botões quando o feedback é mostrado
+      if (type === "hint") {
+        const hintButton = document.getElementById(`hint-button-${exerciseId}`);
+        if (hintButton) {
+          hintButton.setAttribute("aria-expanded", "true");
+        }
       }
     }
   }
@@ -492,8 +507,38 @@ function runExercise(exerciseId) {
   }
 
   try {
+    // Capturar console.log para mostrar no output
+    const originalConsoleLog = console.log;
+    const logs = [];
+
+    console.log = function (...args) {
+      logs.push(
+        args
+          .map((arg) =>
+            typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
+          )
+          .join(" ")
+      );
+      originalConsoleLog.apply(console, args);
+    };
+
     // Executar código do usuário
     Function(userCode)();
+
+    // Restaurar console.log original
+    console.log = originalConsoleLog;
+
+    // Se houver logs, exibi-los no output do exercício
+    if (logs.length > 0) {
+      const outputElement = document.getElementById(
+        `exercise${exerciseId}Output`
+      );
+      if (outputElement) {
+        outputElement.innerHTML = `<strong>Console:</strong><br><pre style="margin-top:8px;padding:8px;background:#f8f9fa;border-radius:4px;font-size:0.9rem">${logs.join(
+          "\n"
+        )}</pre>`;
+      }
+    }
 
     // Validar se está correto
     const isValid = ExerciseSystem.validateExercise(exerciseId, userCode);
@@ -534,6 +579,12 @@ function showHint(exerciseId) {
 
   const randomHint = hints[Math.floor(Math.random() * hints.length)];
 
+  // Atualizar estado ARIA para acessibilidade
+  const hintButton = document.getElementById(`hint-button-${exerciseId}`);
+  if (hintButton) {
+    hintButton.setAttribute("aria-expanded", "true");
+  }
+
   ExerciseSystem.showFeedback(exerciseId, "hint", `💡 Dica: ${randomHint}`);
 
   EventLogger.log("HINT_SHOWN", `Exercício ${exerciseId}`);
@@ -545,6 +596,15 @@ function showSolution(exerciseId) {
 
   if (solution && codeInput) {
     codeInput.value = solution;
+
+    // Atualizar estado ARIA para acessibilidade
+    const solutionButton = document.getElementById(
+      `solution-button-${exerciseId}`
+    );
+    if (solutionButton) {
+      solutionButton.setAttribute("aria-expanded", "true");
+    }
+
     ExerciseSystem.showFeedback(
       exerciseId,
       "hint",
@@ -692,6 +752,195 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // === MELHORIAS DE ACESSIBILIDADE PARA O MENU DE NAVEGAÇÃO POR TECLADO ===
+  const menuList = document.getElementById("menuList");
+  if (menuList) {
+    // Adicionar suporte para navegação por teclado
+    menuList.addEventListener("keydown", function (event) {
+      const menuItems = Array.from(this.querySelectorAll(".menu-item"));
+      const activeItem = document.querySelector(".menu-item.active");
+      const activeIndex = activeItem ? parseInt(activeItem.dataset.index) : -1;
+      let newIndex = activeIndex;
+
+      switch (event.key) {
+        case "ArrowDown":
+          event.preventDefault();
+          newIndex = activeIndex < menuItems.length - 1 ? activeIndex + 1 : 0;
+          break;
+        case "ArrowUp":
+          event.preventDefault();
+          newIndex = activeIndex > 0 ? activeIndex - 1 : menuItems.length - 1;
+          break;
+        case "Home":
+          event.preventDefault();
+          newIndex = 0;
+          break;
+        case "End":
+          event.preventDefault();
+          newIndex = menuItems.length - 1;
+          break;
+        case "Enter":
+        case " ":
+          event.preventDefault();
+          if (activeItem) {
+            activateMenuItem(activeItem);
+          }
+          return;
+        case "Escape":
+          event.preventDefault();
+          clearMenuSelection();
+          return;
+      }
+
+      // Se houve mudança, atualizar seleção
+      if (newIndex !== activeIndex && menuItems[newIndex]) {
+        clearMenuSelection();
+        menuItems[newIndex].classList.add("active");
+        menuItems[newIndex].setAttribute("aria-selected", "true");
+        menuItems[newIndex].focus();
+        AppState.currentMenuIndex = newIndex;
+      }
+    });
+
+    // Função para ativar um item de menu
+    function activateMenuItem(item) {
+      const index = item.dataset.index;
+      const selectionOutput = document.getElementById("selectionOutput");
+      if (selectionOutput) {
+        selectionOutput.style.display = "block";
+        selectionOutput.textContent = `Você selecionou: ${item.textContent}`;
+        selectionOutput.setAttribute("role", "alert");
+      }
+      EventLogger.log(
+        "MENU_SELECTED",
+        `Item: ${item.textContent} (índice ${index})`
+      );
+    }
+
+    // Função para limpar seleção
+    function clearMenuSelection() {
+      const menuItems = menuList.querySelectorAll(".menu-item");
+      menuItems.forEach((item) => {
+        item.classList.remove("active");
+        item.setAttribute("aria-selected", "false");
+      });
+    }
+
+    // Inicializar todos os itens de menu com atributos ARIA
+    const menuItems = menuList.querySelectorAll(".menu-item");
+    menuItems.forEach((item) => {
+      item.setAttribute("aria-selected", "false");
+      item.addEventListener("click", function () {
+        clearMenuSelection();
+        this.classList.add("active");
+        this.setAttribute("aria-selected", "true");
+        activateMenuItem(this);
+      });
+    });
+  }
+
+  // === VALIDAÇÃO DE FORMULÁRIO ACESSÍVEL ===
+  const validationForm = document.getElementById("validationForm");
+  if (validationForm) {
+    validationForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      let isValid = true;
+      const formMessages = document.getElementById("formMessages");
+      let messageHTML = "";
+
+      // Validar nome de usuário
+      const userName = document.getElementById("userName");
+      const userNameError = document.getElementById("userNameHint");
+
+      if (userName.value.length < 3) {
+        isValid = false;
+        userName.setAttribute("aria-invalid", "true");
+        userNameError.classList.add("error-text");
+        userNameError.textContent =
+          "Nome de usuário deve ter pelo menos 3 caracteres";
+      } else {
+        userName.setAttribute("aria-invalid", "false");
+        userNameError.classList.remove("error-text");
+        userNameError.textContent = "Digite pelo menos 3 caracteres";
+      }
+
+      // Validar email
+      const userEmail = document.getElementById("userEmail");
+      const userEmailError = document.getElementById("userEmailError");
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailPattern.test(userEmail.value)) {
+        isValid = false;
+        userEmail.setAttribute("aria-invalid", "true");
+        userEmailError.textContent = "Por favor, digite um email válido";
+        userEmailError.classList.remove("sr-only");
+      } else {
+        userEmail.setAttribute("aria-invalid", "false");
+        userEmailError.textContent = "";
+        userEmailError.classList.add("sr-only");
+      }
+
+      // Validar idade
+      const userAge = document.getElementById("userAge");
+      const userAgeError = document.getElementById("userAgeError");
+
+      if (
+        userAge.value === "" ||
+        parseInt(userAge.value) < 1 ||
+        parseInt(userAge.value) > 120
+      ) {
+        isValid = false;
+        userAge.setAttribute("aria-invalid", "true");
+        userAgeError.textContent = "Por favor, digite uma idade entre 1 e 120";
+        userAgeError.classList.remove("sr-only");
+      } else {
+        userAge.setAttribute("aria-invalid", "false");
+        userAgeError.textContent = "";
+        userAgeError.classList.add("sr-only");
+      }
+
+      // Exibir mensagem final
+      if (isValid) {
+        messageHTML =
+          '<div class="message success">✅ Formulário enviado com sucesso!</div>';
+        // Limpar os campos
+        validationForm.reset();
+        // Limpar estados de erro
+        [userName, userEmail, userAge].forEach((field) => {
+          field.setAttribute("aria-invalid", "false");
+        });
+
+        EventLogger.log("FORM_SUBMIT", "Formulário validado com sucesso");
+        BadgeSystem.updateProgress("form-validator");
+      } else {
+        messageHTML =
+          '<div class="message error">❌ Por favor, corrija os erros no formulário</div>';
+        EventLogger.log("FORM_ERROR", "Erros de validação no formulário");
+      }
+
+      if (formMessages) {
+        formMessages.innerHTML = messageHTML;
+
+        // Focar no primeiro campo com erro para acessibilidade
+        if (!isValid) {
+          const firstInvalidField = document.querySelector(
+            '[aria-invalid="true"]'
+          );
+          if (firstInvalidField) {
+            firstInvalidField.focus();
+          }
+        }
+
+        // Auto-remover mensagem após 5 segundos se for sucesso
+        if (isValid) {
+          setTimeout(() => {
+            formMessages.innerHTML = "";
+          }, 5000);
+        }
+      }
+    });
+  }
+
   // === CONTINUAR COM TODAS AS OUTRAS FUNCIONALIDADES ORIGINAIS ===
   // [O resto do código original permanece aqui...]
   // Vou incluir algumas das principais para manter a funcionalidade
@@ -714,6 +963,24 @@ document.addEventListener("DOMContentLoaded", function () {
       AppState.isPaused = !AppState.isPaused;
       this.textContent = AppState.isPaused ? "Retomar" : "Pausar";
       this.className = AppState.isPaused ? "btn btn-success" : "btn";
+
+      // Atualizando atributos ARIA para acessibilidade
+      this.setAttribute("aria-pressed", AppState.isPaused ? "true" : "false");
+
+      // Atualizando status para leitores de tela
+      const logActiveStatus = document.getElementById("log-active-status");
+      const logPauseStatus = document.getElementById("log-pause-status");
+
+      if (logActiveStatus && logPauseStatus) {
+        if (AppState.isPaused) {
+          logActiveStatus.style.display = "none";
+          logPauseStatus.style.display = "inline";
+        } else {
+          logActiveStatus.style.display = "inline";
+          logPauseStatus.style.display = "none";
+        }
+      }
+
       console.log(
         `📊 Sistema de log ${AppState.isPaused ? "pausado" : "retomado"}`
       );
@@ -800,12 +1067,162 @@ function showNotification(message, type = "info", duration = 3000) {
 }
 
 // ==========================================
+// SISTEMA DE PROGRESSO
+// ==========================================
+
+class ProgressTracker {
+  static init() {
+    console.log("📊 Inicializando sistema de progresso...");
+
+    this.interactionPoints = [
+      { id: "consoleInput", type: "focus", tracked: false, weight: 10 },
+      { id: "exercise1Code", type: "input", tracked: false, weight: 15 },
+      { id: "exercise2Code", type: "input", tracked: false, weight: 15 },
+      { id: "exercise3Code", type: "input", tracked: false, weight: 15 },
+      { id: "menuList", type: "click", tracked: false, weight: 10 },
+      { id: "clickBtn", type: "click", tracked: false, weight: 5 },
+      { id: "mouseTracker", type: "mousemove", tracked: false, weight: 5 },
+      { id: "keyboardInput", type: "focus", tracked: false, weight: 5 },
+      { id: "validationForm", type: "click", tracked: false, weight: 10 },
+      { id: "dynamicList", type: "click", tracked: false, weight: 5 },
+      { id: "sourceZone", type: "click", tracked: false, weight: 5 },
+    ];
+
+    this.totalWeight = this.interactionPoints.reduce(
+      (sum, point) => sum + point.weight,
+      0
+    );
+    this.trackedWeight = 0;
+
+    // Configurar listeners para cada ponto de interação
+    this.setupListeners();
+
+    // Carregar progresso do localStorage
+    this.loadProgress();
+
+    // Atualizar a visualização inicial
+    this.updateProgressDisplay();
+  }
+
+  static setupListeners() {
+    this.interactionPoints.forEach((point) => {
+      const element = document.getElementById(point.id);
+      if (element) {
+        element.addEventListener(point.type, () =>
+          this.trackInteraction(point.id)
+        );
+      }
+    });
+
+    // Adicionar listener para completar exercícios
+    document.addEventListener("exerciseCompleted", (e) => {
+      const exerciseId = e.detail.id;
+      this.trackInteraction("exercise" + exerciseId + "Completed", 20);
+    });
+  }
+
+  static trackInteraction(id, extraWeight = 0) {
+    const point = this.interactionPoints.find((p) => p.id === id);
+
+    if (point && !point.tracked) {
+      point.tracked = true;
+      this.trackedWeight += point.weight;
+      this.saveProgress();
+      this.updateProgressDisplay();
+    }
+
+    // Para interações com peso extra (como completar exercícios)
+    if (extraWeight > 0) {
+      this.trackedWeight += extraWeight;
+      this.totalWeight += extraWeight;
+      this.saveProgress();
+      this.updateProgressDisplay();
+    }
+  }
+
+  static updateProgressDisplay() {
+    const progressPercent = Math.min(
+      Math.floor((this.trackedWeight / this.totalWeight) * 100),
+      100
+    );
+
+    // Atualizar barra de progresso fixa
+    const progressBar = document.getElementById("fixed-progress-bar");
+    const progressValue = document.getElementById("fixed-progress-value");
+
+    if (progressBar && progressValue) {
+      progressBar.style.setProperty("--progress-width", progressPercent + "%");
+      progressBar.style.setProperty("--progress-width", progressPercent + "%");
+      progressBar.setAttribute("aria-valuenow", progressPercent);
+      progressValue.textContent = progressPercent + "%";
+
+      // Atualizar estilo inline já que o ::before não pode ser alterado diretamente
+      progressBar.style.background = `linear-gradient(90deg, var(--primary-color), var(--success-color) ${progressPercent}%, #e0e7ef ${progressPercent}%)`;
+    }
+
+    // Se o progresso for 100%, mostrar notificação de conclusão se não foi mostrada antes
+    if (progressPercent >= 100 && !this.completionNotified) {
+      this.completionNotified = true;
+      showNotification(
+        "🎉 Parabéns! Você completou 100% desta aula!",
+        "success",
+        10000
+      );
+    }
+  }
+
+  static saveProgress() {
+    try {
+      const progressData = {
+        trackedIds: this.interactionPoints
+          .filter((p) => p.tracked)
+          .map((p) => p.id),
+        trackedWeight: this.trackedWeight,
+        totalWeight: this.totalWeight,
+        completionNotified: this.completionNotified,
+      };
+      localStorage.setItem("aula03_progress", JSON.stringify(progressData));
+    } catch (e) {
+      console.warn("Não foi possível salvar progresso");
+    }
+  }
+
+  static loadProgress() {
+    try {
+      const saved = localStorage.getItem("aula03_progress");
+      if (saved) {
+        const data = JSON.parse(saved);
+
+        // Restaurar o estado dos pontos de interação
+        if (data.trackedIds) {
+          data.trackedIds.forEach((id) => {
+            const point = this.interactionPoints.find((p) => p.id === id);
+            if (point) point.tracked = true;
+          });
+        }
+
+        // Restaurar outros valores
+        if (data.trackedWeight) this.trackedWeight = data.trackedWeight;
+        if (data.totalWeight) this.totalWeight = data.totalWeight;
+        if (data.completionNotified)
+          this.completionNotified = data.completionNotified;
+      }
+    } catch (e) {
+      console.warn("Não foi possível carregar progresso", e);
+    }
+  }
+}
+
+// ==========================================
 // INICIALIZAÇÃO FINAL
 // ==========================================
 
 setTimeout(() => {
   EventLogger.log("SYSTEM_READY", "Sistema modernizado carregado");
   console.log("✅ Sistema modernizado da Aula 3 carregado completamente!");
+
+  // Inicializar o sistema de progresso
+  ProgressTracker.init();
 
   showNotification(
     "🎯 Sistema modernizado carregado! Console DOM, badges e exercícios disponíveis.",

@@ -19,14 +19,18 @@
 
     <style>
       :root {
-        --primary-color: #6366f1;
-        --secondary-color: #8b5cf6;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --info-color: #06b6d4;
+        --primary-color: #5558de;
+        --secondary-color: #7e51de;
+        --success-color: #0ca975;
+        --warning-color: #d98b0d;
+        --danger-color: #d73e3e;
+        --info-color: #0a9fbb;
         --dark-color: #1f2937;
         --light-color: #f8fafc;
+
+        /* Cores de foco e elementos acessíveis */
+        --focus-color: #2563eb;
+        --focus-width: 3px;
       }
 
       body {
@@ -101,6 +105,97 @@
       .demo-box:hover {
         border-color: var(--primary-color);
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+      }
+
+      /* Estilos para acessibilidade */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: var(--primary-color);
+        color: white;
+        padding: 8px 16px;
+        z-index: 1000;
+        transition: top 0.2s ease;
+      }
+
+      .skip-link:focus {
+        top: 0;
+      }
+
+      /* Estilos para formulários acessíveis */
+      input[aria-invalid="true"] {
+        border: 2px solid var(--danger-color);
+      }
+
+      .error-text,
+      .error-message {
+        color: var(--danger-color);
+        font-weight: 500;
+        margin-top: 0.25rem;
+      }
+
+      /* Focus visível para teclado */
+      :focus-visible {
+        outline: var(--focus-width) solid var(--focus-color);
+        outline-offset: 2px;
+      }
+
+      /* Barra de progresso fixa */
+      #fixed-progress-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 8px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #fixed-progress-bar {
+        width: 80%;
+        height: 12px;
+        background-color: #e0e7ef;
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+        --progress-width: 0%;
+      }
+
+      #fixed-progress-value {
+        margin-left: 10px;
+        font-weight: bold;
+      }
+
+      /* Suporte para movimento reduzido */
+      @media (prefers-reduced-motion: reduce) {
+        .bounce,
+        .btn:hover,
+        .btn-demo:hover,
+        .badge-notification,
+        .menu-item,
+        .slide-in,
+        .fade-in {
+          transition: none !important;
+          animation: none !important;
+          transform: none !important;
+        }
       }
 
       /* Botões estilizados */
@@ -1105,6 +1200,57 @@
         color: white;
       }
 
+      /* Skip Links para Acessibilidade */
+      .skip-link {
+        position: absolute;
+        top: -50px;
+        left: 0;
+        background: var(--primary-color);
+        color: white;
+        padding: 8px 16px;
+        z-index: 1050;
+        text-decoration: none;
+        transition: top 0.3s ease;
+      }
+
+      .skip-link:focus {
+        top: 0;
+        outline: 3px solid var(--warning-color);
+        outline-offset: -3px;
+      }
+
+      /* Para conteúdo apenas para leitores de tela */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      /* Media Query para Prefers Reduced Motion */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+        .bounce,
+        .pulse,
+        .shake {
+          animation: none !important;
+        }
+        .click-area:hover,
+        .badge.unlocked .badge-icon {
+          animation: none !important;
+        }
+      }
+
       @media (max-width: 768px) {
         .nav-container {
           grid-template-columns: 1fr;
@@ -1138,6 +1284,14 @@
     </style>
   </head>
   <body>
+    <!-- Skip Links para Acessibilidade -->
+    <a href="#main-content" class="skip-link"
+      >Pular para o conteúdo principal</a
+    >
+    <a href="#course-navigation" class="skip-link"
+      >Pular para a navegação do curso</a
+    >
+
     <!-- Container Principal -->
     <div class="main-container">
       <!-- Header -->
@@ -1153,6 +1307,7 @@
 
       <!-- Conteúdo Principal -->
       <main
+        id="main-content"
         class="content"
         role="main"
         aria-labelledby="main-title"
@@ -1171,25 +1326,34 @@
 
           <div class="console-container">
             <div class="console-header">
-              <div class="console-controls">
+              <div class="console-controls" aria-hidden="true">
                 <div class="console-dot red"></div>
                 <div class="console-dot yellow"></div>
                 <div class="console-dot green"></div>
               </div>
-              <span class="console-title">JavaScript Console</span>
+              <span class="console-title" id="console-title"
+                >JavaScript Console</span
+              >
               <button
                 class="btn-console-clear"
                 id="clearConsole"
                 title="Limpar Console"
+                aria-label="Limpar Console"
               >
-                <i class="fas fa-trash"></i>
+                <i class="fas fa-trash" aria-hidden="true"></i>
               </button>
             </div>
 
             <div class="console-content">
-              <div class="console-output" id="consoleOutput">
+              <div
+                class="console-output"
+                id="consoleOutput"
+                role="log"
+                aria-live="polite"
+                aria-labelledby="console-title"
+              >
                 <div class="console-line welcome">
-                  <span class="console-prompt">></span>
+                  <span class="console-prompt" aria-hidden="true">></span>
                   <span class="console-text"
                     >Console DOM carregado! Digite comandos JavaScript
                     abaixo.</span
@@ -1198,7 +1362,7 @@
               </div>
 
               <div class="console-input-container">
-                <span class="console-prompt">></span>
+                <span class="console-prompt" aria-hidden="true">></span>
                 <input
                   type="text"
                   class="console-input"
@@ -1217,30 +1381,51 @@
                   <i class="fas fa-play" aria-hidden="true"></i>
                 </button>
               </div>
+              <div id="console-help" class="sr-only">
+                Pressione Enter para executar o código ou use as setas para cima
+                e para baixo para navegar pelo histórico de comandos.
+              </div>
             </div>
           </div>
 
-          <div class="console-examples">
-            <h4><i class="fas fa-lightbulb"></i> Exemplos para testar:</h4>
+          <div class="console-examples" aria-labelledby="examples-heading">
+            <h4 id="examples-heading">
+              <i class="fas fa-lightbulb" aria-hidden="true"></i> Exemplos para
+              testar:
+            </h4>
             <div class="example-buttons">
               <button
                 class="btn-example"
                 data-code="console.log('Olá, mundo!')"
+                aria-label="Testar comando: console.log('Olá, mundo!')"
               >
                 console.log
               </button>
-              <button class="btn-example" data-code="document.title">
+              <button
+                class="btn-example"
+                data-code="document.title"
+                aria-label="Testar comando: document.title"
+              >
                 document.title
               </button>
-              <button class="btn-example" data-code="Math.random()">
+              <button
+                class="btn-example"
+                data-code="Math.random()"
+                aria-label="Testar comando: Math.random()"
+              >
                 Math.random
               </button>
-              <button class="btn-example" data-code="new Date()">
+              <button
+                class="btn-example"
+                data-code="new Date()"
+                aria-label="Testar comando: new Date()"
+              >
                 new Date
               </button>
               <button
                 class="btn-example"
                 data-code="document.querySelectorAll('button').length"
+                aria-label="Testar comando: contar botões na página"
               >
                 contar botões
               </button>
@@ -1256,56 +1441,115 @@
           </h2>
           <p>Ganhe badges conforme explora os eventos e interatividade!</p>
 
-          <div class="badges-container" id="badgesContainer">
-            <div class="badge locked" data-badge="first-click">
-              <div class="badge-icon">🖱️</div>
+          <div
+            class="badges-container"
+            id="badgesContainer"
+            role="list"
+            aria-label="Sistema de Conquistas"
+          >
+            <div
+              class="badge locked"
+              data-badge="first-click"
+              role="listitem"
+              aria-labelledby="badge-title-first-click"
+              aria-describedby="badge-desc-first-click"
+            >
+              <div class="badge-icon" aria-hidden="true">🖱️</div>
               <div class="badge-info">
-                <div class="badge-title">Primeiro Clique</div>
-                <div class="badge-description">Clique em qualquer botão</div>
+                <div class="badge-title" id="badge-title-first-click">
+                  Primeiro Clique
+                </div>
+                <div class="badge-description" id="badge-desc-first-click">
+                  Clique em qualquer botão
+                </div>
               </div>
             </div>
 
-            <div class="badge locked" data-badge="keyboard-master">
-              <div class="badge-icon">⌨️</div>
+            <div
+              class="badge locked"
+              data-badge="keyboard-master"
+              role="listitem"
+              aria-labelledby="badge-title-keyboard-master"
+              aria-describedby="badge-desc-keyboard-master"
+            >
+              <div class="badge-icon" aria-hidden="true">⌨️</div>
               <div class="badge-info">
-                <div class="badge-title">Mestre do Teclado</div>
-                <div class="badge-description">Use 5 teclas diferentes</div>
+                <div class="badge-title" id="badge-title-keyboard-master">
+                  Mestre do Teclado
+                </div>
+                <div class="badge-description" id="badge-desc-keyboard-master">
+                  Use 5 teclas diferentes
+                </div>
               </div>
             </div>
 
-            <div class="badge locked" data-badge="form-validator">
-              <div class="badge-icon">📝</div>
+            <div
+              class="badge locked"
+              data-badge="form-validator"
+              role="listitem"
+              aria-labelledby="badge-title-form-validator"
+              aria-describedby="badge-desc-form-validator"
+            >
+              <div class="badge-icon" aria-hidden="true">📝</div>
               <div class="badge-info">
-                <div class="badge-title">Validador</div>
-                <div class="badge-description">
+                <div class="badge-title" id="badge-title-form-validator">
+                  Validador
+                </div>
+                <div class="badge-description" id="badge-desc-form-validator">
                   Complete um formulário válido
                 </div>
               </div>
             </div>
 
-            <div class="badge locked" data-badge="drag-master">
-              <div class="badge-icon">🔄</div>
+            <div
+              class="badge locked"
+              data-badge="drag-master"
+              role="listitem"
+              aria-labelledby="badge-title-drag-master"
+              aria-describedby="badge-desc-drag-master"
+            >
+              <div class="badge-icon" aria-hidden="true">🔄</div>
               <div class="badge-info">
-                <div class="badge-title">Mestre do Arrastar</div>
-                <div class="badge-description">
+                <div class="badge-title" id="badge-title-drag-master">
+                  Mestre do Arrastar
+                </div>
+                <div class="badge-description" id="badge-desc-drag-master">
                   Mova 3 itens com drag & drop
                 </div>
               </div>
             </div>
 
-            <div class="badge locked" data-badge="event-explorer">
-              <div class="badge-icon">🎯</div>
+            <div
+              class="badge locked"
+              data-badge="event-explorer"
+              role="listitem"
+              aria-labelledby="badge-title-event-explorer"
+              aria-describedby="badge-desc-event-explorer"
+            >
+              <div class="badge-icon" aria-hidden="true">🎯</div>
               <div class="badge-info">
-                <div class="badge-title">Explorador de Eventos</div>
-                <div class="badge-description">Explore 10 tipos de eventos</div>
+                <div class="badge-title" id="badge-title-event-explorer">
+                  Explorador de Eventos
+                </div>
+                <div class="badge-description" id="badge-desc-event-explorer">
+                  Explore 10 tipos de eventos
+                </div>
               </div>
             </div>
 
-            <div class="badge locked" data-badge="console-coder">
-              <div class="badge-icon">💻</div>
+            <div
+              class="badge locked"
+              data-badge="console-coder"
+              role="listitem"
+              aria-labelledby="badge-title-console-coder"
+              aria-describedby="badge-desc-console-coder"
+            >
+              <div class="badge-icon" aria-hidden="true">💻</div>
               <div class="badge-info">
-                <div class="badge-title">Programador Console</div>
-                <div class="badge-description">
+                <div class="badge-title" id="badge-title-console-coder">
+                  Programador Console
+                </div>
+                <div class="badge-description" id="badge-desc-console-coder">
                   Execute 5 comandos no console
                 </div>
               </div>
@@ -1371,18 +1615,41 @@ elemento.addEventListener('click', function(event) {
                 </div>
 
                 <div class="exercise-actions">
-                  <button class="botao" onclick="runExercise(1)">
-                    <i class="fas fa-play"></i> Executar
+                  <button
+                    class="botao"
+                    onclick="runExercise(1)"
+                    aria-label="Executar exercício 1"
+                  >
+                    <i class="fas fa-play" aria-hidden="true"></i> Executar
                   </button>
-                  <button class="botao-secundario" onclick="showHint(1)">
-                    <i class="fas fa-lightbulb"></i> Dica
+                  <button
+                    class="botao-secundario"
+                    onclick="showHint(1)"
+                    aria-expanded="false"
+                    aria-controls="exercise1Feedback"
+                    id="hint-button-1"
+                    aria-label="Mostrar dica para o exercício 1"
+                  >
+                    <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
                   </button>
-                  <button class="botao-terciario" onclick="showSolution(1)">
-                    <i class="fas fa-eye"></i> Ver Solução
+                  <button
+                    class="botao-terciario"
+                    onclick="showSolution(1)"
+                    aria-expanded="false"
+                    aria-controls="exercise1Feedback"
+                    id="solution-button-1"
+                    aria-label="Ver solução do exercício 1"
+                  >
+                    <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
                   </button>
                 </div>
 
-                <div class="exercise-feedback" id="exercise1Feedback"></div>
+                <div
+                  class="exercise-feedback"
+                  id="exercise1Feedback"
+                  aria-live="polite"
+                  role="status"
+                ></div>
               </div>
             </div>
 
@@ -1431,18 +1698,41 @@ let contador = 0;
                 </div>
 
                 <div class="exercise-actions">
-                  <button class="botao" onclick="runExercise(2)">
-                    <i class="fas fa-play"></i> Executar
+                  <button
+                    class="botao"
+                    onclick="runExercise(2)"
+                    aria-label="Executar exercício 2"
+                  >
+                    <i class="fas fa-play" aria-hidden="true"></i> Executar
                   </button>
-                  <button class="botao-secundario" onclick="showHint(2)">
-                    <i class="fas fa-lightbulb"></i> Dica
+                  <button
+                    class="botao-secundario"
+                    onclick="showHint(2)"
+                    aria-expanded="false"
+                    aria-controls="exercise2Feedback"
+                    id="hint-button-2"
+                    aria-label="Mostrar dica para o exercício 2"
+                  >
+                    <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
                   </button>
-                  <button class="botao-terciario" onclick="showSolution(2)">
-                    <i class="fas fa-eye"></i> Ver Solução
+                  <button
+                    class="botao-terciario"
+                    onclick="showSolution(2)"
+                    aria-expanded="false"
+                    aria-controls="exercise2Feedback"
+                    id="solution-button-2"
+                    aria-label="Ver solução do exercício 2"
+                  >
+                    <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
                   </button>
                 </div>
 
-                <div class="exercise-feedback" id="exercise2Feedback"></div>
+                <div
+                  class="exercise-feedback"
+                  id="exercise2Feedback"
+                  aria-live="polite"
+                  role="status"
+                ></div>
               </div>
             </div>
 
@@ -1493,18 +1783,41 @@ const form = document.getElementById('exercise3Form');
                 </div>
 
                 <div class="exercise-actions">
-                  <button class="botao" onclick="runExercise(3)">
-                    <i class="fas fa-play"></i> Executar
+                  <button
+                    class="botao"
+                    onclick="runExercise(3)"
+                    aria-label="Executar exercício 3"
+                  >
+                    <i class="fas fa-play" aria-hidden="true"></i> Executar
                   </button>
-                  <button class="botao-secundario" onclick="showHint(3)">
-                    <i class="fas fa-lightbulb"></i> Dica
+                  <button
+                    class="botao-secundario"
+                    onclick="showHint(3)"
+                    aria-expanded="false"
+                    aria-controls="exercise3Feedback"
+                    id="hint-button-3"
+                    aria-label="Mostrar dica para o exercício 3"
+                  >
+                    <i class="fas fa-lightbulb" aria-hidden="true"></i> Dica
                   </button>
-                  <button class="botao-terciario" onclick="showSolution(3)">
-                    <i class="fas fa-eye"></i> Ver Solução
+                  <button
+                    class="botao-terciario"
+                    onclick="showSolution(3)"
+                    aria-expanded="false"
+                    aria-controls="exercise3Feedback"
+                    id="solution-button-3"
+                    aria-label="Ver solução do exercício 3"
+                  >
+                    <i class="fas fa-eye" aria-hidden="true"></i> Ver Solução
                   </button>
                 </div>
 
-                <div class="exercise-feedback" id="exercise3Feedback"></div>
+                <div
+                  class="exercise-feedback"
+                  id="exercise3Feedback"
+                  aria-live="polite"
+                  role="status"
+                ></div>
               </div>
             </div>
           </div>
@@ -1584,7 +1897,7 @@ const form = document.getElementById('exercise3Form');
           </p>
 
           <div class="demo-box">
-            <form id="validationForm">
+            <form id="validationForm" novalidate>
               <div class="form-group">
                 <label for="userName">Nome de Usuário:</label>
                 <input
@@ -1592,8 +1905,13 @@ const form = document.getElementById('exercise3Form');
                   id="userName"
                   class="form-control"
                   placeholder="Mínimo 3 caracteres"
+                  aria-describedby="userNameHint"
+                  minlength="3"
+                  required
                 />
-                <small class="text-muted">Digite pelo menos 3 caracteres</small>
+                <small id="userNameHint" class="text-muted"
+                  >Digite pelo menos 3 caracteres</small
+                >
               </div>
 
               <div class="form-group">
@@ -1603,7 +1921,14 @@ const form = document.getElementById('exercise3Form');
                   id="userEmail"
                   class="form-control"
                   placeholder="seu@email.com"
+                  aria-describedby="userEmailError"
+                  required
                 />
+                <span
+                  id="userEmailError"
+                  class="error-message sr-only"
+                  aria-live="assertive"
+                ></span>
               </div>
 
               <div class="form-group">
@@ -1615,7 +1940,14 @@ const form = document.getElementById('exercise3Form');
                   min="1"
                   max="120"
                   placeholder="Sua idade"
+                  aria-describedby="userAgeError"
+                  required
                 />
+                <span
+                  id="userAgeError"
+                  class="error-message sr-only"
+                  aria-live="assertive"
+                ></span>
               </div>
 
               <button type="submit" class="btn btn-success">
@@ -1624,7 +1956,7 @@ const form = document.getElementById('exercise3Form');
               <button type="reset" class="btn btn-warning">Limpar</button>
             </form>
 
-            <div id="formMessages"></div>
+            <div id="formMessages" role="status" aria-live="polite"></div>
           </div>
         </div>
 
@@ -1701,19 +2033,63 @@ const form = document.getElementById('exercise3Form');
 
             <div
               id="menuList"
+              role="menu"
+              aria-label="Menu de navegação com teclado"
               style="background: #f8f9fa; border-radius: 8px; padding: 1rem"
+              tabindex="0"
             >
-              <div class="menu-item" data-index="0">🏠 Início</div>
-              <div class="menu-item" data-index="1">👤 Perfil</div>
-              <div class="menu-item" data-index="2">⚙️ Configurações</div>
-              <div class="menu-item" data-index="3">📊 Relatórios</div>
-              <div class="menu-item" data-index="4">❓ Ajuda</div>
+              <div
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                data-index="0"
+              >
+                <span aria-hidden="true">🏠</span>
+                <span>Início</span>
+              </div>
+              <div
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                data-index="1"
+              >
+                <span aria-hidden="true">👤</span>
+                <span>Perfil</span>
+              </div>
+              <div
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                data-index="2"
+              >
+                <span aria-hidden="true">⚙️</span>
+                <span>Configurações</span>
+              </div>
+              <div
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                data-index="3"
+              >
+                <span aria-hidden="true">📊</span>
+                <span>Relatórios</span>
+              </div>
+              <div
+                class="menu-item"
+                role="menuitem"
+                tabindex="-1"
+                data-index="4"
+              >
+                <span aria-hidden="true">❓</span>
+                <span>Ajuda</span>
+              </div>
             </div>
 
             <div
               id="selectionOutput"
               class="message info"
               style="display: none"
+              aria-live="polite"
             ></div>
           </div>
 
@@ -1745,26 +2121,76 @@ const form = document.getElementById('exercise3Form');
 
           <div class="demo-box">
             <div class="drag-container">
-              <div class="drag-zone" id="sourceZone">
-                <h4>📦 Itens Disponíveis</h4>
-                <div class="draggable-item" draggable="true" data-item="1">
+              <div
+                class="drag-zone"
+                id="sourceZone"
+                role="region"
+                aria-labelledby="source-heading"
+              >
+                <h4 id="source-heading">
+                  <span aria-hidden="true">📦</span> Itens Disponíveis
+                </h4>
+                <div
+                  class="draggable-item"
+                  draggable="true"
+                  data-item="1"
+                  tabindex="0"
+                  role="button"
+                  aria-grabbed="false"
+                  aria-describedby="drag-help"
+                >
                   Item 1
                 </div>
-                <div class="draggable-item" draggable="true" data-item="2">
+                <div
+                  class="draggable-item"
+                  draggable="true"
+                  data-item="2"
+                  tabindex="0"
+                  role="button"
+                  aria-grabbed="false"
+                  aria-describedby="drag-help"
+                >
                   Item 2
                 </div>
-                <div class="draggable-item" draggable="true" data-item="3">
+                <div
+                  class="draggable-item"
+                  draggable="true"
+                  data-item="3"
+                  tabindex="0"
+                  role="button"
+                  aria-grabbed="false"
+                  aria-describedby="drag-help"
+                >
                   Item 3
                 </div>
               </div>
 
-              <div class="drag-zone" id="targetZone">
-                <h4>🎯 Área de Destino</h4>
+              <div
+                class="drag-zone"
+                id="targetZone"
+                role="region"
+                aria-labelledby="target-heading"
+                aria-dropeffect="copy"
+              >
+                <h4 id="target-heading">
+                  <span aria-hidden="true">🎯</span> Área de Destino
+                </h4>
                 <p>Arraste itens aqui</p>
               </div>
             </div>
 
-            <button class="btn btn-warning" id="resetDragBtn">Reset</button>
+            <div id="drag-help" class="sr-only">
+              Pressione Espaço para selecionar, use as setas para mover entre
+              itens e pressione Enter para soltar.
+            </div>
+
+            <button
+              class="btn btn-warning"
+              id="resetDragBtn"
+              aria-label="Resetar área de arrastar e soltar"
+            >
+              Reset
+            </button>
           </div>
         </div>
 
@@ -1855,21 +2281,47 @@ const form = document.getElementById('exercise3Form');
             >
               <h3>🔍 Log de Eventos</h3>
               <div>
-                <button class="btn btn-warning" id="clearLogBtn">
+                <button
+                  class="btn btn-warning"
+                  id="clearLogBtn"
+                  aria-label="Limpar log de eventos"
+                >
                   Limpar Log
                 </button>
-                <button class="btn" id="pauseLogBtn">Pausar</button>
+                <button
+                  class="btn"
+                  id="pauseLogBtn"
+                  aria-pressed="false"
+                  aria-controls="globalEventLog log-status"
+                >
+                  Pausar
+                </button>
               </div>
             </div>
 
-            <div class="event-log" id="globalEventLog">
+            <div
+              class="event-log"
+              id="globalEventLog"
+              role="log"
+              aria-live="polite"
+              aria-atomic="false"
+              aria-relevant="additions"
+              aria-labelledby="event-log-title"
+            >
               <div class="event-item">Sistema de monitoramento iniciado...</div>
             </div>
 
-            <div style="margin-top: 1rem">
+            <div style="margin-top: 1rem" aria-hidden="true">
               <span class="indicator green"></span> Eventos ativos
               <span class="indicator yellow"></span> Sistema funcionando
               <span class="indicator red"></span> Eventos pausados
+            </div>
+
+            <div class="sr-only" id="log-status">
+              <span id="log-active-status">Monitor de eventos ativo</span>
+              <span id="log-pause-status" style="display: none"
+                >Monitor de eventos pausado</span
+              >
             </div>
           </div>
         </div>
@@ -1877,7 +2329,7 @@ const form = document.getElementById('exercise3Form');
     </div>
 
     <!-- Navegação entre Aulas -->
-    <nav class="course-navigation">
+    <nav id="course-navigation" class="course-navigation" role="navigation">
       <div class="nav-container">
         <div class="nav-item nav-prev">
           <a href="../aula-02/index.html" class="nav-link">
@@ -1936,6 +2388,93 @@ const form = document.getElementById('exercise3Form');
         </div>
       </div>
     </nav>
+
+    <!-- Barra de progresso fixa -->
+    <div class="fixed-progress-container" id="fixed-progress">
+      <div
+        class="fixed-progress-bar"
+        id="fixed-progress-bar"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+      ></div>
+      <div class="fixed-progress-text">
+        <span id="fixed-progress-value">0%</span> da aula concluída
+      </div>
+    </div>
+
+    <style>
+      .fixed-progress-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        border-radius: 24px;
+        padding: 10px 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 1000;
+        border: 1px solid #e0e7ef;
+      }
+
+      .fixed-progress-bar {
+        width: 100px;
+        height: 10px;
+        background: #e0e7ef;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .fixed-progress-bar::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--success-color)
+        );
+        width: 0%;
+        border-radius: 10px;
+        transition: width 0.5s ease;
+      }
+
+      .fixed-progress-text {
+        font-size: 0.9rem;
+        color: #333;
+        font-weight: 500;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .fixed-progress-bar::before {
+          transition: none;
+        }
+      }
+    </style>
+
+    <!-- Barra de Progresso Fixa -->
+    <div
+      id="fixed-progress-container"
+      role="complementary"
+      aria-label="Progresso da aula"
+    >
+      <div
+        id="fixed-progress-bar"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+      >
+        <!-- Barra de progresso será preenchida via JavaScript -->
+      </div>
+      <div id="fixed-progress-value">0%</div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
