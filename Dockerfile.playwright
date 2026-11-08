@@ -6,12 +6,15 @@ WORKDIR /app
 
 # Copia a configuração e os testes E2E.
 COPY playwright.config.js ./
-COPY tests/e2e ./tests/e2e
 
-# Instala a mesma versão do Playwright presente na imagem,
-# evitando incompatibilidade entre a CLI e os navegadores.
-COPY package.json ./
-RUN npm install --no-save @playwright/test@1.48.0
+# O container precisa somente do runner E2E. Não copiamos o package.json
+# da aplicação para evitar instalar ESLint, Vitest e outras ferramentas.
+# A versão coincide com os navegadores que já vêm na imagem base.
+RUN npm init -y && npm install --no-save @playwright/test@1.48.0
+
+# Mantém os testes disponíveis mesmo quando o volume do Compose não é usado.
+# Essa cópia fica depois da instalação para preservar o cache ao editar specs.
+COPY tests/e2e ./tests/e2e
 
 # O container apenas executa os testes; ele não serve a aplicação
 # (quem serve é o serviço "servidor" do docker-compose).
