@@ -37,7 +37,7 @@
            CABEÇALHO
            O emoji é decorativo (aria-hidden) e o texto é o conteúdo.
            ============================================================ -->
-      <header id="header" role="banner">
+      <header id="header">
         <h1>
           <span class="logo-icon" aria-hidden="true">📝</span>
           TODO List
@@ -57,7 +57,8 @@
         <label for="todo-input" class="sr-only">Nova tarefa</label>
 
         <!-- maxlength reflete a regra de negócio (100 caracteres)
-             e evita digitação além do limite.
+             e evita digitação além do limite. O teste de contrato
+             garante que ele acompanhe CONFIG.MAX_CARACTERES_TAREFA.
              Não usamos "required": a validação é feita em JavaScript
              para exibir a mensagem didática da aplicação. -->
         <input
@@ -65,7 +66,6 @@
           id="todo-input"
           name="nova-tarefa"
           placeholder="Adicione uma nova tarefa"
-          aria-label="Digite o texto da nova tarefa"
           maxlength="100"
           autocomplete="off"
         />
@@ -81,7 +81,7 @@
            ÁREA PRINCIPAL
            Contém os contadores e a lista de tarefas.
            ============================================================ -->
-      <main class="tarefas-container" role="main">
+      <main class="tarefas-container">
         <!-- aria-live="polite" avisa leitores de tela sobre mudanças
              nos contadores sem interromper o usuário. -->
         <header class="tarefas-header" aria-live="polite">
@@ -99,8 +99,10 @@
         <!-- Container da lista.
              role="list" combina com role="listitem" em cada tarefa
              criada pelo JavaScript, mantendo a semântica correta.
-             aria-live="polite" anuncia novas tarefas. -->
-        <section class="tarefas-box" role="list" aria-label="Lista de tarefas" aria-live="polite">
+             Não usamos aria-live aqui: a lista é recriada a cada
+             mudança e o leitor de tela reanunciaria tudo. O feedback
+             de novidade já vem dos contadores e das mensagens flash. -->
+        <section class="tarefas-box" role="list" aria-label="Lista de tarefas">
           <!-- As tarefas são inseridas dinamicamente por js/dom.js. -->
         </section>
       </main>

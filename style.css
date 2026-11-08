@@ -1,3 +1,19 @@
+/* ============================================================
+   STYLE.CSS — Aparência completa da Lista de Tarefas
+   ------------------------------------------------------------
+   ÍNDICE (na ordem em que as seções aparecem):
+   1. Variáveis CSS          8. Container da lista
+   2. Reset e base           9. Estado vazio
+   3. Acessibilidade        10. Item de tarefa
+   4. Corpo e tipografia    11. Checkbox
+   5. Elementos interativos 12. Texto da tarefa
+   6. Cabeçalho             13. Botão de exclusão
+   7. Formulário            14. Responsividade
+                            15. Acabamentos e contraste
+                            16. Modo de edição
+                            17. Mensagens flash
+   ============================================================ */
+
 /* ========== VARIÁVEIS CSS (CUSTOM PROPERTIES) ========== */
 /* 
   Variáveis CSS permitem reutilizar valores e facilitar manutenção
@@ -464,6 +480,8 @@ button:focus {
   /* Altura da linha */
   color: var(--gray-300);
   /* Cor acinzentada */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  /* Sombra sutil para melhorar o contraste */
 }
 
 /* Subtítulo do estado vazio */
@@ -601,6 +619,16 @@ button:focus {
   /* Quebra palavras longas */
   margin-top: 0.125rem;
   /* Pequeno ajuste de alinhamento */
+
+  /* O texto é editável com duplo clique: estilo e posição
+     preparam o destaque de hover e o tooltip. */
+  cursor: text;
+  padding: 2px 4px;
+  border-radius: 4px;
+  position: relative;
+  transition: background 0.2s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  /* Sombra sutil para melhorar o contraste */
 }
 
 /* Estilo do texto quando tarefa está completa.
@@ -617,7 +645,7 @@ button:focus {
   Botão para deletar tarefa
   Ícone de lixeira que muda cor no hover
 */
-.tarefa button {
+.tarefa .remove-btn {
   background: transparent;
   /* Fundo transparente */
   border: 0;
@@ -639,13 +667,13 @@ button:focus {
 }
 
 /* Estado hover do botão de exclusão */
-.tarefa button:hover {
+.tarefa .remove-btn:hover {
   color: var(--red);
   /* Vermelho no hover */
 }
 
 /* Estado de foco do botão de exclusão */
-.tarefa button:focus {
+.tarefa .remove-btn:focus {
   color: var(--red);
 }
 
@@ -731,18 +759,11 @@ button:focus {
   }
 }
 
-/* ========== MODO ESCURO APRIMORADO ========== */
+/* ========== ACABAMENTOS E CONTRASTE ========== */
 /* 
-  Ajustes adicionais para melhor contraste
-  em tema escuro (já é o padrão)
+  Ajustes globais de acabamento visual
+  (o tema escuro já é o padrão da aplicação)
 */
-
-/* Melhor contraste para texto */
-.tarefa span.texto-tarefa,
-.tarefas-empty__titulo {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  /* Sombra sutil no texto */
-}
 
 /* Melhor destaque para elementos interativos */
 button:hover,
@@ -804,25 +825,15 @@ input:focus {
 }
 
 /* Indicação visual de que o texto da tarefa é editável */
-.tarefa span.texto-tarefa {
-  /* Aparência padrão */
-  cursor: text;
-  padding: 2px 4px;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-
-  /* Dica visual para o usuário */
-  position: relative;
-}
-
 /* Efeito hover no texto da tarefa */
 .tarefa span.texto-tarefa:hover {
   background: rgba(130, 132, 250, 0.1);
   /* Fundo sutil roxo indicando interatividade */
 }
 
-/* Tooltip explicativo (opcional) */
-.tarefa span.texto-tarefa:hover::after {
+/* Tooltip explicativo: começa invisível e aparece no hover.
+   O atraso de 0.5s evita poluir a tela em passagens rápidas. */
+.tarefa span.texto-tarefa::after {
   content: 'Clique duas vezes para editar';
   position: absolute;
   bottom: -25px;
@@ -834,38 +845,22 @@ input:focus {
   font-size: 12px;
   white-space: nowrap;
   z-index: 1000;
+  pointer-events: none;
   opacity: 0;
-  animation: fadeIn 0.3s ease 0.5s forwards;
-  /* Aparece após 0.5s de hover */
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease 0.5s,
+    visibility 0s linear 0.5s;
 }
 
-/* Animação do tooltip */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.tarefa span.texto-tarefa:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 
-/* Remove tooltip quando não está em hover */
-.tarefa span.texto-tarefa:not(:hover)::after {
-  display: none;
-}
-
-/* Ícone de exclusão: garantir que o SVG herde a cor do botão no hover */
-.tarefa button.remove-btn:hover .icone-exclusao svg {
-  color: var(--red);
-}
-
-/* Ícone de exclusão: cor padrão */
-.tarefa button.remove-btn .icone-exclusao svg {
-  color: var(--gray-300);
-  transition: color 0.2s ease;
+/* O SVG usa currentColor e acompanha a cor definida no botão. */
+.icone-exclusao {
+  display: inline-flex;
 }
 
 /* ========== MENSAGENS FLASH (FEEDBACK AO USUÁRIO) ========== */
