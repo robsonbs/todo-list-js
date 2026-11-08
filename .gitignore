@@ -1,0 +1,26 @@
+# Dependências
+node_modules/
+
+# Build / output
+dist/
+build/
+
+# Testes E2E
+playwright-report/
+test-results/
+tests/e2e/screenshots/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
