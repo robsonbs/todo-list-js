@@ -54,7 +54,12 @@ todo-list-js/
 │   ├── dom.test.js         # Testes de estrutura e acessibilidade do DOM
 │   ├── main.test.js        # Testes de orquestração (fluxo completo)
 │   └── e2e/
-│       └── visual.spec.ts  # Testes end-to-end (Playwright via Docker)
+│       ├── helpers.ts                      # Ações comuns baseadas na interface acessível
+│       ├── aplicacao.spec.ts                # Criação, conclusão, remoção e edição
+│       ├── validacao.spec.ts                # Limites, mensagens e conteúdo seguro
+│       ├── persistencia.spec.ts             # Recarga, dados inválidos e falha ao salvar
+│       ├── acessibilidade-responsividade.spec.ts # Teclado, rótulos e tamanhos de tela
+│       └── visual.spec.ts                   # Estados e estilos visuais
 ├── curso/                  # Material do curso (9 aulas)
 └── iniciante/              # Versões simplificadas para iniciantes
 ```
@@ -120,7 +125,13 @@ Usuário → main.js → state.js → storage.js
 - **Unitários (Vitest):** `validacao`, `state`, `storage`, `dom` e a orquestração em `main.test.js`.
 - **Contrato:** `tests/contrato.test.js` confere que os seletores existem no `index.html`, que o `maxlength` acompanha `CONFIG` e que toda classe criada pelo JavaScript tem regra no CSS.
 - **Helpers:** `tests/helpers/fixtures.js` monta o DOM mínimo; `tests/helpers/aplicacao.js` inicializa a aplicação e simula ações do usuário.
-- **E2E (Playwright):** somente via Docker, com `npm run test:e2e`.
+- **E2E (Playwright):** `tests/e2e/` organiza cenários por jornada; interações
+  preferem rótulos e papéis acessíveis, enquanto seletores CSS ficam para
+  verificações visuais. A suíte roda somente via Docker com `npm run test:e2e`.
+- **Isolamento E2E:** cada teste recebe contexto de navegador isolado. Cenários
+  de recarga usam a mesma página/contexto para verificar a persistência real.
+- **Escopo E2E:** cobre as jornadas integradas no Chromium; validações de
+  permutações de dados e regras puras permanecem nos testes Vitest.
 
 ## ♿ Acessibilidade
 
