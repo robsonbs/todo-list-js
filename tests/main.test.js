@@ -1,0 +1,223 @@
+// ============================================================
+// MAIN.TEST.JS — Testes de orquestração
+// ------------------------------------------------------------
+// Aqui testamos a aplicação "de ponta a ponta" no DOM: o mesmo
+// fluxo que o usuário executa (enviar formulário, marcar, remover
+// e editar). Os módulos são recarregados a cada teste para simular
+// uma nova visita à página.
+// ============================================================
+
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { montarDOMDeTeste, criarTarefaFixture } from './helpers/fixtures.js';
+import { CHAVE_ARMAZENAMENTO, MENSAGENS } from '../js/constants.js';
+
+/**
+ * Monta o DOM, prepara o localStorage e inicializa a aplicação.
+ * @param {{ tarefasSalvas?: object[]|null, dadosBrutos?: string|null }} [opcoes]
+ * @returns {Promise<typeof import('../js/state.js')>} O módulo de estado usado pela aplicação
+ */
+async function iniciarAplicacao({ tarefasSalvas = null, dadosBrutos = null } = {}) {
+  // Reinicia o registro de módulos: é como recarregar a página.
+  vi.resetModules();
+  montarDOMDeTeste();
+  localStorage.clear();
+
+  if (dadosBrutos !== null) {
+    localStorage.setItem(CHAVE_ARMAZENAMENTO, dadosBrutos);
+  } else if (tarefasSalvas !== null) {
+    localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(tarefasSalvas));
+  }
+
+  // Importa estado e main no MESMO grafo de módulos recém-criado.
+  // Chamamos inicializarAplicacao() diretamente em vez de disparar
+  // DOMContentLoaded: assim listeners de testes anteriores não se
+  // acumulam e não interferem no formulário.
+  const state = await import('../js/state.js');
+  const { inicializarAplicacao } = await import('../js/main.js');
+  inicializarAplicacao();
+
+  return state;
+}
+
+/**
+ * Preenche o campo e envia o formulário (equivale a clicar em "Criar").
+ * @param {string} texto
+ */
+function enviarFormulario(texto) {
+  const input = document.getElementById('todo-input');
+  input.value = texto;
+
+  const formulario = document.getElementById('todo-form');
+  formulario.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+}
+
+/**
+ * Dispara um evento de clique a partir de um elemento interno.
+ * @param {Element} elemento
+ */
+function clicar(elemento) {
+  elemento.dispatchEvent(new Event('click', { bubbles: true }));
+}
+
+beforeEach(() => {
+  vi.resetModules();
+});
+
+afterEach(() => {
+  document.body.innerHTML = '';
+  localStorage.clear();
+  vi.restoreAllMocks();
+});
+
+describe('main.js — Inicialização', () => {
+  it('deve exibir o estado vazio quando não há tarefas salvas', async () => {
+    const state = await iniciarAplicacao();
+
+    expect(state.obterTarefas()).toHaveLength(0);
+    expect(document.querySelector('.tarefas-empty')).not.toBeNull();
+    expect(document.getElementById('contador-criadas').textContent).toBe('0');
+    expect(document.getElementById('contador-concluidas').textContent).toBe('0 de 0');
+  });
+
+  it('deve carregar tarefas salvas e normalizar dados inválidos', async () => {
+    const state = await iniciarAplicacao({
+      tarefasSalvas: [
+        criarTarefaFixture({ id: 5, atividade: 'Salva', completa: true }),
+        { id: 'inválido', atividade: 'Descartar', completa: false },
+      ],
+    });
+
+    expect(state.obterTarefas()).toHaveLength(1);
+    expect(document.querySelectorAll('.tarefa')).toHaveLength(1);
+    expect(document.getElementById('contador-concluidas').textContent).toBe('1 de 1');
+  });
+
+  it('deve ignorar localStorage corrompido sem quebrar a aplicação', async () => {
+    const state = await iniciarAplicacao({ dadosBrutos: '{isto não é json' });
+
+    expect(state.obterTarefas()).toHaveLength(0);
+    expect(document.querySelector('.tarefas-empty')).not.toBeNull();
+  });
+});
+
+describe('main.js — Criação de tarefas', () => {
+  it('deve adicionar, renderizar, contar e salvar ao enviar o formulário', async () => {
+    const state = await iniciarAplicacao();
+
+    enviarFormulario('Estudar JavaScript');
+
+    expect(state.obterTarefas()).toHaveLength(1);
+    expect(state.obterTarefas()[0].atividade).toBe('Estudar JavaScript');
+
+    expect(document.querySelectorAll('.tarefa')).toHaveLength(1);
+    expect(document.querySelector('.texto-tarefa').textContent).toBe('Estudar JavaScript');
+
+    expect(document.getElementById('contador-criadas').textContent).toBe('1');
+    expect(document.getElementById('contador-concluidas').textContent).toBe('0 de 1');
+
+    const dadosSalvos = JSON.parse(localStorage.getItem(CHAVE_ARMAZENAMENTO));
+    expect(dadosSalvos).toHaveLength(1);
+  });
+
+  it('deve limpar o campo após adicionar', async () => {
+    await iniciarAplicacao();
+
+    enviarFormulario('Tarefa');
+
+    expect(document.getElementById('todo-input').value).toBe('');
+  });
+
+  it('deve avisar e não adicionar quando o campo está vazio', async () => {
+    const state = await iniciarAplicacao();
+
+    enviarFormulario('   ');
+
+    expect(state.obterTarefas()).toHaveLength(0);
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.textoVazio);
+  });
+
+  it('deve avisar e não adicionar quando o texto excede o limite', async () => {
+    const state = await iniciarAplicacao();
+
+    enviarFormulario('a'.repeat(101));
+
+    expect(state.obterTarefas()).toHaveLength(0);
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.textoMuitoLongo);
+  });
+});
+
+describe('main.js — Conclusão de tarefas', () => {
+  it('deve alternar a conclusão ao clicar no checkbox e atualizar os contadores', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Tarefa');
+
+    const checkbox = document.querySelector('.tarefa input[type="checkbox"]');
+    clicar(checkbox);
+
+    expect(state.obterTarefas()[0].completa).toBe(true);
+    expect(document.getElementById('contador-concluidas').textContent).toBe('1 de 1');
+    expect(JSON.parse(localStorage.getItem(CHAVE_ARMAZENAMENTO))[0].completa).toBe(true);
+
+    // Clicar de novo desmarca.
+    clicar(checkbox);
+
+    expect(state.obterTarefas()[0].completa).toBe(false);
+    expect(document.getElementById('contador-concluidas').textContent).toBe('0 de 1');
+  });
+});
+
+describe('main.js — Remoção de tarefas', () => {
+  it('deve remover ao clicar no ícone SVG dentro do botão', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Remover');
+
+    const icone = document.querySelector('.remove-btn svg');
+    clicar(icone);
+
+    expect(state.obterTarefas()).toHaveLength(0);
+    expect(document.querySelectorAll('.tarefa')).toHaveLength(0);
+    expect(document.querySelector('.tarefas-empty')).not.toBeNull();
+    expect(document.getElementById('contador-criadas').textContent).toBe('0');
+    expect(JSON.parse(localStorage.getItem(CHAVE_ARMAZENAMENTO))).toHaveLength(0);
+  });
+});
+
+describe('main.js — Edição de tarefas', () => {
+  /**
+   * Abre a edição com duplo clique no texto.
+   * @returns {HTMLInputElement} O campo de edição criado
+   */
+  function abrirEdicao() {
+    const texto = document.querySelector('.texto-tarefa');
+    texto.dispatchEvent(new Event('dblclick', { bubbles: true }));
+    return document.querySelector('.campo-edicao');
+  }
+
+  it('deve salvar a edição ao pressionar Enter', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Texto original');
+
+    const campo = abrirEdicao();
+    expect(campo).not.toBeNull();
+
+    campo.value = 'Texto editado';
+    campo.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect(state.obterTarefas()[0].atividade).toBe('Texto editado');
+    expect(document.querySelector('.texto-tarefa').textContent).toBe('Texto editado');
+    expect(document.querySelector('.campo-edicao')).toBeNull();
+  });
+
+  it('deve cancelar a edição ao pressionar Escape', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Texto original');
+
+    const campo = abrirEdicao();
+    campo.value = 'Não deve salvar';
+    campo.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+    expect(state.obterTarefas()[0].atividade).toBe('Texto original');
+    expect(document.querySelector('.texto-tarefa').textContent).toBe('Texto original');
+    expect(document.querySelector('.campo-edicao')).toBeNull();
+  });
+});

@@ -1,7 +1,11 @@
-// ========== MAIN.JS — Orquestração da aplicação ==========
-// Este módulo conecta eventos da interface com state.js, storage.js e dom.js.
-// É o ponto de entrada da aplicação.
-// Usa event delegation para eventos de tarefas (um único listener no container).
+// ============================================================
+// MAIN.JS — Orquestração da aplicação
+// ------------------------------------------------------------
+// Responsabilidade: conectar os eventos da interface às funções de
+// state, storage e dom. É o ponto de entrada (type="module").
+// Conceitos ensinados: módulos ES, event delegation, submit de
+// formulário e fluxo de dados unidirecional.
+// ============================================================
 
 import {
   obterTarefas,
@@ -14,7 +18,7 @@ import {
   substituirTarefas,
 } from './state.js';
 
-import { salvar, carregar } from './storage.js';
+import { salvarTarefas, carregarTarefas } from './storage.js';
 
 import {
   renderizarLista,
@@ -27,98 +31,101 @@ import {
   mostrarMensagem,
 } from './dom.js';
 
-import { MENSAGENS } from './constants.js';
+import { SELETORES, MENSAGENS, CONFIG } from './constants.js';
+
+// Atalho para consultar elementos usando os seletores centralizados.
+const selecionar = (seletor) => document.querySelector(seletor);
 
 // ========== PERSISTÊNCIA E RENDERIZAÇÃO ==========
 
 /**
- * Salva o estado atual no localStorage e renderiza a interface completa
+ * Recria os contadores a partir do estado atual.
  */
-function salvarERenderizar() {
-  const tarefas = obterTarefas();
-  salvar(tarefas);
-  renderizarLista(tarefas);
+function sincronizarContadores() {
   const { total, completas } = obterContadores();
   atualizarContadores(total, completas);
 }
 
 /**
- * Carrega tarefas salvas e inicia a aplicação
+ * Salva o estado, redesenha a lista e atualiza os contadores.
  */
-function inicializarAplicacao() {
-  const tarefasSalvas = carregar();
+function persistirERenderizar() {
+  const tarefas = obterTarefas();
+  salvarTarefas(tarefas);
+  renderizarLista(tarefas);
+  sincronizarContadores();
+}
+
+/**
+ * Carrega os dados salvos e liga os eventos da interface.
+ * Exportada para permitir testes de orquestração sem depender do
+ * evento DOMContentLoaded (que dispara uma única vez por página).
+ */
+export function inicializarAplicacao() {
+  const tarefasSalvas = carregarTarefas();
   if (tarefasSalvas) {
     substituirTarefas(tarefasSalvas);
   }
 
   renderizarLista(obterTarefas());
-  const { total, completas } = obterContadores();
-  atualizarContadores(total, completas);
-  configurarEventosDaInterface();
+  sincronizarContadores();
+  configurarFormulario();
   configurarEventDelegation();
 }
 
-// ========== EVENTOS DA INTERFACE (BOTÕES FIXOS) ==========
+// ========== FORMULÁRIO ==========
 
 /**
- * Configura eventos de elementos fixos (botão criar, input Enter)
+ * Trata o envio do formulário (clique em "Criar" ou tecla Enter).
+ * @param {SubmitEvent} evento
  */
-function configurarEventosDaInterface() {
-  configurarBotaoCriar();
-  configurarEnterNoInput();
-}
+function aoSubmeterFormulario(evento) {
+  // Impede o comportamento padrão do navegador (recarregar a página).
+  evento.preventDefault();
 
-/**
- * Configura o evento do botão "Criar"
- */
-function configurarBotaoCriar() {
-  const botao = document.getElementById('btn-criar');
-  if (!botao) {
+  const texto = obterValorInput();
+
+  if (texto === '') {
+    mostrarMensagem(MENSAGENS.textoVazio);
     return;
   }
 
-  botao.addEventListener('click', function () {
-    const texto = obterValorInput();
-    if (texto === '') {
-      mostrarMensagem(MENSAGENS.textoVazio);
-      return;
-    }
-
-    adicionarTarefa(texto);
-    limparInput();
-    salvarERenderizar();
-  });
-}
-
-/**
- * Configura o evento Enter no input
- */
-function configurarEnterNoInput() {
-  const input = document.querySelector('#todo-input');
-  if (!input) {
+  if (texto.length > CONFIG.MAX_CARACTERES_TAREFA) {
+    mostrarMensagem(MENSAGENS.textoMuitoLongo);
     return;
   }
 
-  input.addEventListener('keypress', function (evento) {
-    if (evento.key === 'Enter') {
-      const texto = obterValorInput();
-      if (texto === '') {
-        mostrarMensagem(MENSAGENS.textoVazio);
-        return;
-      }
+  adicionarTarefa(texto);
+  limparInput();
+  persistirERenderizar();
+}
 
-      adicionarTarefa(texto);
-      limparInput();
-      salvarERenderizar();
-    }
-  });
+/**
+ * Liga o evento de submit ao formulário.
+ */
+function configurarFormulario() {
+  const formulario = selecionar(SELETORES.formulario);
+  if (formulario) {
+    formulario.addEventListener('submit', aoSubmeterFormulario);
+  }
 }
 
 // ========== EVENT DELEGATION ==========
 
 /**
- * Configura um único listener no container para todos os eventos de tarefas.
- * Isso evita anexar múltiplos listeners (um por tarefa) e simplifica o código.
+ * Descobre o ID da tarefa a partir de um elemento interno.
+ * @param {Element} alvo
+ * @returns {number|null}
+ */
+function obterIdDaTarefa(alvo) {
+  const elementoTarefa = alvo.closest(SELETORES.tarefa);
+  return elementoTarefa ? Number(elementoTarefa.dataset.id) : null;
+}
+
+/**
+ * Registra um único listener no container de tarefas.
+ * Assim, tarefas criadas depois também funcionam sem novos listeners
+ * (é isso que chamamos de delegação de eventos).
  */
 function configurarEventDelegation() {
   const container = obterContainerTarefas();
@@ -126,58 +133,57 @@ function configurarEventDelegation() {
     return;
   }
 
-  // Clique no container (captura eventos de checkbox, botão deletar, texto)
+  // 1) Remover tarefa (clique no botão ou no ícone SVG dentro dele).
   container.addEventListener('click', function (evento) {
     const alvo = evento.target;
 
-    // Botão de deletar
-    if (alvo.classList.contains('remove-btn')) {
-      const id = Number(alvo.dataset.id);
-      removerTarefa(id);
-      salvarERenderizar();
-      return;
-    }
-
-    // Ícone SVG dentro do botão deletar
-    if (alvo.closest('.remove-btn')) {
-      const botao = alvo.closest('.remove-btn');
-      const id = Number(botao.dataset.id);
-      removerTarefa(id);
-      salvarERenderizar();
-      return;
-    }
-
-    // Checkbox
-    if (alvo.type === 'checkbox' && alvo.id.startsWith('tarefa-')) {
-      const id = Number(alvo.id.replace('tarefa-', ''));
-      toggleConcluida(id);
-      salvar(obterTarefas());
-      const tarefa = obterTarefaPorId(id);
-      if (tarefa) {
-        atualizarCheckboxTarefa(id, tarefa.completa);
+    if (alvo.closest(SELETORES.botaoRemover)) {
+      const id = obterIdDaTarefa(alvo);
+      if (id !== null) {
+        removerTarefa(id);
+        persistirERenderizar();
       }
-      const { total, completas } = obterContadores();
-      atualizarContadores(total, completas);
       return;
     }
 
-    // Duplo clique no texto da tarefa para editar
-    if (alvo.tagName === 'SPAN' && alvo.parentElement.classList.contains('tarefa')) {
-      const checkbox = alvo.previousElementSibling;
-      if (checkbox && checkbox.id.startsWith('tarefa-')) {
-        const id = Number(checkbox.id.replace('tarefa-', ''));
-        iniciarEdicaoTarefa(
-          alvo,
-          function (novoTexto) {
-            editarTarefa(id, novoTexto);
-            salvarERenderizar();
-          },
-          function () {
-            // Cancelar: não faz nada, o texto original permanece
-          }
-        );
+    // 2) Marcar/desmarcar como concluída.
+    if (alvo.matches('input[type="checkbox"][id^="tarefa-"]')) {
+      const id = obterIdDaTarefa(alvo);
+      if (id !== null) {
+        toggleConcluida(id);
+        salvarTarefas(obterTarefas());
+
+        const tarefa = obterTarefaPorId(id);
+        if (tarefa) {
+          atualizarCheckboxTarefa(id, tarefa.completa);
+        }
+        sincronizarContadores();
       }
     }
+  });
+
+  // 3) Editar com duplo clique no texto da tarefa.
+  container.addEventListener('dblclick', function (evento) {
+    const texto = evento.target.closest(SELETORES.textoTarefa);
+    if (!texto) {
+      return;
+    }
+
+    const id = obterIdDaTarefa(texto);
+    if (id === null) {
+      return;
+    }
+
+    iniciarEdicaoTarefa(
+      texto,
+      (novoTexto) => {
+        editarTarefa(id, novoTexto);
+        persistirERenderizar();
+      },
+      () => {
+        // Cancelar não altera nada: o texto original continua visível.
+      }
+    );
   });
 }
 
