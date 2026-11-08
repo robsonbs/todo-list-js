@@ -32,6 +32,11 @@ describe('validarTexto', () => {
     expect(validarTexto(null)).toEqual({ valido: false, motivo: 'textoVazio' });
   });
 
+  it('converte números e booleanos para texto antes de validar', () => {
+    expect(validarTexto(42)).toEqual({ valido: true, texto: '42' });
+    expect(validarTexto(false)).toEqual({ valido: true, texto: 'false' });
+  });
+
   it(`aceita exatamente ${CONFIG.MAX_CARACTERES_TAREFA} caracteres`, () => {
     const resultado = validarTexto('a'.repeat(CONFIG.MAX_CARACTERES_TAREFA));
     expect(resultado.valido).toBe(true);
