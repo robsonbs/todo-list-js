@@ -97,7 +97,7 @@
           aria-label: descrição específica para acessibilidade
           aria-hidden="true": o emoji é apenas decorativo, não informativo
         -->
-        <button type="button" id="btn-criar" aria-label="Criar nova tarefa">
+        <button type="button" id="btn-criar" aria-label="Criar nova tarefa" aria-expanded="false">
           <span aria-hidden="true">➕</span>
           Criar
         </button>
@@ -150,7 +150,7 @@
           IMPORTANTE: Este container começa vazio!
           O JavaScript irá adicionar as tarefas aqui dinamicamente
         -->
-        <section class="tarefas-box" role="list" aria-label="Lista de tarefas">
+        <section class="tarefas-box" role="list" aria-label="Lista de tarefas" aria-live="polite">
           <!-- As tarefas aparecerão aqui dinamicamente via JavaScript -->
         </section>
       </main>
@@ -161,6 +161,6 @@
       Quando o navegador chega aqui, todos os elementos HTML já foram criados
       O JavaScript é o responsável por toda a interatividade da aplicação
     -->
-    <script src="scripts.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>
