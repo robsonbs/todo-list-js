@@ -60,15 +60,15 @@ export function criarElementoTarefa(tarefa) {
   div.className = CLASSES.tarefa;
   // O ID fica na raiz da tarefa: qualquer clique pode descobrir a
   // tarefa correspondente sem depender da posição dos filhos no DOM.
-  div.dataset.id = tarefa.id;
+  div.dataset.id = String(tarefa.id);
   div.setAttribute('role', 'listitem');
 
-  // Checkbox com ARIA para leitores de tela.
+  // Checkbox acessível pelo aria-label.
+  // Um checkbox nativo já expõe o estado "marcado" para leitores de
+  // tela, então não precisamos duplicar isso com aria-checked.
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
-  checkbox.id = `tarefa-${tarefa.id}`;
   checkbox.checked = tarefa.completa;
-  checkbox.setAttribute('aria-checked', tarefa.completa);
   checkbox.setAttribute('aria-label', `Marcar "${tarefa.atividade}" como concluída`);
 
   // Texto da tarefa.
@@ -83,7 +83,7 @@ export function criarElementoTarefa(tarefa) {
   botao.type = 'button';
   botao.title = 'Deletar tarefa';
   botao.className = CLASSES.botaoRemover;
-  botao.dataset.id = tarefa.id;
+  botao.dataset.id = String(tarefa.id);
   botao.setAttribute('aria-label', `Deletar tarefa: ${tarefa.atividade}`);
 
   // Ícone SVG (conteúdo estático, seguro).
@@ -93,9 +93,7 @@ export function criarElementoTarefa(tarefa) {
   botao.appendChild(iconeContainer);
 
   // Monta a estrutura: [checkbox] [texto] [botão]
-  div.appendChild(checkbox);
-  div.appendChild(span);
-  div.appendChild(botao);
+  div.append(checkbox, span, botao);
 
   return div;
 }
@@ -120,9 +118,7 @@ export function criarEstadoVazio() {
   subtitulo.className = CLASSES.estadoVazioSubtitulo;
   subtitulo.textContent = 'Crie tarefas e organize seus itens a fazer';
 
-  div.appendChild(iconeContainer);
-  div.appendChild(titulo);
-  div.appendChild(subtitulo);
+  div.append(iconeContainer, titulo, subtitulo);
 
   return div;
 }
@@ -130,17 +126,9 @@ export function criarEstadoVazio() {
 // ========== RENDERIZAÇÃO ==========
 
 /**
- * Remove todo o conteúdo do container de tarefas.
- */
-export function limparContainerTarefas() {
-  const container = selecionar(SELETORES.containerTarefas);
-  if (container) {
-    container.innerHTML = '';
-  }
-}
-
-/**
  * Renderiza a lista de tarefas no container.
+ * replaceChildren troca todo o conteúdo de uma vez: mais simples
+ * que limpar e depois inserir item por item.
  * @param {import('./state.js').Tarefa[]} tarefas
  */
 export function renderizarLista(tarefas) {
@@ -149,16 +137,8 @@ export function renderizarLista(tarefas) {
     return;
   }
 
-  limparContainerTarefas();
-
-  if (!tarefas || tarefas.length === 0) {
-    container.appendChild(criarEstadoVazio());
-    return;
-  }
-
-  tarefas.forEach((tarefa) => {
-    container.appendChild(criarElementoTarefa(tarefa));
-  });
+  const itens = tarefas.length === 0 ? [criarEstadoVazio()] : tarefas.map(criarElementoTarefa);
+  container.replaceChildren(...itens);
 }
 
 /**
@@ -171,10 +151,10 @@ export function atualizarContadores(total, completas) {
   const contadorConcluidas = selecionar(SELETORES.contadorConcluidas);
 
   if (contadorCriadas) {
-    contadorCriadas.innerText = `${total}`;
+    contadorCriadas.textContent = `${total}`;
   }
   if (contadorConcluidas) {
-    contadorConcluidas.innerText = `${completas} de ${total}`;
+    contadorConcluidas.textContent = `${completas} de ${total}`;
   }
 }
 
@@ -185,35 +165,43 @@ export function atualizarContadores(total, completas) {
  * @returns {string}
  */
 export function obterValorCampoEntrada() {
-  const input = selecionar(SELETORES.campoEntrada);
-  return input ? input.value.trim() : '';
+  const campo = selecionar(SELETORES.campoEntrada);
+  return campo ? campo.value.trim() : '';
 }
 
 /**
  * Limpa o campo de nova tarefa.
  */
 export function limparCampoEntrada() {
-  const input = selecionar(SELETORES.campoEntrada);
-  if (input) {
-    input.value = '';
+  const campo = selecionar(SELETORES.campoEntrada);
+  if (campo) {
+    campo.value = '';
   }
+}
+
+/**
+ * Retorna o formulário de criação de tarefas.
+ * @returns {HTMLFormElement|null}
+ */
+export function obterFormulario() {
+  return selecionar(SELETORES.formulario);
 }
 
 // ========== ATUALIZAÇÃO INCREMENTAL ==========
 
 /**
  * Atualiza o checkbox de uma tarefa sem re-renderizar toda a lista.
- * @param {number} id
+ * O estado "marcado" de um checkbox nativo é exposto sozinho na
+ * árvore de acessibilidade, então basta alterar a propriedade checked.
+ * @param {HTMLInputElement} checkbox
  * @param {boolean} estaCompleta
  */
-export function atualizarCheckboxTarefa(id, estaCompleta) {
-  const checkbox = document.getElementById(`tarefa-${id}`);
+export function atualizarCheckboxTarefa(checkbox, estaCompleta) {
   if (!checkbox) {
     return;
   }
 
   checkbox.checked = estaCompleta;
-  checkbox.setAttribute('aria-checked', estaCompleta);
 }
 
 /**
@@ -246,11 +234,7 @@ export function mostrarMensagem(texto, tipo = 'erro') {
 
   // Insere no topo do container principal (ou no body, se necessário).
   const main = selecionar(SELETORES.containerPrincipal);
-  if (main) {
-    main.insertBefore(div, main.firstChild);
-  } else {
-    document.body.insertBefore(div, document.body.firstChild);
-  }
+  (main || document.body).prepend(div);
 
   // Remove automaticamente depois de alguns segundos.
   setTimeout(() => {
@@ -312,12 +296,14 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
 
   // Garante que o fluxo termine apenas uma vez (Enter, Esc ou blur).
   let finalizado = false;
+  let timerSalvar = null;
 
   function cancelarEdicao() {
     if (finalizado) {
       return;
     }
     finalizado = true;
+    clearTimeout(timerSalvar);
     encerrarEdicao(elementoTarefa, campoEdicao);
     if (typeof onCancelar === 'function') {
       onCancelar();
@@ -346,6 +332,7 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
     }
 
     finalizado = true;
+    clearTimeout(timerSalvar);
     encerrarEdicao(elementoTarefa, campoEdicao);
     if (typeof onSalvar === 'function') {
       onSalvar(validacao.texto);
@@ -364,6 +351,6 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
 
   campoEdicao.addEventListener('blur', () => {
     // O pequeno delay evita conflito com o clique em outro controle.
-    setTimeout(salvarEdicao, CONFIG.DELAY_SALVAR_BLUR);
+    timerSalvar = setTimeout(salvarEdicao, CONFIG.DELAY_SALVAR_BLUR);
   });
 }

@@ -28,28 +28,21 @@ describe('criarElementoTarefa — Estrutura visual', () => {
     expect(elemento.classList.contains('tarefa')).toBe(true);
   });
 
-  it('deve conter um checkbox com tipo e id corretos', () => {
+  it('deve conter um checkbox do tipo correto e desmarcado', () => {
     const elemento = criarElementoTarefa(
       criarTarefaFixture({ id: 42, completa: false, atividade: 'Tarefa' })
     );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox).not.toBeNull();
-    expect(checkbox.id).toBe('tarefa-42');
     expect(checkbox.checked).toBe(false);
   });
 
-  it('deve ter aria-checked no checkbox', () => {
+  it('checkbox não deve depender de id gerado', () => {
     const elemento = criarElementoTarefa(
-      criarTarefaFixture({ id: 1, completa: true, atividade: 'Tarefa' })
+      criarTarefaFixture({ id: 42, completa: false, atividade: 'Tarefa' })
     );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
-    expect(checkbox.getAttribute('aria-checked')).toBe('true');
-
-    const elemento2 = criarElementoTarefa(
-      criarTarefaFixture({ id: 2, completa: false, atividade: 'Tarefa 2' })
-    );
-    const checkbox2 = elemento2.querySelector('input[type="checkbox"]');
-    expect(checkbox2.getAttribute('aria-checked')).toBe('false');
+    expect(checkbox.id).toBe('');
   });
 
   it('deve ter aria-label descritivo no checkbox', () => {
@@ -134,7 +127,6 @@ describe('criarElementoTarefa — Estado concluído vs pendente', () => {
     );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox.checked).toBe(true);
-    expect(checkbox.getAttribute('aria-checked')).toBe('true');
   });
 
   it('checkbox não deve estar marcado quando tarefa está pendente', () => {
@@ -143,7 +135,6 @@ describe('criarElementoTarefa — Estado concluído vs pendente', () => {
     );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox.checked).toBe(false);
-    expect(checkbox.getAttribute('aria-checked')).toBe('false');
   });
 });
 
@@ -173,29 +164,27 @@ describe('criarEstadoVazio — Estrutura visual', () => {
 });
 
 describe('atualizarCheckboxTarefa — Atualização visual incremental', () => {
-  it('deve atualizar checked e aria-checked do checkbox', () => {
-    document.body.innerHTML = `
-      <div class="tarefa">
-        <input type="checkbox" id="tarefa-99" checked aria-checked="true">
-        <span class="texto-tarefa">Tarefa</span>
-        <button class="remove-btn" data-id="99">X</button>
-      </div>
-    `;
+  it('deve atualizar a propriedade checked do checkbox', () => {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = true;
 
-    atualizarCheckboxTarefa(99, false);
-    const checkbox = document.getElementById('tarefa-99');
+    atualizarCheckboxTarefa(checkbox, false);
+
     expect(checkbox.checked).toBe(false);
-    expect(checkbox.getAttribute('aria-checked')).toBe('false');
   });
 
   it('deve definir checked=true quando marcada como completa', () => {
-    document.body.innerHTML = `
-      <input type="checkbox" id="tarefa-5" aria-checked="false">
-    `;
-    atualizarCheckboxTarefa(5, true);
-    const checkbox = document.getElementById('tarefa-5');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+
+    atualizarCheckboxTarefa(checkbox, true);
+
     expect(checkbox.checked).toBe(true);
-    expect(checkbox.getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('não deve quebrar quando o checkbox não existe', () => {
+    expect(() => atualizarCheckboxTarefa(null, true)).not.toThrow();
   });
 });
 

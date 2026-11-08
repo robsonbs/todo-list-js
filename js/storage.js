@@ -26,8 +26,10 @@ export function salvarTarefas(tarefas) {
 }
 
 /**
- * Carrega a lista de tarefas do localStorage.
- * @returns {import('./state.js').Tarefa[]|null} Dados ou null
+ * Carrega os dados crus do localStorage.
+ * O retorno é desconhecido de propósito: JSON pode conter qualquer
+ * coisa, então a validação fica em state.js (substituirTarefas).
+ * @returns {unknown} Dados crus ou null se não houver/erro
  */
 export function carregarTarefas() {
   try {

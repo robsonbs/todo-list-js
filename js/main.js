@@ -4,7 +4,11 @@
 // Responsabilidade: conectar os eventos da interface às funções de
 // state, storage e dom. É o ponto de entrada (type="module").
 // Conceitos ensinados: módulos ES, event delegation, submit de
-// formulário e fluxo de dados unidirecional.
+// formulário e fluxo de dados unidirecional:
+//
+//   evento → state → storage → dom → contadores
+//
+// NÃO faz: não cria elementos e não guarda dados.
 // ============================================================
 
 import {
@@ -29,14 +33,12 @@ import {
   limparCampoEntrada,
   iniciarEdicaoTarefa,
   obterContainerTarefas,
+  obterFormulario,
   atualizarCheckboxTarefa,
   mostrarMensagem,
 } from './dom.js';
 
 import { SELETORES, MENSAGENS } from './constants.js';
-
-// Atalho para consultar elementos usando os seletores centralizados.
-const selecionar = (seletor) => document.querySelector(seletor);
 
 // ========== PERSISTÊNCIA E RENDERIZAÇÃO ==========
 
@@ -49,12 +51,34 @@ function sincronizarContadores() {
 }
 
 /**
+ * Salva o estado no localStorage e avisa o usuário se falhar.
+ * @returns {import('./state.js').Tarefa[]} Lista salva (ou tentada)
+ */
+function salvarEstado() {
+  const tarefas = obterTarefas();
+
+  if (!salvarTarefas(tarefas)) {
+    mostrarMensagem(MENSAGENS.erroAoSalvar);
+  }
+
+  return tarefas;
+}
+
+/**
  * Salva o estado, redesenha a lista e atualiza os contadores.
+ * Usado quando a lista muda de tamanho ou de conteúdo.
  */
 function persistirERenderizar() {
-  const tarefas = obterTarefas();
-  salvarTarefas(tarefas);
-  renderizarLista(tarefas);
+  renderizarLista(salvarEstado());
+  sincronizarContadores();
+}
+
+/**
+ * Salva e atualiza só os contadores, sem recriar a lista.
+ * Usado ao marcar/desmarcar: preserva o foco e a posição de rolagem.
+ */
+function persistirAtualizacaoIncremental() {
+  salvarEstado();
   sincronizarContadores();
 }
 
@@ -104,22 +128,99 @@ function aoSubmeterFormulario(evento) {
  * Liga o evento de submit ao formulário.
  */
 function configurarFormulario() {
-  const formulario = selecionar(SELETORES.formulario);
+  const formulario = obterFormulario();
   if (formulario) {
     formulario.addEventListener('submit', aoSubmeterFormulario);
   }
 }
 
-// ========== EVENT DELEGATION ==========
+// ========== DELEGAÇÃO DE EVENTOS ==========
 
 /**
  * Descobre o ID da tarefa a partir de um elemento interno.
- * @param {Element} alvo
+ * @param {Element} elemento
  * @returns {number|null}
  */
-function obterIdDaTarefa(alvo) {
-  const elementoTarefa = alvo.closest(SELETORES.tarefa);
+function obterIdDaTarefa(elemento) {
+  const elementoTarefa = elemento.closest(SELETORES.tarefa);
   return elementoTarefa ? Number(elementoTarefa.dataset.id) : null;
+}
+
+/**
+ * Remove a tarefa representada pelo elemento clicado.
+ * @param {Element} elemento
+ */
+function removerDaInterface(elemento) {
+  const id = obterIdDaTarefa(elemento);
+  if (id === null) {
+    return;
+  }
+
+  removerTarefa(id);
+  persistirERenderizar();
+}
+
+/**
+ * Alterna a conclusão e atualiza apenas o checkbox clicado.
+ * @param {HTMLInputElement} checkbox
+ */
+function alternarConclusao(checkbox) {
+  const id = obterIdDaTarefa(checkbox);
+  if (id === null || !alternarConcluida(id)) {
+    return;
+  }
+
+  persistirAtualizacaoIncremental();
+
+  const tarefa = obterTarefaPorId(id);
+  if (tarefa) {
+    atualizarCheckboxTarefa(checkbox, tarefa.completa);
+  }
+}
+
+/**
+ * Abre o campo de edição inline do texto clicado.
+ * @param {HTMLElement} elementoTexto
+ */
+function iniciarEdicaoDoTexto(elementoTexto) {
+  const id = obterIdDaTarefa(elementoTexto);
+  if (id === null) {
+    return;
+  }
+
+  iniciarEdicaoTarefa(elementoTexto, (novoTexto) => {
+    if (editarTarefa(id, novoTexto)) {
+      persistirERenderizar();
+    }
+  });
+}
+
+/**
+ * Trata cliques na lista: remover ou marcar como concluída.
+ * @param {MouseEvent} evento
+ */
+function aoClicarNaLista(evento) {
+  const botaoRemover = evento.target.closest(SELETORES.botaoRemover);
+  if (botaoRemover) {
+    removerDaInterface(botaoRemover);
+    return;
+  }
+
+  const checkbox = evento.target.closest(SELETORES.checkboxTarefa);
+  if (checkbox) {
+    alternarConclusao(checkbox);
+  }
+}
+
+/**
+ * Trata o duplo clique que inicia a edição.
+ * @param {MouseEvent} evento
+ */
+function aoDuploCliqueNaLista(evento) {
+  const elementoTexto = evento.target.closest(SELETORES.textoTarefa);
+  if (elementoTexto) {
+    iniciarEdicaoDoTexto(elementoTexto);
+  }
 }
 
 /**
@@ -133,58 +234,8 @@ function configurarDelegacaoDeEventos() {
     return;
   }
 
-  // 1) Remover tarefa (clique no botão ou no ícone SVG dentro dele).
-  container.addEventListener('click', function (evento) {
-    const alvo = evento.target;
-
-    if (alvo.closest(SELETORES.botaoRemover)) {
-      const id = obterIdDaTarefa(alvo);
-      if (id !== null) {
-        removerTarefa(id);
-        persistirERenderizar();
-      }
-      return;
-    }
-
-    // 2) Marcar/desmarcar como concluída.
-    if (alvo.matches('input[type="checkbox"][id^="tarefa-"]')) {
-      const id = obterIdDaTarefa(alvo);
-      if (id !== null) {
-        alternarConcluida(id);
-        salvarTarefas(obterTarefas());
-
-        const tarefa = obterTarefaPorId(id);
-        if (tarefa) {
-          atualizarCheckboxTarefa(id, tarefa.completa);
-        }
-        sincronizarContadores();
-      }
-    }
-  });
-
-  // 3) Editar com duplo clique no texto da tarefa.
-  container.addEventListener('dblclick', function (evento) {
-    const texto = evento.target.closest(SELETORES.textoTarefa);
-    if (!texto) {
-      return;
-    }
-
-    const id = obterIdDaTarefa(texto);
-    if (id === null) {
-      return;
-    }
-
-    iniciarEdicaoTarefa(
-      texto,
-      (novoTexto) => {
-        editarTarefa(id, novoTexto);
-        persistirERenderizar();
-      },
-      () => {
-        // Cancelar não altera nada: o texto original continua visível.
-      }
-    );
-  });
+  container.addEventListener('click', aoClicarNaLista);
+  container.addEventListener('dblclick', aoDuploCliqueNaLista);
 }
 
 // ========== INICIALIZAÇÃO ==========
