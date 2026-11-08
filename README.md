@@ -36,14 +36,19 @@ todo-list-js/
 ├── vitest.config.js        # Configuração do Vitest
 ├── playwright.config.js    # Configuração do Playwright (via Docker)
 ├── js/
-│   ├── constants.js        # Constantes centralizadas
+│   ├── constants.js        # Classes, seletores, mensagens e configurações
+│   ├── validacao.js        # Regra única de validação do texto
 │   ├── state.js            # Gerência do estado das tarefas
 │   ├── storage.js          # Abstração do localStorage
+│   ├── icones.js           # SVGs estáticos da interface
 │   ├── dom.js              # Manipulação pura de DOM
 │   └── main.js             # Orquestração e eventos
 ├── tests/
 │   ├── helpers/
-│   │   └── fixtures.js     # DOM e dados reutilizáveis nos testes
+│   │   ├── fixtures.js     # DOM e dados reutilizáveis nos testes
+│   │   └── aplicacao.js    # Inicialização e ações de usuário nos testes
+│   ├── contrato.test.js    # Contrato entre HTML, constantes e CSS
+│   ├── validacao.test.js   # Testes da regra de validação
 │   ├── state.test.js       # Testes unitários do state.js
 │   ├── storage.test.js     # Testes unitários do storage.js
 │   ├── dom.test.js         # Testes de estrutura e acessibilidade do DOM
@@ -74,11 +79,15 @@ todo-list-js/
 
 O código segue separação de responsabilidades:
 
-- **constants.js** — Fonte única de verdade: `CHAVE_ARMAZENAMENTO`, `SELETORES`, `MENSAGENS` e `CONFIG`.
+- **constants.js** — Fonte única de verdade: `CHAVE_ARMAZENAMENTO`, `CLASSES`, `SELETORES_ESTATICOS`, `SELETORES_DINAMICOS`, `SELETORES`, `MENSAGENS` e `CONFIG`.
+- **validacao.js** — Função pura `validarTexto()` com a regra de texto vazio e limite de caracteres. Não toca no DOM.
 - **state.js** — Gerencia o estado (array de tarefas com IDs únicos). Não toca no DOM nem no `localStorage`.
 - **storage.js** — Abstrai o `localStorage` (`salvarTarefas` / `carregarTarefas`), com `try/catch`.
+- **icones.js** — Guarda o markup estático dos ícones SVG. Não toca no DOM.
 - **dom.js** — Manipulação pura de DOM (`createElement` + `textContent`, proteção contra XSS).
 - **main.js** — Orquestração de eventos (usa event delegation) e ponto de entrada da aplicação.
+
+**Seletores:** `SELETORES_ESTATICOS` são os elementos que já existem no `index.html`; `SELETORES_DINAMICOS` são os criados pelo JavaScript. `SELETORES` reúne os dois. O teste de contrato garante que HTML, constantes e CSS continuem batendo.
 
 ### Fluxo de dados
 
@@ -94,14 +103,30 @@ Usuário → main.js → state.js → storage.js
 
 ### Glossário de nomes
 
-| Nome                   | Significado                                             |
-| ---------------------- | ------------------------------------------------------- |
-| `CHAVE_ARMAZENAMENTO`  | Chave do `localStorage` (valor preservado: `'tarefas'`) |
-| `salvarTarefas`        | Salva a lista no `localStorage`                         |
-| `carregarTarefas`      | Carrega a lista do `localStorage`                       |
-| `selecionar`           | Atalho para `document.querySelector`                    |
-| `persistirERenderizar` | Salva, redesenha a lista e atualiza contadores          |
-| `iniciarEdicaoTarefa`  | Abre a edição inline (duplo clique)                     |
+| Nome                   | Significado                                                       |
+| ---------------------- | ----------------------------------------------------------------- |
+| `CHAVE_ARMAZENAMENTO`  | Chave do `localStorage` (valor preservado: `'tarefas'`)           |
+| `salvarTarefas`        | Salva a lista no `localStorage`                                   |
+| `carregarTarefas`      | Carrega a lista do `localStorage`                                 |
+| `validarTexto`         | Regra única que valida e normaliza o texto de uma tarefa          |
+| `selecionar`           | Atalho para `document.querySelector`                              |
+| `salvarEstado`         | Persiste o estado e avisa o usuário quando o `localStorage` falha |
+| `persistirERenderizar` | Salva, redesenha a lista e atualiza contadores                    |
+| `alternarConcluida`    | Alterna o estado de conclusão de uma tarefa                       |
+| `iniciarEdicaoTarefa`  | Abre a edição inline (duplo clique)                               |
+
+## 🧪 Testes
+
+- **Unitários (Vitest):** `validacao`, `state`, `storage`, `dom` e a orquestração em `main.test.js`.
+- **Contrato:** `tests/contrato.test.js` confere que os seletores existem no `index.html`, que o `maxlength` acompanha `CONFIG` e que toda classe criada pelo JavaScript tem regra no CSS.
+- **Helpers:** `tests/helpers/fixtures.js` monta o DOM mínimo; `tests/helpers/aplicacao.js` inicializa a aplicação e simula ações do usuário.
+- **E2E (Playwright):** somente via Docker, com `npm run test:e2e`.
+
+## ♿ Acessibilidade
+
+- O checkbox nativo já expõe o estado marcado; por isso não usamos `aria-checked` nem um `id` gerado.
+- A lista não usa `aria-live`: como ela é recriada a cada mudança, o leitor de tela reanunciaria todas as tarefas. O feedback vem dos contadores e das mensagens flash (`role="alert"`).
+- Os ícones são decorativos; a ação é descrita pelo `aria-label` do botão.
 
 ## 💬 Padrão de comentários
 

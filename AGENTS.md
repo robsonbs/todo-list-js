@@ -42,14 +42,19 @@ todo-list-js/
 ├── 🐳 docker-compose.yml      # Orquestração servidor + Playwright (Docker)
 │
 ├── 📂 js/                     # Módulos JavaScript (ES modules)
-│   ├── constants.js           # Constantes centralizadas (seletores, mensagens, chave)
+│   ├── constants.js           # Classes, seletores estáticos/dinâmicos, mensagens e config
+│   ├── validacao.js           # Regra única de validação do texto (função pura)
 │   ├── state.js               # Gerência pura do estado das tarefas (IDs únicos)
 │   ├── storage.js             # Abstração do localStorage (salvarTarefas/carregarTarefas)
+│   ├── icones.js              # SVGs estáticos da interface
 │   ├── dom.js                 # Manipulação pura de DOM (createElement + textContent, sem XSS)
 │   └── main.js                # Orquestração de eventos (event delegation)
 │
 ├── 🧪 tests/
 │   ├── helpers/fixtures.js    # DOM e dados reutilizáveis nos testes
+│   ├── helpers/aplicacao.js   # Inicialização e ações de usuário nos testes
+│   ├── contrato.test.js       # Contrato entre index.html, constantes e style.css
+│   ├── validacao.test.js      # Testes unitários da regra de validação
 │   ├── state.test.js          # Testes unitários de lógica de negócio (Vitest)
 │   ├── storage.test.js        # Testes unitários de persistência (Vitest)
 │   ├── dom.test.js            # Testes unitários de estrutura DOM e ARIA (Vitest)
@@ -82,13 +87,15 @@ todo-list-js/
 ### `index.html`
 
 - Estrutura semântica da aplicação (`<header>`, `<main>`, `<section>`, `<form>`)
-- Atributos ARIA para acessibilidade (`role`, `aria-label`, `aria-live`)
+- Atributos ARIA pontuais (`role="list"`, `aria-label`, mensagens com `role="alert"`)
 - Carrega `js/main.js` como módulo ES (`<script type="module">`)
 - Meta tags para charset UTF-8 e viewport (responsividade)
 - Fonte Inter importada do Google Fonts
+- O `maxlength` do campo acompanha `CONFIG.MAX_CARACTERES_TAREFA` (verificado por contrato)
 
 ### `style.css`
 
+- Índice de seções no topo do arquivo
 - Variáveis CSS (`:root`) para cores, cinzas e tons
 - Reset CSS (`* { margin: 0; padding: 0; box-sizing: border-box }`)
 - Tipografia com fonte Inter
@@ -96,38 +103,58 @@ todo-list-js/
 - Media queries para tablets (≤768px) e celulares (≤480px)
 - Dark theme (fundo escuro por padrão)
 - Estilos para estados: hover, focus, checked, edição de tarefa
-- Animações (tooltip fadeIn, mensagens flash slideIn)
+- Tooltip de edição com `opacity`/`visibility` (sem `@keyframes`) e animação `slideIn` das mensagens flash
 
 ### `js/constants.js`
 
 - `CHAVE_ARMAZENAMENTO` — Chave do localStorage (valor preservado: `"tarefas"`)
-- `SELETORES` — Seletores CSS centralizados (IDs e classes)
-- `MENSAGENS` — Mensagens de interface e validação
+- `CLASSES` — Nomes de classe criados pelo JavaScript (fonte única para HTML/CSS/JS)
+- `SELETORES_ESTATICOS` — Elementos que já existem no `index.html`
+- `SELETORES_DINAMICOS` — Elementos criados pelo JavaScript em tempo de execução
+- `SELETORES` — Merge dos dois anteriores
+- `MENSAGENS` — Mensagens de interface e validação (limite interpolado de `CONFIG`)
 - `CONFIG` — Configurações (max caracteres, delay de blur, duração da mensagem)
+
+### `js/validacao.js`
+
+- `validarTexto(texto)` — função pura que devolve `{ valido, texto?, motivo? }`
+- Única implementação da regra de texto vazio e do limite de 100 caracteres
+- Não toca no DOM, não guarda estado e não exibe mensagens
 
 ### `js/state.js`
 
 - Gerência pura do estado (array de tarefas com IDs únicos)
 - `obterTarefas()`, `adicionarTarefa()`, `removerTarefa()`, `editarTarefa()`
-- `toggleConcluida()`, `obterContadores()`, `substituirTarefas()`
+- `alternarConcluida()`, `obterContadores()`, `substituirTarefas()`
+- Normaliza dados carregados: exige `id` inteiro positivo e descarta IDs repetidos
 - Não manipula DOM, não acessa localStorage
 
 ### `js/storage.js`
 
 - Abstração do `localStorage` (`salvarTarefas()`, `carregarTarefas()`)
 - Tratamento de erros com `try/catch`
+- `carregarTarefas()` devolve `unknown` (a validação fica em `state.js`)
 - Não manipula DOM, não contém lógica de negócio
+
+### `js/icones.js`
+
+- `obterIconeLixeira()` e `obterIconeListaVazia()` — markup SVG estático
+- Não toca no DOM e não conhece estado
 
 ### `js/dom.js`
 
 - Manipulação pura de DOM (`createElement` + `textContent`, sem `innerHTML` com conteúdo do usuário)
 - `criarElementoTarefa()`, `renderizarLista()`, `atualizarContadores()`
-- `iniciarEdicaoTarefa()`, `atualizarCheckboxTarefa()`, `mostrarMensagem()`
+- `iniciarEdicaoTarefa()`, `atualizarCheckboxTarefa(checkbox, completa)`, `mostrarMensagem()`
+- Checkbox sem `id` gerado e sem `aria-checked` (o estado nativo já é acessível)
 - Proteção contra XSS (texto do usuário inserido via `textContent`)
 
 ### `js/main.js`
 
 - Orquestração: conecta eventos da interface com state.js, storage.js e dom.js
+- Handlers nomeados (`aoSubmeterFormulario`, `aoClicarNaLista`, `aoDuploCliqueNaLista`)
+- `salvarEstado()` centraliza a persistência e avisa quando o `localStorage` falha
+- `persistirERenderizar()` recria a lista; `persistirAtualizacaoIncremental()` preserva o DOM ao marcar
 - Usa **event delegation** (um único listener no container para todos os eventos de tarefa)
 - Ponto de entrada da aplicação (`DOMContentLoaded`)
 - `inicializarAplicacao()` é exportada para permitir testes de orquestração
@@ -166,11 +193,16 @@ npm run test:watch # Modo watch
 npm run verify     # Lint + formatação + testes
 ```
 
-- `tests/state.test.js` — Lógica de negócio (adicionar, remover, editar, toggle, contadores)
+- `tests/validacao.test.js` — Regra única de validação (texto vazio, limite e normalização)
+- `tests/state.test.js` — Lógica de negócio (adicionar, remover, editar, alternar, contadores)
 - `tests/storage.test.js` — Persistência (salvar, carregar, dados corrompidos)
 - `tests/dom.test.js` — Estrutura visual (classes, ARIA, ícones, checkbox, mensagens flash, estado vazio)
-- `tests/main.test.js` — Orquestração (submit, checkbox, remoção, edição e inicialização)
+- `tests/main.test.js` — Orquestração (submit, checkbox, remoção, edição, inicialização e falha ao salvar)
+- `tests/contrato.test.js` — Contrato entre `index.html`, `js/constants.js` e `style.css`
 - `tests/helpers/fixtures.js` — DOM mínimo e fábrica de tarefas reutilizados nos testes
+- `tests/helpers/aplicacao.js` — Inicialização e ações de usuário (enviar formulário, clicar, obter tarefa)
+
+**Ao adicionar um seletor ou classe:** atualize `js/constants.js`. O teste de contrato avisa se o HTML, o CSS ou o DOM dos testes ficarem dessincronizados.
 
 ### Testes End-to-End (Playwright — APENAS via Docker)
 
@@ -211,9 +243,11 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 - Não comentar o óbvio (`// incrementa i`) nem deixar comentários desatualizados
 - HTML: um comentário por bloco semântico, explicando atributos ARIA quando usados
 - CSS: um comentário por seção e por grupo de propriedades
+- Ao mudar um nome, procure referências em `js/`, `tests/`, `index.html`, `style.css` e na documentação
 
 ### CSS
 
+- Índice de seções no topo do arquivo (mantenha-o atualizado ao criar uma seção)
 - Variáveis CSS (`--nome-variavel`) definidas em `:root`
 - Nomes de variáveis descritivos (`--blue-dark`, `--gray-600`, `--purple-dark`)
 - Seções organizadas com comentários (`/* ========== SECAO ========== */`)
@@ -223,9 +257,9 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 ### HTML
 
 - HTML semântico (`<header>`, `<main>`, `<section>`, `<form>`)
-- Atributos ARIA para acessibilidade
+- Atributos ARIA apenas quando acrescentam informação (evite `role` redundante)
 - IDs únicos para elementos manipulados por JavaScript
-- Classes CSS para estilização (`tarefa`, `tarefas-box`, `remove-btn`, etc.)
+- Classes CSS centralizadas em `CLASSES` quando criadas pelo JS (`tarefa`, `texto-tarefa`, `remove-btn`, etc.)
 
 ---
 
@@ -233,11 +267,14 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 
 1. **Persistência:** Os dados são salvos em `localStorage` com a chave `"tarefas"` (constante `CHAVE_ARMAZENAMENTO`). Limpar o navegador remove todos os dados.
 2. **IDs únicos:** As tarefas têm um `id` próprio (não usam índices do array). Ao remover, os IDs das tarefas restantes não mudam.
-3. **Renderização completa:** `renderizarLista()` limpa e recria todo o HTML da lista. O estado visual do checkbox é restaurado via CSS `:checked`.
-4. **Modo de edição:** Só permite uma edição por vez (verifica se já existe um `input` dentro do elemento de texto).
-5. **Duplo clique:** O evento de duplo clique no texto da tarefa inicia a edição inline; Enter salva, Esc cancela, blur salva após 100ms.
-6. **Sem `innerHTML` com conteúdo do usuário:** Todo texto do usuário é inserido via `textContent` para evitar XSS.
-7. **Playwright apenas via Docker:** Nunca instalar Playwright como dependência local.
+3. **Renderização completa:** `renderizarLista()` usa `replaceChildren()` e recria toda a lista. O estado visual do checkbox é restaurado a partir de `tarefa.completa`.
+4. **Atualização incremental:** ao marcar/desmarcar, `main.js` só atualiza o checkbox clicado e os contadores — a lista não é recriada.
+5. **Modo de edição:** Só permite uma edição por vez (verifica se já existe um `input` dentro do elemento de texto).
+6. **Duplo clique:** O evento de duplo clique no texto da tarefa inicia a edição inline; Enter salva, Esc cancela, blur salva após 100ms (o timer é cancelado ao salvar/cancelar).
+7. **Sem `innerHTML` com conteúdo do usuário:** Todo texto do usuário é inserido via `textContent` para evitar XSS. `innerHTML` só é usado com os SVGs estáticos de `js/icones.js`.
+8. **Checkbox sem `id`:** o checkbox é acessível pelo `aria-label` e o estado nativo substitui `aria-checked`.
+9. **Classes e seletores:** use `CLASSES` e `SELETORES` de `js/constants.js`; o teste de contrato falha se o HTML ou o CSS ficarem dessincronizados.
+10. **Playwright apenas via Docker:** Nunca instalar Playwright como dependência local.
 
 ---
 
@@ -246,18 +283,20 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 ### Adicionar uma nova funcionalidade
 
 1. Entenda o fluxo existente em `js/main.js` (adicionar → `persistirERenderizar()` → renderizar → atualizar contadores)
-2. Adicione a função no módulo apropriado (`state.js` para dados, `dom.js` para interface, `main.js` para eventos)
-3. Siga as convenções (nome em português, JSDoc, validação)
+2. Adicione a função no módulo apropriado (`validacao.js` para regras puras, `state.js` para dados, `dom.js` para interface, `main.js` para eventos)
+3. Siga as convenções (nome em português, JSDoc, validação via `validarTexto`)
 4. Atualize `renderizarLista()` se a funcionalidade afetar a exibição das tarefas
 5. Salve no `localStorage` via `storage.js` se houver mudança de dados
-6. Teste manualmente no navegador e rode `npm test`
+6. Se criar classe/seletor novo, registre em `js/constants.js`
+7. Teste manualmente no navegador e rode `npm test`
 
 ### Modificar estilos
 
 1. Edite `style.css` usando as variáveis CSS existentes (`var(--nome)`)
 2. Adicione novas variáveis em `:root` se necessário
 3. Mantenha a responsividade (teste em mobile e desktop)
-4. Siga a organização por seções com comentários em blocos
+4. Siga a organização por seções com comentários em blocos e atualize o índice do topo
+5. Classes criadas pelo JS precisam existir em `CLASSES` e ter regra no CSS (teste de contrato)
 
 ### Alterar textos da interface
 
