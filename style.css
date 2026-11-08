@@ -448,8 +448,8 @@ button:focus {
   /* Espaço entre elementos */
 }
 
-/* Ícone do estado vazio */
-.tarefas-empty svg {
+// Ícone do estado vazio
+.tarefas-empty__icone {
   color: var(--gray-400);
   /* Cor acinzentada para o ícone */
 }

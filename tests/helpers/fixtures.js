@@ -7,33 +7,39 @@
 // ============================================================
 
 /**
+ * HTML mínimo que reproduz os elementos estáticos do index.html.
+ * Exportado para que o teste de contrato valide os mesmos seletores.
+ */
+export const HTML_DOM_TESTE = `
+  <header id="header"></header>
+
+  <form id="todo-form">
+    <label for="todo-input" class="sr-only">Nova tarefa</label>
+    <input type="text" id="todo-input" maxlength="100" />
+    <button type="submit" id="btn-criar">Criar</button>
+  </form>
+
+  <main class="tarefas-container">
+    <header class="tarefas-header">
+      <p id="contador-criadas">0</p>
+      <p id="contador-concluidas">0 de 0</p>
+    </header>
+
+    <section
+      class="tarefas-box"
+      id="tarefas-box"
+      role="list"
+      aria-label="Lista de tarefas"
+    ></section>
+  </main>
+`;
+
+/**
  * Monta no <body> o HTML mínimo esperado pela aplicação.
  * Os seletores precisam corresponder aos de js/constants.js.
  */
 export function montarDOMDeTeste() {
-  document.body.innerHTML = `
-    <header id="header"></header>
-
-    <form id="todo-form">
-      <label for="todo-input" class="sr-only">Nova tarefa</label>
-      <input type="text" id="todo-input" maxlength="100" />
-      <button type="submit" id="btn-criar">Criar</button>
-    </form>
-
-    <main class="tarefas-container">
-      <header class="tarefas-header">
-        <p id="contador-criadas">0</p>
-        <p id="contador-concluidas">0 de 0</p>
-      </header>
-
-      <section
-        class="tarefas-box"
-        id="tarefas-box"
-        role="list"
-        aria-label="Lista de tarefas"
-      ></section>
-    </main>
-  `;
+  document.body.innerHTML = HTML_DOM_TESTE;
 }
 
 /**

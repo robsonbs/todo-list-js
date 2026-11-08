@@ -8,7 +8,7 @@
 // classes CSS, eventos e acessibilidade (ARIA).
 // ============================================================
 
-import { SELETORES, CONFIG, MENSAGENS } from './constants.js';
+import { CLASSES, SELETORES, CONFIG, MENSAGENS } from './constants.js';
 
 // Atalho para consultar um elemento usando os seletores centralizados.
 const selecionar = (seletor) => document.querySelector(seletor);
@@ -56,7 +56,7 @@ function obterIconeListaVazia() {
  */
 export function criarElementoTarefa(tarefa) {
   const div = document.createElement('div');
-  div.classList.add('tarefa');
+  div.className = CLASSES.tarefa;
   // O ID fica na raiz da tarefa: qualquer clique pode descobrir a
   // tarefa correspondente sem depender da posição dos filhos no DOM.
   div.dataset.id = tarefa.id;
@@ -74,20 +74,20 @@ export function criarElementoTarefa(tarefa) {
   // textContent (em vez de innerHTML) impede que o texto digitado
   // pelo usuário seja interpretado como HTML — proteção contra XSS.
   const span = document.createElement('span');
-  span.className = 'texto-tarefa';
+  span.className = CLASSES.textoTarefa;
   span.textContent = tarefa.atividade;
 
   // Botão de remover, com rótulo acessível.
   const botao = document.createElement('button');
   botao.type = 'button';
   botao.title = 'Deletar tarefa';
-  botao.className = 'remove-btn';
+  botao.className = CLASSES.botaoRemover;
   botao.dataset.id = tarefa.id;
   botao.setAttribute('aria-label', `Deletar tarefa: ${tarefa.atividade}`);
 
   // Ícone SVG (conteúdo estático, seguro).
   const iconeContainer = document.createElement('span');
-  iconeContainer.className = 'icone-exclusao';
+  iconeContainer.className = CLASSES.iconeExclusao;
   iconeContainer.innerHTML = obterIconeLixeira();
   botao.appendChild(iconeContainer);
 
@@ -105,18 +105,18 @@ export function criarElementoTarefa(tarefa) {
  */
 export function criarEstadoVazio() {
   const div = document.createElement('div');
-  div.className = 'tarefas-empty';
+  div.className = CLASSES.estadoVazio;
 
   const iconeContainer = document.createElement('span');
-  iconeContainer.className = 'tarefas-empty__icone';
+  iconeContainer.className = CLASSES.estadoVazioIcone;
   iconeContainer.innerHTML = obterIconeListaVazia();
 
   const titulo = document.createElement('span');
-  titulo.className = 'tarefas-empty__titulo';
+  titulo.className = CLASSES.estadoVazioTitulo;
   titulo.textContent = 'Você ainda não tem tarefas cadastradas';
 
   const subtitulo = document.createElement('p');
-  subtitulo.className = 'tarefas-empty__subtitulo';
+  subtitulo.className = CLASSES.estadoVazioSubtitulo;
   subtitulo.textContent = 'Crie tarefas e organize seus itens a fazer';
 
   div.appendChild(iconeContainer);
@@ -238,7 +238,7 @@ export function mostrarMensagem(texto, tipo = 'erro') {
   }
 
   const div = document.createElement('div');
-  div.className = `mensagem-flash mensagem-flash--${tipo}`;
+  div.className = `${CLASSES.mensagemFlash} ${CLASSES.mensagemFlash}--${tipo}`;
   div.textContent = texto;
   div.setAttribute('role', 'alert');
   div.setAttribute('aria-live', 'polite');
@@ -268,7 +268,7 @@ function criarCampoEdicao(textoOriginal) {
   const campo = document.createElement('input');
   campo.type = 'text';
   campo.value = textoOriginal;
-  campo.className = 'campo-edicao';
+  campo.className = CLASSES.campoEdicao;
   campo.maxLength = CONFIG.MAX_CARACTERES_TAREFA;
   campo.setAttribute('aria-label', 'Editar tarefa');
   return campo;
@@ -281,7 +281,7 @@ function criarCampoEdicao(textoOriginal) {
  */
 function encerrarEdicao(elementoTarefa, campoEdicao) {
   campoEdicao.remove();
-  elementoTarefa.classList.remove('tarefa--editando');
+  elementoTarefa.classList.remove(CLASSES.tarefaEditando);
 }
 
 /**
@@ -295,7 +295,7 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
   const elementoTarefa = elementoTexto.closest(SELETORES.tarefa);
 
   // Evita abrir duas edições ao mesmo tempo para a mesma tarefa.
-  if (!elementoTarefa || elementoTarefa.classList.contains('tarefa--editando')) {
+  if (!elementoTarefa || elementoTarefa.classList.contains(CLASSES.tarefaEditando)) {
     return;
   }
 
@@ -303,7 +303,7 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
   const campoEdicao = criarCampoEdicao(textoOriginal);
 
   // A classe esconde o texto pelo CSS; o JS não mexe em style inline.
-  elementoTarefa.classList.add('tarefa--editando');
+  elementoTarefa.classList.add(CLASSES.tarefaEditando);
   elementoTexto.parentNode.insertBefore(campoEdicao, elementoTexto);
 
   campoEdicao.focus();
