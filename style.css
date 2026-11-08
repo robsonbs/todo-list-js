@@ -11,7 +11,8 @@
    7. Formulário            14. Responsividade
                             15. Acabamentos e contraste
                             16. Modo de edição
-                            17. Mensagens flash
+   17. Mensagens flash
+   18. Preferência por movimento reduzido
    ============================================================ */
 
 /* ========== VARIÁVEIS CSS (CUSTOM PROPERTIES) ========== */
@@ -899,5 +900,29 @@ input:focus {
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ========== PREFERÊNCIA POR MOVIMENTO REDUZIDO ========== */
+/* Respeita a preferência do sistema e remove animações não essenciais. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .mensagem-flash {
+    animation: none;
+  }
+
+  button:hover,
+  input:hover {
+    transition: none;
+    transform: none;
+  }
+
+  .tarefa input[type='checkbox'],
+  .tarefa span.texto-tarefa,
+  .tarefa .remove-btn {
+    transition: none;
   }
 }

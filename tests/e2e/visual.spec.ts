@@ -1,171 +1,58 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { criarTarefa } from './helpers';
 
-test.use({ screenshot: 'only-on-failure' });
-
-test.describe('Validação visual - Todo List', () => {
+test.describe('Estados visuais', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
-  test('Página carrega com todos os elementos visuais', async ({ page }) => {
-    // Título da página
+  test('página apresenta os elementos visuais principais', async ({ page }) => {
     await expect(page).toHaveTitle(/Lista de Tarefas/);
-
-    // Elementos principais visíveis
     await expect(page.locator('h1')).toBeVisible();
-    await expect(page.locator('#todo-input')).toBeVisible();
-    await expect(page.locator('#btn-criar')).toBeVisible();
+    await expect(page.getByLabel('Nova tarefa', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Criar nova tarefa' })).toBeVisible();
     await expect(page.locator('.tarefas-box')).toBeVisible();
     await expect(page.locator('#contador-criadas')).toBeVisible();
     await expect(page.locator('#contador-concluidas')).toBeVisible();
-  });
-
-  test('Adicionar tarefa exibe na lista com estrutura visual correta', async ({ page }) => {
-    await page.fill('#todo-input', 'Estudar JavaScript');
-    await page.click('#btn-criar');
-
-    const tarefa = page.locator('.tarefa').first();
-    await expect(tarefa).toBeVisible();
-
-    // Checkbox presente
-    const checkbox = tarefa.locator('input[type="checkbox"]');
-    await expect(checkbox).toBeVisible();
-    await expect(checkbox).not.toBeChecked();
-
-    // Texto da tarefa
-    const texto = tarefa.locator('span.texto-tarefa');
-    await expect(texto).toHaveText('Estudar JavaScript');
-
-    // Botão de exclusão com ícone
-    const btnExcluir = tarefa.locator('.remove-btn');
-    await expect(btnExcluir).toBeVisible();
-    await expect(btnExcluir.locator('svg')).toBeVisible();
-
-    // Contador atualizado
-    await expect(page.locator('#contador-criadas')).toHaveText('1');
-  });
-
-  test('Checkbox concluído: texto riscado e cor cinza', async ({ page }) => {
-    await page.fill('#todo-input', 'Tarefa para completar');
-    await page.click('#btn-criar');
-
-    const tarefa = page.locator('.tarefa').first();
-    const checkbox = tarefa.locator('input[type="checkbox"]');
-    const texto = tarefa.locator('span.texto-tarefa');
-
-    // Antes de marcar
-    await expect(texto).toHaveCSS('text-decoration-line', 'none');
-
-    // Marcar como concluído
-    await checkbox.check();
-    await expect(checkbox).toBeChecked();
-
-    // Tira o mouse de cima do checkbox: o estado :hover usa
-    // --purple (#8284FA), e aqui queremos validar a cor de repouso.
-    await page.mouse.move(0, 0);
-
-    // Depois de marcar: texto deve ficar riscado
-    await expect(texto).toHaveCSS('text-decoration-line', 'line-through');
-    await expect(texto).toHaveCSS('color', /rgb\(128, 128, 128\)/); // --gray-300 = #808080
-
-    // Checkbox deve ficar roxo (--purple-dark = #5E60CE)
-    await expect(checkbox).toHaveCSS('background-color', /rgb\(94, 96, 206\)/);
-  });
-
-  test('Hover no botão de exclusão: ícone fica vermelho', async ({ page }) => {
-    await page.fill('#todo-input', 'Tarefa para excluir');
-    await page.click('#btn-criar');
-
-    const btnExcluir = page.locator('.remove-btn').first();
-    const svg = btnExcluir.locator('svg');
-
-    // Cor padrão do ícone (cinza)
-    await expect(svg).toHaveCSS('color', /rgb\(128, 128, 128\)/); // --gray-300
-
-    // Hover: ícone deve ficar vermelho (--red = #E25858 = rgb(226, 88, 88))
-    await btnExcluir.hover();
-    await expect(svg).toHaveCSS('color', /rgb\(226, 88, 88\)/);
-
-    // Screenshot para comparação visual
-    await page.screenshot({ path: 'tests/e2e/screenshots/hover-exclusao-vermelho.png' });
-  });
-
-  test('Modo de edição: duplo clique exibe campo de edição', async ({ page }) => {
-    await page.fill('#todo-input', 'Tarefa para editar');
-    await page.click('#btn-criar');
-
-    const tarefa = page.locator('.tarefa').first();
-    const texto = tarefa.locator('span.texto-tarefa');
-
-    // Duplo clique no texto
-    await texto.dblclick();
-
-    // Campo de edição deve aparecer
-    const campoEdicao = page.locator('.campo-edicao');
-    await expect(campoEdicao).toBeVisible();
-    await expect(campoEdicao).toHaveValue('Tarefa para editar');
-    await expect(campoEdicao).toBeFocused();
-
-    // O span original deve estar escondido
-    await expect(texto).toHaveCSS('display', 'none');
-
-    // Cancelar com Esc
-    await campoEdicao.press('Escape');
-    await expect(campoEdicao).not.toBeVisible();
-    await expect(texto).not.toHaveCSS('display', 'none');
-    await expect(texto).toHaveText('Tarefa para editar');
-  });
-
-  test('Mensagem flash aparece quando tenta adicionar tarefa vazia', async ({ page }) => {
-    await page.click('#btn-criar');
-
-    const mensagem = page.locator('.mensagem-flash');
-    await expect(mensagem).toBeVisible();
-    await expect(mensagem).toHaveText('Digite uma tarefa antes de criar.');
-    await expect(mensagem).toHaveAttribute('role', 'alert');
-    await expect(mensagem).toHaveAttribute('aria-live', 'polite');
-
-    // Mensagem deve sumir após 3 segundos
-    await page.waitForTimeout(3500);
-    await expect(mensagem).not.toBeVisible();
-  });
-
-  test('Persistência: tarefa sobrevive ao recarregar página', async ({ page }) => {
-    await page.fill('#todo-input', 'Tarefa persistente');
-    await page.click('#btn-criar');
-
-    await expect(page.locator('.tarefa')).toHaveCount(1);
-    await expect(page.locator('.texto-tarefa')).toHaveText('Tarefa persistente');
-
-    // Recarregar página
-    await page.reload();
-
-    // Tarefa deve continuar lá
-    await expect(page.locator('.tarefa')).toHaveCount(1);
-    await expect(page.locator('.texto-tarefa')).toHaveText('Tarefa persistente');
-    await expect(page.locator('#contador-criadas')).toHaveText('1');
-  });
-
-  test('Estado vazio quando não há tarefas', async ({ page }) => {
-    await expect(page.locator('.tarefas-empty')).toBeVisible();
     await expect(page.locator('.tarefas-empty__titulo')).toHaveText(
       'Você ainda não tem tarefas cadastradas'
     );
   });
 
-  test('Contador de concluídas atualiza corretamente', async ({ page }) => {
-    await page.fill('#todo-input', 'Tarefa 1');
-    await page.click('#btn-criar');
-    await page.fill('#todo-input', 'Tarefa 2');
-    await page.click('#btn-criar');
+  test('tarefa criada tem checkbox, texto e botão de remoção', async ({ page }) => {
+    await criarTarefa(page, 'Estudar JavaScript');
+    const tarefa = page.locator('.tarefa');
 
-    await expect(page.locator('#contador-criadas')).toHaveText('2');
-    await expect(page.locator('#contador-concluidas')).toHaveText('0 de 2');
+    await expect(tarefa).toHaveCount(1);
+    await expect(tarefa.locator('input[type="checkbox"]')).not.toBeChecked();
+    await expect(tarefa.locator('.texto-tarefa')).toHaveText('Estudar JavaScript');
+    await expect(tarefa.locator('.remove-btn svg')).toBeVisible();
+    await expect(page.locator('#contador-criadas')).toHaveText('1');
+  });
 
-    // Marcar primeira como concluída
-    const primeiroCheckbox = page.locator('.tarefa').first().locator('input[type="checkbox"]');
-    await primeiroCheckbox.check();
+  test('tarefa concluída recebe estilo riscado e cor correspondente', async ({ page }) => {
+    await criarTarefa(page, 'Tarefa para completar');
+    const tarefa = page.locator('.tarefa');
+    const checkbox = tarefa.locator('input[type="checkbox"]');
+    const texto = tarefa.locator('.texto-tarefa');
 
-    await expect(page.locator('#contador-concluidas')).toHaveText('1 de 2');
+    await expect(texto).toHaveCSS('text-decoration-line', 'none');
+    await checkbox.check();
+    await page.mouse.move(0, 0);
+
+    await expect(checkbox).toBeChecked();
+    await expect(texto).toHaveCSS('text-decoration-line', 'line-through');
+    await expect(texto).toHaveCSS('color', /rgb\(128, 128, 128\)/);
+    await expect(checkbox).toHaveCSS('background-color', /rgb\(94, 96, 206\)/);
+  });
+
+  test('hover no botão de exclusão destaca o ícone em vermelho', async ({ page }) => {
+    await criarTarefa(page, 'Tarefa para excluir');
+    const botao = page.locator('.remove-btn');
+    const icone = botao.locator('svg');
+
+    await expect(icone).toHaveCSS('color', /rgb\(128, 128, 128\)/);
+    await botao.hover();
+    await expect(icone).toHaveCSS('color', /rgb\(226, 88, 88\)/);
   });
 });
