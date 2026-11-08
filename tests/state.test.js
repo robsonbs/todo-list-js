@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { criarTarefaFixture } from './helpers/fixtures.js';
 import {
   obterTarefas,
   adicionarTarefa,
@@ -43,6 +44,18 @@ describe('state.js', () => {
     it('deve fazer trim no texto da tarefa', () => {
       const tarefa = adicionarTarefa('  Estudar  ');
       expect(tarefa.atividade).toBe('Estudar');
+    });
+
+    it('deve aceitar exatamente o limite de caracteres', () => {
+      const texto = 'a'.repeat(100);
+      const tarefa = adicionarTarefa(texto);
+      expect(tarefa).not.toBeNull();
+      expect(tarefa.atividade.length).toBe(100);
+    });
+
+    it('deve retornar null quando excede o limite de caracteres', () => {
+      expect(adicionarTarefa('a'.repeat(101))).toBeNull();
+      expect(obterTarefas().length).toBe(0);
     });
   });
 
@@ -103,6 +116,12 @@ describe('state.js', () => {
       expect(editarTarefa(tarefa.id, '')).toBe(false);
       expect(obterTarefaPorId(tarefa.id).atividade).toBe('Valida');
     });
+
+    it('deve retornar false quando o novo texto excede o limite', () => {
+      const tarefa = adicionarTarefa('Valida');
+      expect(editarTarefa(tarefa.id, 'a'.repeat(101))).toBe(false);
+      expect(obterTarefaPorId(tarefa.id).atividade).toBe('Valida');
+    });
   });
 
   describe('toggleConcluida', () => {
@@ -144,7 +163,7 @@ describe('state.js', () => {
   describe('substituirTarefas', () => {
     it('deve substituir todas as tarefas', () => {
       adicionarTarefa('Antiga');
-      substituirTarefas([{ id: 100, completa: false, atividade: 'Nova' }]);
+      substituirTarefas([criarTarefaFixture({ id: 100, atividade: 'Nova' })]);
       expect(obterTarefas().length).toBe(1);
       expect(obterTarefaPorId(100).atividade).toBe('Nova');
     });
@@ -153,6 +172,33 @@ describe('state.js', () => {
       adicionarTarefa('Temporária');
       substituirTarefas(null);
       expect(obterTarefas().length).toBe(0);
+    });
+
+    it('deve ignorar valores que não são array', () => {
+      adicionarTarefa('Temporária');
+      substituirTarefas({ id: 1, atividade: 'Não é array' });
+      expect(obterTarefas().length).toBe(0);
+    });
+
+    it('deve descartar entradas inválidas e normalizar as válidas', () => {
+      substituirTarefas([
+        { id: 1, atividade: '  Válida  ', completa: 1 },
+        null,
+        { id: '2', atividade: 'ID inválido', completa: false },
+        { id: 3, atividade: '   ', completa: false },
+        { id: 4, atividade: 'Sem flag' },
+      ]);
+
+      const tarefas = obterTarefas();
+      expect(tarefas).toHaveLength(2);
+      expect(tarefas[0]).toEqual({ id: 1, atividade: 'Válida', completa: true });
+      expect(tarefas[1]).toEqual({ id: 4, atividade: 'Sem flag', completa: false });
+    });
+
+    it('deve recalcular o próximo ID a partir do maior existente', () => {
+      substituirTarefas([criarTarefaFixture({ id: 42, atividade: 'Existente' })]);
+      const nova = adicionarTarefa('Nova');
+      expect(nova.id).toBe(43);
     });
   });
 });

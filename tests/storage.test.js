@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-// Mock do localStorage antes de importar storage.js
+// Mock simples do localStorage antes de importar storage.js.
+// Assim os testes não dependem do navegador real.
 const localStorageMock = (() => {
   let store = {};
   return {
@@ -22,51 +23,53 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 });
 
-import { salvar, carregar } from '../js/storage.js';
+import { salvarTarefas, carregarTarefas } from '../js/storage.js';
+import { CHAVE_ARMAZENAMENTO } from '../js/constants.js';
+import { criarTarefaFixture } from './helpers/fixtures.js';
 
 beforeEach(() => {
   localStorageMock.clear();
 });
 
 describe('storage.js', () => {
-  describe('salvar', () => {
+  describe('salvarTarefas', () => {
     it('deve salvar dados no localStorage', () => {
-      const dados = [{ id: 1, atividade: 'Teste', completa: false }];
-      const resultado = salvar(dados);
+      const dados = [criarTarefaFixture({ atividade: 'Teste' })];
+      const resultado = salvarTarefas(dados);
       expect(resultado).toBe(true);
-      expect(localStorageMock.getItem('tarefas')).toBe(JSON.stringify(dados));
+      expect(localStorageMock.getItem(CHAVE_ARMAZENAMENTO)).toBe(JSON.stringify(dados));
     });
 
     it('deve retornar false em caso de erro', () => {
-      // Simular erro fazendo localStorage lançar exceção
+      // Simular erro fazendo localStorage lançar exceção.
       const originalSetItem = localStorageMock.setItem;
       localStorageMock.setItem = () => {
         throw new Error('Quota excedida');
       };
 
-      const resultado = salvar([{ id: 1 }]);
+      const resultado = salvarTarefas([{ id: 1 }]);
       expect(resultado).toBe(false);
 
       localStorageMock.setItem = originalSetItem;
     });
   });
 
-  describe('carregar', () => {
+  describe('carregarTarefas', () => {
     it('deve carregar dados do localStorage', () => {
-      const dados = [{ id: 1, atividade: 'Teste', completa: false }];
-      localStorageMock.setItem('tarefas', JSON.stringify(dados));
+      const dados = [criarTarefaFixture({ atividade: 'Teste' })];
+      localStorageMock.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(dados));
 
-      const resultado = carregar();
+      const resultado = carregarTarefas();
       expect(resultado).toEqual(dados);
     });
 
     it('deve retornar null quando não há dados salvos', () => {
-      expect(carregar()).toBeNull();
+      expect(carregarTarefas()).toBeNull();
     });
 
     it('deve retornar null para dados corrompidos', () => {
-      localStorageMock.setItem('tarefas', 'não é json válido');
-      expect(carregar()).toBeNull();
+      localStorageMock.setItem(CHAVE_ARMAZENAMENTO, 'não é json válido');
+      expect(carregarTarefas()).toBeNull();
     });
   });
 });

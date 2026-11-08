@@ -1,33 +1,43 @@
-// ========== CONSTANTES DO PROJETO ==========
-// Centraliza valores reutilizados para facilitar manutenção
+// ============================================================
+// CONSTANTS.JS — Valores compartilhados por toda a aplicação
+// ------------------------------------------------------------
+// Responsabilidade: centralizar chaves, seletores, mensagens e
+// configurações para que exista uma única fonte de verdade.
+// NÃO faz: não executa lógica e não toca no DOM.
+// Conceitos ensinados: constantes, objetos literais e organização.
+// ============================================================
 
-export const STORAGE_KEY = 'tarefas';
+// Chave usada para guardar as tarefas no localStorage.
+// O valor 'tarefas' NÃO deve mudar: ele identifica os dados que
+// usuários já têm salvos no navegador.
+export const CHAVE_ARMAZENAMENTO = 'tarefas';
 
-// Seletores DOM (IDs e classes usados no JavaScript)
+// Seletores CSS dos elementos manipulados pelo JavaScript.
+// Manter todos aqui evita "números mágicos" espalhados pelo código.
 export const SELETORES = {
-  form: '#todo-form',
-  input: '#todo-input',
-  btnCriar: '#btn-criar',
+  formulario: '#todo-form',
+  campoEntrada: '#todo-input',
+  botaoCriar: '#btn-criar',
+  containerPrincipal: '.tarefas-container',
   containerTarefas: '.tarefas-box',
   contadorCriadas: '#contador-criadas',
   contadorConcluidas: '#contador-concluidas',
   tarefa: '.tarefa',
-  checkbox: 'input[type="checkbox"]',
-  textoTarefa: 'span',
-  btnRemover: '.remove-btn',
+  textoTarefa: '.texto-tarefa',
+  botaoRemover: '.remove-btn',
   campoEdicao: '.campo-edicao',
+  mensagemFlash: '.mensagem-flash',
 };
 
-// Mensagens de interface e validação
+// Mensagens exibidas ao usuário.
 export const MENSAGENS = {
   textoVazio: 'Digite uma tarefa antes de criar.',
   textoMuitoLongo: 'A tarefa não pode ter mais de 100 caracteres.',
-  indiceInvalido: 'Índice de tarefa inválido.',
-  erroLocalStorage: 'Erro ao acessar o armazenamento do navegador.',
 };
 
-// Configurações
+// Configurações numéricas da aplicação.
 export const CONFIG = {
   MAX_CARACTERES_TAREFA: 100,
-  DELAY_SALVAR_BLUR: 100, // ms
+  DELAY_SALVAR_BLUR: 100, // ms de espera antes de salvar ao perder o foco
+  DURACAO_MENSAGEM_MS: 3000, // tempo que a mensagem flash fica na tela
 };

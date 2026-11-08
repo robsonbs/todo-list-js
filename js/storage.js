@@ -1,31 +1,37 @@
-// ========== STORAGE.JS — Abstração do localStorage ==========
-// Este módulo é responsável apenas por persistir e carregar dados.
-// Não manipula DOM e não contém lógica de negócio.
+// ============================================================
+// STORAGE.JS — Persistência no localStorage
+// ------------------------------------------------------------
+// Responsabilidade: converter a lista de tarefas em JSON, salvar
+// e carregar do localStorage, tratando erros.
+// NÃO faz: não toca no DOM e não contém regras de negócio.
+// Conceitos ensinados: try/catch, JSON e API do navegador.
+// ============================================================
 
-import { STORAGE_KEY } from './constants.js';
+import { CHAVE_ARMAZENAMENTO } from './constants.js';
 
 /**
- * Salva dados no localStorage
- * @param {any} dados - Dados a serem salvos (serão convertidos para JSON)
- * @returns {boolean} true se salvou com sucesso, false em caso de erro
+ * Salva a lista de tarefas no localStorage.
+ * @param {import('./state.js').Tarefa[]} tarefas
+ * @returns {boolean} true se salvou, false em caso de erro
  */
-export function salvar(dados) {
+export function salvarTarefas(tarefas) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(tarefas));
     return true;
   } catch (erro) {
+    // Pode falhar por quota cheia ou por restrições do modo privado.
     console.error('Erro ao salvar no localStorage:', erro);
     return false;
   }
 }
 
 /**
- * Carrega dados do localStorage
- * @returns {any|null} Dados carregados ou null se não houver ou houver erro
+ * Carrega a lista de tarefas do localStorage.
+ * @returns {import('./state.js').Tarefa[]|null} Dados ou null
  */
-export function carregar() {
+export function carregarTarefas() {
   try {
-    const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+    const dadosSalvos = localStorage.getItem(CHAVE_ARMAZENAMENTO);
     if (!dadosSalvos) {
       return null;
     }
