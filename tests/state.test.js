@@ -195,6 +195,26 @@ describe('state.js', () => {
       expect(tarefas[1]).toEqual({ id: 4, atividade: 'Sem flag', completa: false });
     });
 
+    it('deve descartar IDs repetidos ao carregar dados corrompidos', () => {
+      substituirTarefas([
+        criarTarefaFixture({ id: 7, atividade: 'Primeira' }),
+        criarTarefaFixture({ id: 7, atividade: 'Duplicada' }),
+      ]);
+
+      expect(obterTarefas()).toHaveLength(1);
+      expect(obterTarefas()[0].atividade).toBe('Primeira');
+    });
+
+    it('deve descartar IDs que não sejam inteiros positivos', () => {
+      substituirTarefas([
+        criarTarefaFixture({ id: 0 }),
+        criarTarefaFixture({ id: -1 }),
+        criarTarefaFixture({ id: 1.5 }),
+      ]);
+
+      expect(obterTarefas()).toHaveLength(0);
+    });
+
     it('deve recalcular o próximo ID a partir do maior existente', () => {
       substituirTarefas([criarTarefaFixture({ id: 42, atividade: 'Existente' })]);
       const nova = adicionarTarefa('Nova');

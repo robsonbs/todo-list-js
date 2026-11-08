@@ -9,6 +9,7 @@
 // ============================================================
 
 import { CLASSES, SELETORES, CONFIG, MENSAGENS } from './constants.js';
+import { validarTexto } from './validacao.js';
 
 // Atalho para consultar um elemento usando os seletores centralizados.
 const selecionar = (seletor) => document.querySelector(seletor);
@@ -328,15 +329,18 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
       return;
     }
 
-    const novoTexto = campoEdicao.value.trim();
+    const validacao = validarTexto(campoEdicao.value);
 
-    if (novoTexto === '' || novoTexto === textoOriginal) {
+    // Texto vazio ou igual ao original: apenas fecha, sem aviso.
+    if (!validacao.valido) {
+      if (validacao.motivo === 'textoMuitoLongo') {
+        mostrarMensagem(MENSAGENS.textoMuitoLongo);
+      }
       cancelarEdicao();
       return;
     }
 
-    if (novoTexto.length > CONFIG.MAX_CARACTERES_TAREFA) {
-      mostrarMensagem(MENSAGENS.textoMuitoLongo);
+    if (validacao.texto === textoOriginal) {
       cancelarEdicao();
       return;
     }
@@ -344,7 +348,7 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
     finalizado = true;
     encerrarEdicao(elementoTarefa, campoEdicao);
     if (typeof onSalvar === 'function') {
-      onSalvar(novoTexto);
+      onSalvar(validacao.texto);
     }
   }
 

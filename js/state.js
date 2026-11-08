@@ -7,7 +7,7 @@
 // Conceitos ensinados: arrays, objetos, IDs únicos e funções puras.
 // ============================================================
 
-import { CONFIG } from './constants.js';
+import { validarTexto } from './validacao.js';
 
 /**
  * Formato de uma tarefa usado em toda a aplicação.
@@ -67,18 +67,17 @@ export function obterTarefaPorId(id) {
  * @returns {Tarefa|null} A tarefa criada ou null se inválida
  */
 export function adicionarTarefa(atividade) {
-  const textoLimpo = atividade.trim();
-
   // Defesa em profundidade: a interface também valida, mas o estado
   // não deve confiar cegamente em quem o chama.
-  if (textoLimpo === '' || textoLimpo.length > CONFIG.MAX_CARACTERES_TAREFA) {
+  const validacao = validarTexto(atividade);
+  if (!validacao.valido) {
     return null;
   }
 
   const tarefa = {
     id: gerarId(),
     completa: false,
-    atividade: textoLimpo,
+    atividade: validacao.texto,
   };
 
   tarefas.push(tarefa);
@@ -112,12 +111,12 @@ export function editarTarefa(id, novoTexto) {
     return false;
   }
 
-  const textoLimpo = novoTexto.trim();
-  if (textoLimpo === '' || textoLimpo.length > CONFIG.MAX_CARACTERES_TAREFA) {
+  const validacao = validarTexto(novoTexto);
+  if (!validacao.valido) {
     return false;
   }
 
-  tarefas[indice].atividade = textoLimpo;
+  tarefas[indice].atividade = validacao.texto;
   return true;
 }
 
@@ -155,30 +154,35 @@ function normalizarTarefa(item) {
   if (!item || typeof item !== 'object') {
     return null;
   }
-  if (typeof item.id !== 'number' || !Number.isFinite(item.id)) {
-    return null;
-  }
-  if (typeof item.atividade !== 'string') {
+  if (!Number.isInteger(item.id) || item.id <= 0) {
     return null;
   }
 
-  const atividade = item.atividade.trim();
-  if (atividade === '') {
+  const validacao = validarTexto(item.atividade);
+  if (!validacao.valido) {
     return null;
   }
 
-  return { id: item.id, atividade, completa: Boolean(item.completa) };
+  return { id: item.id, atividade: validacao.texto, completa: Boolean(item.completa) };
 }
 
 /**
  * Substitui toda a lista (usado ao carregar do localStorage).
- * Entradas inválidas são descartadas para que dados antigos ou
- * corrompidos não quebrem a renderização.
+ * Entradas inválidas e IDs repetidos são descartados para que dados
+ * antigos ou corrompidos não quebrem a renderização.
  * @param {unknown} novasTarefas
  */
 export function substituirTarefas(novasTarefas) {
   const lista = Array.isArray(novasTarefas) ? novasTarefas : [];
-  tarefas = lista.map(normalizarTarefa).filter(Boolean);
+  const idsVistos = new Set();
+
+  tarefas = lista.map(normalizarTarefa).filter((tarefa) => {
+    if (!tarefa || idsVistos.has(tarefa.id)) {
+      return false;
+    }
+    idsVistos.add(tarefa.id);
+    return true;
+  });
 
   // Recalcula o próximo ID a partir do maior existente.
   // Usamos reduce (e não Math.max(...ids)) para não estourar a pilha

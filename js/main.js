@@ -20,6 +20,8 @@ import {
 
 import { salvarTarefas, carregarTarefas } from './storage.js';
 
+import { validarTexto } from './validacao.js';
+
 import {
   renderizarLista,
   atualizarContadores,
@@ -31,7 +33,7 @@ import {
   mostrarMensagem,
 } from './dom.js';
 
-import { SELETORES, MENSAGENS, CONFIG } from './constants.js';
+import { SELETORES, MENSAGENS } from './constants.js';
 
 // Atalho para consultar elementos usando os seletores centralizados.
 const selecionar = (seletor) => document.querySelector(seletor);
@@ -83,19 +85,17 @@ function aoSubmeterFormulario(evento) {
   // Impede o comportamento padrão do navegador (recarregar a página).
   evento.preventDefault();
 
-  const texto = obterValorCampoEntrada();
+  const validacao = validarTexto(obterValorCampoEntrada());
 
-  if (texto === '') {
-    mostrarMensagem(MENSAGENS.textoVazio);
+  if (!validacao.valido) {
+    mostrarMensagem(MENSAGENS[validacao.motivo]);
     return;
   }
 
-  if (texto.length > CONFIG.MAX_CARACTERES_TAREFA) {
-    mostrarMensagem(MENSAGENS.textoMuitoLongo);
+  if (!adicionarTarefa(validacao.texto)) {
     return;
   }
 
-  adicionarTarefa(texto);
   limparCampoEntrada();
   persistirERenderizar();
 }
