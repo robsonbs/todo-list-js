@@ -1,0 +1,20 @@
+FROM mcr.microsoft.com/playwright:chromium-1.48.0
+
+WORKDIR /app
+
+# Instala dependências do sistema para rodar servidor HTTP simples
+RUN apt-get update && apt-get install -y \
+  python3 \
+  && rm -rf /var/lib/apt/lists/*
+
+# Copia testes e screenshots
+COPY tests/e2e ./tests/e2e
+
+# Instala dependências Node (se houver package.json local)
+COPY package.json ./
+RUN npm install --no-save @playwright/test
+
+# Expõe porta do servidor de teste
+EXPOSE 8080
+
+CMD ["npx", "playwright", "test", "--project=chromium"]

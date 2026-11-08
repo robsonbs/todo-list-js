@@ -1,0 +1,29 @@
+services:
+  servidor:
+    image: python:3.11-slim
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: python3 -m http.server 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - todo-network
+
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    depends_on:
+      - servidor
+    environment:
+      - BASE_URL=http://servidor:8080
+    volumes:
+      - ./tests/e2e:/app/tests/e2e
+      - ./tests/e2e/screenshots:/app/screenshots
+    networks:
+      - todo-network
+
+networks:
+  todo-network:
+    driver: bridge
