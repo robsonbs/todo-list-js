@@ -24,6 +24,8 @@ services:
       # Monta os testes do host: as screenshots geradas aparecem
       # em tests/e2e/screenshots sem precisar rebuildar a imagem.
       - ./tests/e2e:/app/tests/e2e
+      # Permite ao GitHub Actions enviar traces e screenshots em falhas.
+      - ./test-results:/app/test-results
     networks:
       - todo-network
 

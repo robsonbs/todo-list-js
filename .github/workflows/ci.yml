@@ -1,0 +1,173 @@
+name: CI/CD
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  workflows:
+    name: Sintaxe dos workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Validar arquivos do GitHub Actions
+        uses: docker://rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+        with:
+          args: -color
+
+  qualidade:
+    name: Qualidade e mensagens de commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o histórico completo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Instalar dependências travadas
+        run: npm ci
+
+      - name: Validar sintaxe, estilo e testes unitários
+        run: npm run verify
+
+      - name: Validar mensagens de commit
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        shell: bash
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            npx commitlint --from "$PR_BASE_SHA" --to "$PR_HEAD_SHA" --strict
+          elif [[ "$EVENT_NAME" == "push" ]]; then
+            if [[ "$PUSH_BEFORE_SHA" =~ ^0+$ ]]; then
+              if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+                npx commitlint --last --strict
+              else
+                base_sha="$(git merge-base origin/main "$GITHUB_SHA")"
+                npx commitlint --from "$base_sha" --to "$GITHUB_SHA" --strict
+              fi
+            else
+              npx commitlint --from "$PUSH_BEFORE_SHA" --to "$GITHUB_SHA" --strict
+            fi
+          else
+            npx commitlint --last --strict
+          fi
+
+  e2e:
+    name: Testes de navegador (Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.x'
+
+      - name: Executar E2E pelo Docker Compose
+        run: npm run test:e2e
+
+      - name: Encerrar serviços do Compose
+        if: always()
+        run: docker compose down --remove-orphans
+
+      - name: Enviar evidências de falha
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: evidencias-e2e
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 7
+
+  preview-vercel:
+    name: Preview Vercel
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    needs:
+      - workflows
+      - qualidade
+      - e2e
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+    steps:
+      - name: Baixar o commit do PR
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.x'
+
+      - name: Instalar Vercel CLI
+        run: npm install --global vercel@65.12.1
+
+      - name: Construir e publicar preview
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
+          vercel build --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --token="$VERCEL_TOKEN"
+
+  producao-vercel:
+    name: Deploy de produção (Vercel)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs:
+      - workflows
+      - qualidade
+      - e2e
+    runs-on: ubuntu-latest
+    concurrency:
+      group: vercel-producao
+      cancel-in-progress: false
+    environment:
+      name: production
+    steps:
+      - name: Baixar o commit aprovado
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22.x'
+
+      - name: Instalar Vercel CLI
+        run: npm install --global vercel@65.12.1
+
+      - name: Construir e publicar produção
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
