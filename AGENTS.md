@@ -151,13 +151,14 @@ todo-list-js/
 - Manipulação pura de DOM (`createElement` + `textContent`, sem `innerHTML` com conteúdo do usuário)
 - `criarElementoTarefa()`, `renderizarLista()`, `atualizarContadores()`
 - `iniciarEdicaoTarefa()`, `atualizarCheckboxTarefa(checkbox, completa)`, `mostrarMensagem()`
+- Edição inline: duplo clique ou ativação por Enter/Espaço; um editor ativo por vez
 - Checkbox sem `id` gerado e sem `aria-checked` (o estado nativo já é acessível)
 - Proteção contra XSS (texto do usuário inserido via `textContent`)
 
 ### `js/main.js`
 
 - Orquestração: conecta eventos da interface com state.js, storage.js e dom.js
-- Handlers nomeados (`aoSubmeterFormulario`, `aoClicarNaLista`, `aoDuploCliqueNaLista`)
+- Handlers nomeados (`aoSubmeterFormulario`, `aoClicarNaLista`, `aoDuploCliqueNaLista`, `aoPressionarTeclaNaLista`)
 - `salvarEstado()` centraliza a persistência e avisa quando o `localStorage` falha
 - `persistirERenderizar()` recria a lista; `persistirAtualizacaoIncremental()` preserva o DOM ao marcar
 - Usa **event delegation** (um único listener no container para todos os eventos de tarefa)
@@ -280,8 +281,8 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 2. **IDs únicos:** As tarefas têm um `id` próprio (não usam índices do array). Ao remover, os IDs das tarefas restantes não mudam.
 3. **Renderização completa:** `renderizarLista()` usa `replaceChildren()` e recria toda a lista. O estado visual do checkbox é restaurado a partir de `tarefa.completa`.
 4. **Atualização incremental:** ao marcar/desmarcar, `main.js` só atualiza o checkbox clicado e os contadores — a lista não é recriada.
-5. **Modo de edição:** Só permite uma edição por vez (verifica se já existe um `input` dentro do elemento de texto).
-6. **Duplo clique:** O evento de duplo clique no texto da tarefa inicia a edição inline; Enter salva, Esc cancela, blur salva após 100ms (o timer é cancelado ao salvar/cancelar).
+5. **Modo de edição:** Só permite uma edição ativa globalmente. Iniciar outra cancela o rascunho anterior sem salvá-lo.
+6. **Edição acessível:** Duplo clique ou ativação por Enter/Espaço no texto abre a edição; Enter salva, Esc cancela e blur salva após 100ms. O temporizador é cancelado ao salvar/cancelar.
 7. **Sem `innerHTML` com conteúdo do usuário:** Todo texto do usuário é inserido via `textContent` para evitar XSS. `innerHTML` só é usado com os SVGs estáticos de `js/icones.js`.
 8. **Checkbox sem `id`:** o checkbox é acessível pelo `aria-label` e o estado nativo substitui `aria-checked`.
 9. **Classes e seletores:** use `CLASSES` e `SELETORES` de `js/constants.js`; o teste de contrato falha se o HTML ou o CSS ficarem dessincronizados.

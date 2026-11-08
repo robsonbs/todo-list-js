@@ -51,6 +51,19 @@ describe('main.js — Inicialização', () => {
     expect(state.obterTarefas()).toHaveLength(0);
     expect(document.querySelector('.tarefas-empty')).not.toBeNull();
   });
+
+  it('deve iniciar em estado vazio quando getItem lança erro', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(localStorage, 'getItem').mockImplementationOnce(() => {
+      throw new Error('Acesso bloqueado');
+    });
+
+    const state = await iniciarAplicacao();
+
+    expect(state.obterTarefas()).toHaveLength(0);
+    expect(document.querySelector('.tarefas-empty')).not.toBeNull();
+    expect(console.error).toHaveBeenCalledOnce();
+  });
 });
 
 describe('main.js — Criação de tarefas', () => {
@@ -145,6 +158,23 @@ describe('main.js — Conclusão de tarefas', () => {
     // Atualização incremental: o mesmo nó continua no DOM.
     expect(obterTarefaUI().raiz).toBe(raiz);
   });
+
+  it('deve avisar se falhar ao persistir a conclusão', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Tarefa');
+    const dadosAntes = localStorage.getItem(CHAVE_ARMAZENAMENTO);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(localStorage, 'setItem').mockImplementationOnce(() => {
+      throw new Error('Quota excedida');
+    });
+
+    clicar(obterTarefaUI().checkbox);
+
+    expect(state.obterTarefas()[0].completa).toBe(true);
+    expect(obterTarefaUI().checkbox.checked).toBe(true);
+    expect(localStorage.getItem(CHAVE_ARMAZENAMENTO)).toBe(dadosAntes);
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.erroAoSalvar);
+  });
 });
 
 describe('main.js — Remoção de tarefas', () => {
@@ -162,6 +192,23 @@ describe('main.js — Remoção de tarefas', () => {
     expect(document.getElementById('contador-criadas').textContent).toBe('0');
     expect(JSON.parse(localStorage.getItem(CHAVE_ARMAZENAMENTO))).toHaveLength(0);
   });
+
+  it('deve avisar se falhar ao persistir uma remoção', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Remover sem persistir');
+    const dadosAntes = localStorage.getItem(CHAVE_ARMAZENAMENTO);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(localStorage, 'setItem').mockImplementationOnce(() => {
+      throw new Error('Quota excedida');
+    });
+
+    clicar(obterTarefaUI().botaoRemover);
+
+    expect(state.obterTarefas()).toHaveLength(0);
+    expect(document.querySelector('.tarefas-empty')).not.toBeNull();
+    expect(localStorage.getItem(CHAVE_ARMAZENAMENTO)).toBe(dadosAntes);
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.erroAoSalvar);
+  });
 });
 
 describe('main.js — Edição de tarefas', () => {
@@ -174,6 +221,17 @@ describe('main.js — Edição de tarefas', () => {
     texto.dispatchEvent(new Event('dblclick', { bubbles: true }));
     return document.querySelector('.campo-edicao');
   }
+
+  it.each(['Enter', ' '])('deve iniciar edição por teclado com %s', async (tecla) => {
+    await iniciarAplicacao();
+    enviarFormulario('Editar por teclado');
+    const { texto } = obterTarefaUI();
+    texto.dispatchEvent(new KeyboardEvent('keydown', { key: tecla, bubbles: true }));
+
+    const campo = document.querySelector('.campo-edicao');
+    expect(campo).not.toBeNull();
+    campo.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  });
 
   it('deve salvar a edição ao pressionar Enter', async () => {
     const state = await iniciarAplicacao();
@@ -201,5 +259,47 @@ describe('main.js — Edição de tarefas', () => {
     expect(state.obterTarefas()[0].atividade).toBe('Texto original');
     expect(document.querySelector('.texto-tarefa').textContent).toBe('Texto original');
     expect(document.querySelector('.campo-edicao')).toBeNull();
+  });
+
+  it('deve preservar o texto e não persistir uma edição sem alterações', async () => {
+    await iniciarAplicacao();
+    enviarFormulario('Sem mudanças');
+    const dadosAntes = localStorage.getItem(CHAVE_ARMAZENAMENTO);
+    const campo = abrirEdicao();
+    campo.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect(document.querySelector('.texto-tarefa').textContent).toBe('Sem mudanças');
+    expect(localStorage.getItem(CHAVE_ARMAZENAMENTO)).toBe(dadosAntes);
+    expect(document.querySelector('.mensagem-flash')).toBeNull();
+  });
+
+  it('deve avisar e preservar a tarefa quando a edição excede o limite', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Original');
+    const campo = abrirEdicao();
+    campo.value = 'x'.repeat(101);
+    campo.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect(state.obterTarefas()[0].atividade).toBe('Original');
+    expect(document.querySelector('.texto-tarefa').textContent).toBe('Original');
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.textoMuitoLongo);
+  });
+
+  it('deve avisar se falhar ao persistir uma edição válida', async () => {
+    const state = await iniciarAplicacao();
+    enviarFormulario('Original');
+    const dadosAntes = localStorage.getItem(CHAVE_ARMAZENAMENTO);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(localStorage, 'setItem').mockImplementationOnce(() => {
+      throw new Error('Quota excedida');
+    });
+    const campo = abrirEdicao();
+    campo.value = 'Editada';
+    campo.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect(state.obterTarefas()[0].atividade).toBe('Editada');
+    expect(document.querySelector('.texto-tarefa').textContent).toBe('Editada');
+    expect(localStorage.getItem(CHAVE_ARMAZENAMENTO)).toBe(dadosAntes);
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.erroAoSalvar);
   });
 });

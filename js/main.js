@@ -224,6 +224,22 @@ function aoDuploCliqueNaLista(evento) {
 }
 
 /**
+ * Inicia edição ao ativar o texto acessível pelo teclado.
+ * @param {KeyboardEvent} evento
+ */
+function aoPressionarTeclaNaLista(evento) {
+  if (evento.key !== 'Enter' && evento.key !== ' ') {
+    return;
+  }
+
+  const elementoTexto = evento.target.closest(SELETORES.textoTarefa);
+  if (elementoTexto) {
+    evento.preventDefault();
+    iniciarEdicaoDoTexto(elementoTexto);
+  }
+}
+
+/**
  * Registra um único listener no container de tarefas.
  * Assim, tarefas criadas depois também funcionam sem novos listeners
  * (é isso que chamamos de delegação de eventos).
@@ -236,6 +252,7 @@ function configurarDelegacaoDeEventos() {
 
   container.addEventListener('click', aoClicarNaLista);
   container.addEventListener('dblclick', aoDuploCliqueNaLista);
+  container.addEventListener('keydown', aoPressionarTeclaNaLista);
 }
 
 // ========== INICIALIZAÇÃO ==========

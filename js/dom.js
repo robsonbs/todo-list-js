@@ -44,6 +44,9 @@ export function criarElementoTarefa(tarefa) {
   const span = document.createElement('span');
   span.className = CLASSES.textoTarefa;
   span.textContent = tarefa.atividade;
+  span.setAttribute('role', 'button');
+  span.setAttribute('aria-label', `Editar tarefa: ${tarefa.atividade}`);
+  span.tabIndex = 0;
 
   // Botão de remover, com rótulo acessível.
   const botao = document.createElement('button');
@@ -211,6 +214,9 @@ export function mostrarMensagem(texto, tipo = 'erro') {
 
 // ========== MODO DE EDIÇÃO ==========
 
+// Mantém a regra documentada de haver somente um editor aberto por vez.
+let cancelarEdicaoAtiva = null;
+
 /**
  * Cria o campo de edição inline já configurado.
  * @param {string} textoOriginal
@@ -246,9 +252,16 @@ function encerrarEdicao(elementoTarefa, campoEdicao) {
 export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
   const elementoTarefa = elementoTexto.closest(SELETORES.tarefa);
 
-  // Evita abrir duas edições ao mesmo tempo para a mesma tarefa.
-  if (!elementoTarefa || elementoTarefa.classList.contains(CLASSES.tarefaEditando)) {
+  if (!elementoTarefa) {
     return;
+  }
+
+  // Abrir outra tarefa cancela o editor anterior, sem salvar parcialmente.
+  if (elementoTarefa.classList.contains(CLASSES.tarefaEditando)) {
+    return;
+  }
+  if (cancelarEdicaoAtiva) {
+    cancelarEdicaoAtiva();
   }
 
   const textoOriginal = elementoTexto.textContent;
@@ -272,8 +285,15 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
     finalizado = true;
     clearTimeout(timerSalvar);
     encerrarEdicao(elementoTarefa, campoEdicao);
+    liberarEdicaoAtiva();
     if (typeof onCancelar === 'function') {
       onCancelar();
+    }
+  }
+
+  function liberarEdicaoAtiva() {
+    if (cancelarEdicaoAtiva === cancelarEdicao) {
+      cancelarEdicaoAtiva = null;
     }
   }
 
@@ -301,6 +321,7 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
     finalizado = true;
     clearTimeout(timerSalvar);
     encerrarEdicao(elementoTarefa, campoEdicao);
+    liberarEdicaoAtiva();
     if (typeof onSalvar === 'function') {
       onSalvar(validacao.texto);
     }
@@ -320,4 +341,6 @@ export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
     // O pequeno delay evita conflito com o clique em outro controle.
     timerSalvar = setTimeout(salvarEdicao, CONFIG.DELAY_SALVAR_BLUR);
   });
+
+  cancelarEdicaoAtiva = cancelarEdicao;
 }

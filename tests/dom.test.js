@@ -7,7 +7,9 @@ import {
   atualizarCheckboxTarefa,
   mostrarMensagem,
   obterContainerTarefas,
+  iniciarEdicaoTarefa,
 } from '../js/dom.js';
+import { CONFIG, CLASSES, MENSAGENS } from '../js/constants.js';
 
 // Monta o DOM mínimo (formulário, contadores e lista) antes de cada teste.
 beforeEach(() => {
@@ -15,6 +17,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   document.body.innerHTML = '';
   vi.restoreAllMocks();
 });
@@ -118,6 +121,17 @@ describe('criarElementoTarefa — Estrutura visual', () => {
     expect(elemento.dataset.id).toBe('7');
     expect(elemento.getAttribute('role')).toBe('listitem');
   });
+
+  it('texto editável deve ser um acionador acessível por teclado', () => {
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 7, completa: false, atividade: 'Revisar conteúdo' })
+    );
+    const texto = elemento.querySelector('.texto-tarefa');
+
+    expect(texto.getAttribute('role')).toBe('button');
+    expect(texto.getAttribute('aria-label')).toBe('Editar tarefa: Revisar conteúdo');
+    expect(texto.tabIndex).toBe(0);
+  });
 });
 
 describe('criarElementoTarefa — Estado concluído vs pendente', () => {
@@ -185,6 +199,115 @@ describe('atualizarCheckboxTarefa — Atualização visual incremental', () => {
 
   it('não deve quebrar quando o checkbox não existe', () => {
     expect(() => atualizarCheckboxTarefa(null, true)).not.toThrow();
+  });
+});
+
+describe('iniciarEdicaoTarefa — Ciclo de edição e temporizadores', () => {
+  function montarTarefa(texto, id = 1) {
+    const raiz = criarElementoTarefa(criarTarefaFixture({ id, atividade: texto }));
+    obterContainerTarefas().append(raiz);
+    return { raiz, texto: raiz.querySelector('.texto-tarefa') };
+  }
+
+  function pressionar(campo, tecla) {
+    campo.dispatchEvent(new KeyboardEvent('keydown', { key: tecla, bubbles: true }));
+  }
+
+  it('cria campo acessível com o limite e foco inicial', () => {
+    const { texto } = montarTarefa('Texto original');
+    iniciarEdicaoTarefa(texto);
+
+    const campo = document.querySelector('.campo-edicao');
+    expect(campo.getAttribute('aria-label')).toBe('Editar tarefa');
+    expect(campo.maxLength).toBe(CONFIG.MAX_CARACTERES_TAREFA);
+    expect(document.activeElement).toBe(campo);
+    pressionar(campo, 'Escape');
+  });
+
+  it('salva no blur somente depois do atraso configurado', () => {
+    vi.useFakeTimers();
+    const { raiz, texto } = montarTarefa('Original');
+    const onSalvar = vi.fn();
+    const onCancelar = vi.fn();
+    iniciarEdicaoTarefa(texto, onSalvar, onCancelar);
+    const campo = raiz.querySelector('.campo-edicao');
+    campo.value = 'Editada no blur';
+    campo.dispatchEvent(new Event('blur'));
+
+    vi.advanceTimersByTime(CONFIG.DELAY_SALVAR_BLUR - 1);
+    expect(onSalvar).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+
+    expect(onSalvar).toHaveBeenCalledExactlyOnceWith('Editada no blur');
+    expect(onCancelar).not.toHaveBeenCalled();
+    expect(raiz.querySelector('.campo-edicao')).toBeNull();
+    expect(raiz.classList.contains(CLASSES.tarefaEditando)).toBe(false);
+  });
+
+  it('cancela o temporizador do blur quando Escape é pressionado', () => {
+    vi.useFakeTimers();
+    const { raiz, texto } = montarTarefa('Original');
+    const onSalvar = vi.fn();
+    const onCancelar = vi.fn();
+    iniciarEdicaoTarefa(texto, onSalvar, onCancelar);
+    const campo = raiz.querySelector('.campo-edicao');
+    campo.value = 'Não salvar';
+    campo.dispatchEvent(new Event('blur'));
+    pressionar(campo, 'Escape');
+    vi.advanceTimersByTime(CONFIG.DELAY_SALVAR_BLUR + 1);
+
+    expect(onSalvar).not.toHaveBeenCalled();
+    expect(onCancelar).toHaveBeenCalledOnce();
+    expect(texto.textContent).toBe('Original');
+    expect(raiz.querySelector('.campo-edicao')).toBeNull();
+  });
+
+  it('fecha sem salvar quando o texto fica vazio ou inalterado', () => {
+    for (const valor of ['', 'Original']) {
+      const { raiz, texto } = montarTarefa('Original', valor === '' ? 1 : 2);
+      const onSalvar = vi.fn();
+      const onCancelar = vi.fn();
+      iniciarEdicaoTarefa(texto, onSalvar, onCancelar);
+      const campo = raiz.querySelector('.campo-edicao');
+      campo.value = valor;
+      pressionar(campo, 'Enter');
+
+      expect(onSalvar).not.toHaveBeenCalled();
+      expect(onCancelar).toHaveBeenCalledOnce();
+      expect(texto.textContent).toBe('Original');
+      expect(raiz.querySelector('.campo-edicao')).toBeNull();
+    }
+
+    expect(document.querySelector('.mensagem-flash')).toBeNull();
+  });
+
+  it('informa edição acima do limite e preserva o texto anterior', () => {
+    const { raiz, texto } = montarTarefa('Original');
+    const onSalvar = vi.fn();
+    iniciarEdicaoTarefa(texto, onSalvar);
+    const campo = raiz.querySelector('.campo-edicao');
+    campo.value = 'x'.repeat(CONFIG.MAX_CARACTERES_TAREFA + 1);
+    pressionar(campo, 'Enter');
+
+    expect(onSalvar).not.toHaveBeenCalled();
+    expect(texto.textContent).toBe('Original');
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.textoMuitoLongo);
+    expect(raiz.querySelector('.campo-edicao')).toBeNull();
+  });
+
+  it('cancela a edição anterior ao abrir outra tarefa', () => {
+    const primeira = montarTarefa('Primeira', 1);
+    const segunda = montarTarefa('Segunda', 2);
+    const cancelarPrimeira = vi.fn();
+    iniciarEdicaoTarefa(primeira.texto, undefined, cancelarPrimeira);
+    iniciarEdicaoTarefa(segunda.texto);
+
+    expect(cancelarPrimeira).toHaveBeenCalledOnce();
+    expect(primeira.raiz.classList.contains(CLASSES.tarefaEditando)).toBe(false);
+    expect(primeira.raiz.querySelector('.campo-edicao')).toBeNull();
+    expect(segunda.raiz.classList.contains(CLASSES.tarefaEditando)).toBe(true);
+    expect(document.querySelectorAll('.campo-edicao')).toHaveLength(1);
+    pressionar(segunda.raiz.querySelector('.campo-edicao'), 'Escape');
   });
 });
 

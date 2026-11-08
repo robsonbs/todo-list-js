@@ -616,8 +616,10 @@ button:focus {
   /* Texto claro */
   flex: 1;
   /* Ocupa espaço disponível */
-  word-wrap: break-word;
-  /* Quebra palavras longas */
+  min-width: 0;
+  /* Permite que o item flexível encolha abaixo do tamanho da palavra */
+  overflow-wrap: anywhere;
+  /* Quebra textos sem espaços em telas estreitas */
   margin-top: 0.125rem;
   /* Pequeno ajuste de alinhamento */
 
@@ -832,10 +834,15 @@ input:focus {
   /* Fundo sutil roxo indicando interatividade */
 }
 
+.tarefa span.texto-tarefa:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
 /* Tooltip explicativo: começa invisível e aparece no hover.
    O atraso de 0.5s evita poluir a tela em passagens rápidas. */
 .tarefa span.texto-tarefa::after {
-  content: 'Clique duas vezes para editar';
+  content: 'Duplo clique, Enter ou Espaço para editar';
   position: absolute;
   bottom: -25px;
   left: 0;

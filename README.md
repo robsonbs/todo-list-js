@@ -136,6 +136,8 @@ Usuário → main.js → state.js → storage.js
 ## ♿ Acessibilidade
 
 - O checkbox nativo já expõe o estado marcado; por isso não usamos `aria-checked` nem um `id` gerado.
+- O texto de cada tarefa funciona como acionador nomeado de edição: pode ser ativado com Enter/Espaço ou duplo clique; o foco recebe destaque visível.
+- Há um editor inline ativo por vez. Abrir outra tarefa descarta o rascunho anterior; Enter salva, Escape cancela e perder o foco salva após o atraso configurado.
 - A lista não usa `aria-live`: como ela é recriada a cada mudança, o leitor de tela reanunciaria todas as tarefas. O feedback vem dos contadores e das mensagens flash (`role="alert"`).
 - Os ícones são decorativos; a ação é descrita pelo `aria-label` do botão.
 
