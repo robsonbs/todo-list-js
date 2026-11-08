@@ -1,20 +1,18 @@
-FROM mcr.microsoft.com/playwright:chromium-1.48.0
+# Imagem oficial do Playwright: já traz os navegadores e as
+# dependências de sistema necessárias (nada é instalado na máquina local).
+FROM mcr.microsoft.com/playwright:v1.48.0-jammy
 
 WORKDIR /app
 
-# Instala dependências do sistema para rodar servidor HTTP simples
-RUN apt-get update && apt-get install -y \
-  python3 \
-  && rm -rf /var/lib/apt/lists/*
-
-# Copia testes e screenshots
+# Copia a configuração e os testes E2E.
+COPY playwright.config.js ./
 COPY tests/e2e ./tests/e2e
 
-# Instala dependências Node (se houver package.json local)
+# Instala a mesma versão do Playwright presente na imagem,
+# evitando incompatibilidade entre a CLI e os navegadores.
 COPY package.json ./
-RUN npm install --no-save @playwright/test
+RUN npm install --no-save @playwright/test@1.48.0
 
-# Expõe porta do servidor de teste
-EXPOSE 8080
-
+# O container apenas executa os testes; ele não serve a aplicação
+# (quem serve é o serviço "servidor" do docker-compose).
 CMD ["npx", "playwright", "test", "--project=chromium"]

@@ -5,8 +5,6 @@ services:
       - .:/app
     working_dir: /app
     command: python3 -m http.server 8080
-    ports:
-      - "8080:8080"
     networks:
       - todo-network
 
@@ -18,9 +16,13 @@ services:
       - servidor
     environment:
       - BASE_URL=http://servidor:8080
+      # CI=1 deixa o Playwright em modo não interativo:
+      # reporter "list", workers sequenciais e retries.
+      - CI=1
     volumes:
+      # Monta os testes do host: as screenshots geradas aparecem
+      # em tests/e2e/screenshots sem precisar rebuildar a imagem.
       - ./tests/e2e:/app/tests/e2e
-      - ./tests/e2e/screenshots:/app/screenshots
     networks:
       - todo-network
 
