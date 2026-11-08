@@ -8,56 +8,9 @@
 // ============================================================
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { montarDOMDeTeste, criarTarefaFixture } from './helpers/fixtures.js';
+import { criarTarefaFixture } from './helpers/fixtures.js';
+import { iniciarAplicacao, enviarFormulario, clicar, obterTarefaUI } from './helpers/aplicacao.js';
 import { CHAVE_ARMAZENAMENTO, MENSAGENS } from '../js/constants.js';
-
-/**
- * Monta o DOM, prepara o localStorage e inicializa a aplicação.
- * @param {{ tarefasSalvas?: object[]|null, dadosBrutos?: string|null }} [opcoes]
- * @returns {Promise<typeof import('../js/state.js')>} O módulo de estado usado pela aplicação
- */
-async function iniciarAplicacao({ tarefasSalvas = null, dadosBrutos = null } = {}) {
-  // Reinicia o registro de módulos: é como recarregar a página.
-  vi.resetModules();
-  montarDOMDeTeste();
-  localStorage.clear();
-
-  if (dadosBrutos !== null) {
-    localStorage.setItem(CHAVE_ARMAZENAMENTO, dadosBrutos);
-  } else if (tarefasSalvas !== null) {
-    localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(tarefasSalvas));
-  }
-
-  // Importa estado e main no MESMO grafo de módulos recém-criado.
-  // Chamamos inicializarAplicacao() diretamente em vez de disparar
-  // DOMContentLoaded: assim listeners de testes anteriores não se
-  // acumulam e não interferem no formulário.
-  const state = await import('../js/state.js');
-  const { inicializarAplicacao } = await import('../js/main.js');
-  inicializarAplicacao();
-
-  return state;
-}
-
-/**
- * Preenche o campo e envia o formulário (equivale a clicar em "Criar").
- * @param {string} texto
- */
-function enviarFormulario(texto) {
-  const input = document.getElementById('todo-input');
-  input.value = texto;
-
-  const formulario = document.getElementById('todo-form');
-  formulario.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-}
-
-/**
- * Dispara um evento de clique a partir de um elemento interno.
- * @param {Element} elemento
- */
-function clicar(elemento) {
-  elemento.dispatchEvent(new Event('click', { bubbles: true }));
-}
 
 beforeEach(() => {
   vi.resetModules();
@@ -144,6 +97,23 @@ describe('main.js — Criação de tarefas', () => {
     expect(state.obterTarefas()).toHaveLength(0);
     expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.textoMuitoLongo);
   });
+
+  it('deve avisar quando o localStorage não consegue salvar', async () => {
+    const state = await iniciarAplicacao();
+
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    // Uma única falha simulada: depois dela, o localStorage volta ao
+    // normal (evita que o mock vaze para os próximos testes).
+    vi.spyOn(localStorage, 'setItem').mockImplementationOnce(() => {
+      throw new Error('Quota excedida');
+    });
+
+    enviarFormulario('Tarefa');
+
+    // A tarefa continua em memória, mas o usuário é avisado da falha.
+    expect(state.obterTarefas()).toHaveLength(1);
+    expect(document.querySelector('.mensagem-flash').textContent).toBe(MENSAGENS.erroAoSalvar);
+  });
 });
 
 describe('main.js — Conclusão de tarefas', () => {
@@ -151,7 +121,7 @@ describe('main.js — Conclusão de tarefas', () => {
     const state = await iniciarAplicacao();
     enviarFormulario('Tarefa');
 
-    const checkbox = document.querySelector('.tarefa input[type="checkbox"]');
+    const { checkbox } = obterTarefaUI();
     clicar(checkbox);
 
     expect(state.obterTarefas()[0].completa).toBe(true);
@@ -164,6 +134,17 @@ describe('main.js — Conclusão de tarefas', () => {
     expect(state.obterTarefas()[0].completa).toBe(false);
     expect(document.getElementById('contador-concluidas').textContent).toBe('0 de 1');
   });
+
+  it('deve atualizar a conclusão sem recriar o elemento da tarefa', async () => {
+    await iniciarAplicacao();
+    enviarFormulario('Tarefa');
+
+    const { raiz, checkbox } = obterTarefaUI();
+    clicar(checkbox);
+
+    // Atualização incremental: o mesmo nó continua no DOM.
+    expect(obterTarefaUI().raiz).toBe(raiz);
+  });
 });
 
 describe('main.js — Remoção de tarefas', () => {
@@ -171,7 +152,8 @@ describe('main.js — Remoção de tarefas', () => {
     const state = await iniciarAplicacao();
     enviarFormulario('Remover');
 
-    const icone = document.querySelector('.remove-btn svg');
+    const { botaoRemover } = obterTarefaUI();
+    const icone = botaoRemover.querySelector('svg');
     clicar(icone);
 
     expect(state.obterTarefas()).toHaveLength(0);
@@ -188,7 +170,7 @@ describe('main.js — Edição de tarefas', () => {
    * @returns {HTMLInputElement} O campo de edição criado
    */
   function abrirEdicao() {
-    const texto = document.querySelector('.texto-tarefa');
+    const { texto } = obterTarefaUI();
     texto.dispatchEvent(new Event('dblclick', { bubbles: true }));
     return document.querySelector('.campo-edicao');
   }
