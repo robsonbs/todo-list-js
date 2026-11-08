@@ -1,18 +1,25 @@
-// ========== DOM.JS — Manipulação de DOM pura ==========
-// Este módulo é responsável apenas por criar e atualizar elementos HTML.
-// Não contém lógica de negócio, não acessa localStorage e não conhece o estado da aplicação.
-// Usa createElement + textContent para evitar XSS (nunca insere conteúdo do usuário via innerHTML).
+// ============================================================
+// DOM.JS — Camada de interface (DOM)
+// ------------------------------------------------------------
+// Responsabilidade: criar elementos, renderizar a lista, atualizar
+// contadores, exibir mensagens e controlar o modo de edição.
+// NÃO faz: não guarda estado e não acessa localStorage.
+// Conceitos ensinados: createElement, textContent (anti-XSS),
+// classes CSS, eventos e acessibilidade (ARIA).
+// ============================================================
 
-import { SELETORES, CONFIG } from './constants.js';
+import { SELETORES, CONFIG, MENSAGENS } from './constants.js';
 
-const $ = (seletor) => document.querySelector(seletor);
-const $id = (id) => document.getElementById(id);
+// Atalho para consultar um elemento usando os seletores centralizados.
+const selecionar = (seletor) => document.querySelector(seletor);
 
 // ========== CRIAÇÃO DE ELEMENTOS ==========
 
 /**
- * Retorna o HTML do ícone de lixeira (SVG)
- * Este SVG é estático (não contém conteúdo do usuário), então é seguro usar innerHTML para ele.
+ * Retorna o HTML do ícone de lixeira (SVG).
+ * É um conteúdo estático (sem dados do usuário), então o uso de
+ * innerHTML é seguro neste caso.
+ * @returns {string}
  */
 function obterIconeLixeira() {
   return `
@@ -27,8 +34,9 @@ function obterIconeLixeira() {
 }
 
 /**
- * Retorna o HTML do ícone de lista vazia (SVG)
- * Este SVG é estático (não contém conteúdo do usuário).
+ * Retorna o HTML do ícone de lista vazia (SVG).
+ * Também é conteúdo estático.
+ * @returns {string}
  */
 function obterIconeListaVazia() {
   return `
@@ -42,16 +50,19 @@ function obterIconeListaVazia() {
 }
 
 /**
- * Cria um elemento de tarefa completo (DOM)
- * Usa createElement + textContent para evitar XSS.
- * @param {Object} tarefa - Objeto da tarefa { id, completa, atividade }
- * @returns {HTMLElement} Elemento div.tarefa
+ * Cria o elemento visual completo de uma tarefa.
+ * @param {import('./state.js').Tarefa} tarefa
+ * @returns {HTMLElement}
  */
 export function criarElementoTarefa(tarefa) {
   const div = document.createElement('div');
   div.classList.add('tarefa');
+  // O ID fica na raiz da tarefa: qualquer clique pode descobrir a
+  // tarefa correspondente sem depender da posição dos filhos no DOM.
+  div.dataset.id = tarefa.id;
+  div.setAttribute('role', 'listitem');
 
-  // Checkbox (com ARIA para acessibilidade)
+  // Checkbox com ARIA para leitores de tela.
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.id = `tarefa-${tarefa.id}`;
@@ -59,12 +70,14 @@ export function criarElementoTarefa(tarefa) {
   checkbox.setAttribute('aria-checked', tarefa.completa);
   checkbox.setAttribute('aria-label', `Marcar "${tarefa.atividade}" como concluída`);
 
-  // Texto da tarefa (usando textContent para evitar XSS)
+  // Texto da tarefa.
+  // textContent (em vez de innerHTML) impede que o texto digitado
+  // pelo usuário seja interpretado como HTML — proteção contra XSS.
   const span = document.createElement('span');
   span.className = 'texto-tarefa';
   span.textContent = tarefa.atividade;
 
-  // Botão de remover (com ARIA para acessibilidade)
+  // Botão de remover, com rótulo acessível.
   const botao = document.createElement('button');
   botao.type = 'button';
   botao.title = 'Deletar tarefa';
@@ -72,13 +85,13 @@ export function criarElementoTarefa(tarefa) {
   botao.dataset.id = tarefa.id;
   botao.setAttribute('aria-label', `Deletar tarefa: ${tarefa.atividade}`);
 
-  // Ícone SVG do botão (conteúdo estático, seguro)
+  // Ícone SVG (conteúdo estático, seguro).
   const iconeContainer = document.createElement('span');
   iconeContainer.className = 'icone-exclusao';
   iconeContainer.innerHTML = obterIconeLixeira();
   botao.appendChild(iconeContainer);
 
-  // Monta a estrutura
+  // Monta a estrutura: [checkbox] [texto] [botão]
   div.appendChild(checkbox);
   div.appendChild(span);
   div.appendChild(botao);
@@ -87,47 +100,50 @@ export function criarElementoTarefa(tarefa) {
 }
 
 /**
- * Cria o estado de lista vazia
- * @returns {HTMLElement} Elemento div.tarefas-empty
+ * Cria o bloco exibido quando a lista está vazia.
+ * @returns {HTMLElement}
  */
 export function criarEstadoVazio() {
   const div = document.createElement('div');
   div.className = 'tarefas-empty';
 
   const iconeContainer = document.createElement('span');
+  iconeContainer.className = 'tarefas-empty__icone';
   iconeContainer.innerHTML = obterIconeListaVazia();
 
-  const texto = document.createElement('span');
-  texto.textContent = 'Você ainda não tem tarefas cadastradas';
+  const titulo = document.createElement('span');
+  titulo.className = 'tarefas-empty__titulo';
+  titulo.textContent = 'Você ainda não tem tarefas cadastradas';
 
   const subtitulo = document.createElement('p');
+  subtitulo.className = 'tarefas-empty__subtitulo';
   subtitulo.textContent = 'Crie tarefas e organize seus itens a fazer';
 
   div.appendChild(iconeContainer);
-  div.appendChild(texto);
+  div.appendChild(titulo);
   div.appendChild(subtitulo);
 
   return div;
 }
 
-// ========== FUNÇÕES DE RENDERIZAÇÃO ==========
+// ========== RENDERIZAÇÃO ==========
 
 /**
- * Limpa o container de tarefas
+ * Remove todo o conteúdo do container de tarefas.
  */
 export function limparContainerTarefas() {
-  const container = $(SELETORES.containerTarefas);
+  const container = selecionar(SELETORES.containerTarefas);
   if (container) {
     container.innerHTML = '';
   }
 }
 
 /**
- * Renderiza uma lista de tarefas no container
- * @param {Array} tarefas - Array de objetos de tarefa
+ * Renderiza a lista de tarefas no container.
+ * @param {import('./state.js').Tarefa[]} tarefas
  */
 export function renderizarLista(tarefas) {
-  const container = $(SELETORES.containerTarefas);
+  const container = selecionar(SELETORES.containerTarefas);
   if (!container) {
     return;
   }
@@ -140,19 +156,18 @@ export function renderizarLista(tarefas) {
   }
 
   tarefas.forEach((tarefa) => {
-    const elemento = criarElementoTarefa(tarefa);
-    container.appendChild(elemento);
+    container.appendChild(criarElementoTarefa(tarefa));
   });
 }
 
 /**
- * Atualiza os contadores de tarefas na interface
- * @param {number} total - Total de tarefas
- * @param {number} completas - Tarefas concluídas
+ * Atualiza os contadores de tarefas na interface.
+ * @param {number} total
+ * @param {number} completas
  */
 export function atualizarContadores(total, completas) {
-  const contadorCriadas = $id(SELETORES.contadorCriadas.replace('#', ''));
-  const contadorConcluidas = $id(SELETORES.contadorConcluidas.replace('#', ''));
+  const contadorCriadas = selecionar(SELETORES.contadorCriadas);
+  const contadorConcluidas = selecionar(SELETORES.contadorConcluidas);
 
   if (contadorCriadas) {
     contadorCriadas.innerText = `${total}`;
@@ -162,22 +177,22 @@ export function atualizarContadores(total, completas) {
   }
 }
 
-// ========== FUNÇÕES DE INPUT ==========
+// ========== INPUT ==========
 
 /**
- * Obtém o valor do input de nova tarefa
- * @returns {string} Texto digitado no input
+ * Lê e normaliza o valor do campo de nova tarefa.
+ * @returns {string}
  */
 export function obterValorInput() {
-  const input = $(SELETORES.input);
+  const input = selecionar(SELETORES.campoEntrada);
   return input ? input.value.trim() : '';
 }
 
 /**
- * Limpa o input de nova tarefa
+ * Limpa o campo de nova tarefa.
  */
 export function limparInput() {
-  const input = $(SELETORES.input);
+  const input = selecionar(SELETORES.campoEntrada);
   if (input) {
     input.value = '';
   }
@@ -186,39 +201,38 @@ export function limparInput() {
 // ========== ATUALIZAÇÃO INCREMENTAL ==========
 
 /**
- * Atualiza visualmente o checkbox de uma tarefa sem re-renderizar a lista
- * @param {number} id - ID único da tarefa
- * @param {boolean} estaCompleta - Se a tarefa está concluída
+ * Atualiza o checkbox de uma tarefa sem re-renderizar toda a lista.
+ * @param {number} id
+ * @param {boolean} estaCompleta
  */
 export function atualizarCheckboxTarefa(id, estaCompleta) {
-  const checkbox = document.querySelector(`#tarefa-${id}`);
+  const checkbox = document.getElementById(`tarefa-${id}`);
   if (!checkbox) {
     return;
   }
+
   checkbox.checked = estaCompleta;
   checkbox.setAttribute('aria-checked', estaCompleta);
 }
 
-// ========== CONTAINER ==========
-
 /**
- * Retorna o container de tarefas
+ * Retorna o container onde as tarefas são renderizadas.
  * @returns {HTMLElement|null}
  */
 export function obterContainerTarefas() {
-  return $(SELETORES.containerTarefas);
+  return selecionar(SELETORES.containerTarefas);
 }
 
 // ========== MENSAGENS DE INTERFACE ==========
 
 /**
- * Exibe uma mensagem temporária na interface
- * @param {string} texto - Texto da mensagem
- * @param {string} tipo - Tipo da mensagem ('erro', 'sucesso', 'info')
+ * Exibe uma mensagem temporária na interface.
+ * @param {string} texto
+ * @param {'erro'|'sucesso'|'info'} tipo
  */
 export function mostrarMensagem(texto, tipo = 'erro') {
-  // Remove mensagem anterior se existir
-  const mensagemExistente = document.querySelector('.mensagem-flash');
+  // Remove a mensagem anterior para não empilhar avisos.
+  const mensagemExistente = selecionar(SELETORES.mensagemFlash);
   if (mensagemExistente) {
     mensagemExistente.remove();
   }
@@ -229,85 +243,123 @@ export function mostrarMensagem(texto, tipo = 'erro') {
   div.setAttribute('role', 'alert');
   div.setAttribute('aria-live', 'polite');
 
-  // Inserir no topo do container principal
-  const main = document.querySelector('.tarefas-container');
+  // Insere no topo do container principal (ou no body, se necessário).
+  const main = selecionar(SELETORES.containerPrincipal);
   if (main) {
     main.insertBefore(div, main.firstChild);
   } else {
     document.body.insertBefore(div, document.body.firstChild);
   }
 
-  // Remover automaticamente após 3 segundos
+  // Remove automaticamente depois de alguns segundos.
   setTimeout(() => {
     div.remove();
-  }, 3000);
+  }, CONFIG.DURACAO_MENSAGEM_MS);
 }
 
-// ========== FUNÇÕES DE EDIÇÃO ==========
+// ========== MODO DE EDIÇÃO ==========
 
 /**
- * Inicia o modo de edição para uma tarefa específica
- * @param {HTMLElement} elementoTexto - O elemento span que contém o texto
- * @param {Function} onSalvar - Callback chamado ao salvar (recebe novoTexto)
- * @param {Function} onCancelar - Callback chamado ao cancelar
+ * Cria o campo de edição inline já configurado.
+ * @param {string} textoOriginal
+ * @returns {HTMLInputElement}
+ */
+function criarCampoEdicao(textoOriginal) {
+  const campo = document.createElement('input');
+  campo.type = 'text';
+  campo.value = textoOriginal;
+  campo.className = 'campo-edicao';
+  campo.maxLength = CONFIG.MAX_CARACTERES_TAREFA;
+  campo.setAttribute('aria-label', 'Editar tarefa');
+  return campo;
+}
+
+/**
+ * Encerra o modo de edição, removendo o campo e a classe de estado.
+ * @param {HTMLElement} elementoTarefa
+ * @param {HTMLInputElement} campoEdicao
+ */
+function encerrarEdicao(elementoTarefa, campoEdicao) {
+  campoEdicao.remove();
+  elementoTarefa.classList.remove('tarefa--editando');
+}
+
+/**
+ * Inicia o modo de edição de uma tarefa.
+ * Enter salva, Esc cancela e perder o foco salva após um pequeno delay.
+ * @param {HTMLElement} elementoTexto
+ * @param {(novoTexto: string) => void} [onSalvar]
+ * @param {() => void} [onCancelar]
  */
 export function iniciarEdicaoTarefa(elementoTexto, onSalvar, onCancelar) {
-  if (elementoTexto.querySelector('input')) {
+  const elementoTarefa = elementoTexto.closest(SELETORES.tarefa);
+
+  // Evita abrir duas edições ao mesmo tempo para a mesma tarefa.
+  if (!elementoTarefa || elementoTarefa.classList.contains('tarefa--editando')) {
     return;
   }
 
   const textoOriginal = elementoTexto.textContent;
+  const campoEdicao = criarCampoEdicao(textoOriginal);
 
-  const campoEdicao = document.createElement('input');
-  campoEdicao.type = 'text';
-  campoEdicao.value = textoOriginal;
-  campoEdicao.className = 'campo-edicao';
-
-  elementoTexto.style.display = 'none';
+  // A classe esconde o texto pelo CSS; o JS não mexe em style inline.
+  elementoTarefa.classList.add('tarefa--editando');
   elementoTexto.parentNode.insertBefore(campoEdicao, elementoTexto);
 
   campoEdicao.focus();
   campoEdicao.select();
 
-  function finalizarEdicao(salvar = true) {
-    const novoTexto = campoEdicao.value.trim();
+  // Garante que o fluxo termine apenas uma vez (Enter, Esc ou blur).
+  let finalizado = false;
 
-    if (salvar && novoTexto !== '' && novoTexto !== textoOriginal) {
-      if (novoTexto.length > CONFIG.MAX_CARACTERES_TAREFA) {
-        campoEdicao.remove();
-        elementoTexto.style.display = '';
-        if (typeof onCancelar === 'function') {
-          onCancelar();
-        }
-        return;
-      }
-      if (typeof onSalvar === 'function') {
-        onSalvar(novoTexto);
-      }
-    } else {
-      campoEdicao.remove();
-      elementoTexto.style.display = '';
-      if (typeof onCancelar === 'function') {
-        onCancelar();
-      }
+  function cancelarEdicao() {
+    if (finalizado) {
+      return;
+    }
+    finalizado = true;
+    encerrarEdicao(elementoTarefa, campoEdicao);
+    if (typeof onCancelar === 'function') {
+      onCancelar();
     }
   }
 
-  campoEdicao.addEventListener('keypress', function (evento) {
+  function salvarEdicao() {
+    if (finalizado) {
+      return;
+    }
+
+    const novoTexto = campoEdicao.value.trim();
+
+    if (novoTexto === '' || novoTexto === textoOriginal) {
+      cancelarEdicao();
+      return;
+    }
+
+    if (novoTexto.length > CONFIG.MAX_CARACTERES_TAREFA) {
+      mostrarMensagem(MENSAGENS.textoMuitoLongo);
+      cancelarEdicao();
+      return;
+    }
+
+    finalizado = true;
+    encerrarEdicao(elementoTarefa, campoEdicao);
+    if (typeof onSalvar === 'function') {
+      onSalvar(novoTexto);
+    }
+  }
+
+  campoEdicao.addEventListener('keydown', (evento) => {
     if (evento.key === 'Enter') {
       evento.preventDefault();
-      finalizarEdicao(true);
-    }
-  });
-
-  campoEdicao.addEventListener('keydown', function (evento) {
-    if (evento.key === 'Escape') {
+      salvarEdicao();
+    } else if (evento.key === 'Escape') {
       evento.preventDefault();
-      finalizarEdicao(false);
+      cancelarEdicao();
     }
   });
 
-  campoEdicao.addEventListener('blur', function () {
-    setTimeout(() => finalizarEdicao(true), CONFIG.DELAY_SALVAR_BLUR);
+  campoEdicao.addEventListener('blur', () => {
+    // O pequeno delay evita conflito com o clique em outro controle.
+    setTimeout(salvarEdicao, CONFIG.DELAY_SALVAR_BLUR);
   });
 }

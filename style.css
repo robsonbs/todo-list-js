@@ -53,6 +53,21 @@
   /* Inclui padding e border no tamanho total */
 }
 
+/* ========== UTILITÁRIOS DE ACESSIBILIDADE ========== */
+/* Esconde o elemento apenas visualmente; leitores de tela continuam
+   lendo o conteúdo. Usado no <label> do campo de nova tarefa. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ========== ESTILO DO CORPO DA PÁGINA ========== */
 body {
   background: var(--gray-600);
@@ -440,7 +455,7 @@ button:focus {
 }
 
 /* Título do estado vazio */
-.tarefas-empty span {
+.tarefas-empty__titulo {
   font-weight: 700;
   /* Negrito */
   font-size: 16px;
@@ -452,7 +467,7 @@ button:focus {
 }
 
 /* Subtítulo do estado vazio */
-.tarefas-empty p {
+.tarefas-empty__subtitulo {
   color: var(--gray-300);
   /* Cor acinzentada */
   font-size: 14px;
@@ -571,7 +586,7 @@ button:focus {
   Texto principal da tarefa
   Muda aparência quando tarefa está completa
 */
-.tarefa span {
+.tarefa span.texto-tarefa {
   font-weight: 400;
   /* Peso normal */
   font-size: 14px;
@@ -588,8 +603,9 @@ button:focus {
   /* Pequeno ajuste de alinhamento */
 }
 
-/* Estilo do texto quando tarefa está completa */
-.tarefa input[type='checkbox']:checked + span {
+/* Estilo do texto quando tarefa está completa.
+   O seletor "+" atinge o span imediatamente após o checkbox marcado. */
+.tarefa input[type='checkbox']:checked + span.texto-tarefa {
   color: var(--gray-300);
   /* Texto mais apagado */
   text-decoration: line-through;
@@ -679,7 +695,7 @@ button:focus {
     /* Padding menor */
   }
 
-  .tarefa span {
+  .tarefa span.texto-tarefa {
     font-size: 16px;
     /* Texto maior para mobile */
   }
@@ -688,14 +704,16 @@ button:focus {
 /* Celulares */
 @media (max-width: 480px) {
   /* Header menor */
-  header {
+  /* Apenas o cabeçalho principal da página (#header).
+     Evita afetar o <header class="tarefas-header"> dos contadores. */
+  #header {
     height: 10rem;
     /* Altura menor */
     padding: 3rem 0;
     /* Padding menor */
   }
 
-  header h1 {
+  #header h1 {
     font-size: 2rem;
     /* Título menor */
   }
@@ -720,8 +738,8 @@ button:focus {
 */
 
 /* Melhor contraste para texto */
-.tarefa span,
-.tarefas-empty span {
+.tarefa span.texto-tarefa,
+.tarefas-empty__titulo {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   /* Sombra sutil no texto */
 }
@@ -747,34 +765,42 @@ input:focus {
   Aplicados quando o usuário clica duas vezes no texto
 */
 
+/* Enquanto a tarefa está em edição, o texto original fica oculto.
+   O JavaScript apenas adiciona/remove a classe .tarefa--editando,
+   mantendo a apresentação sob responsabilidade do CSS. */
+.tarefa--editando .texto-tarefa {
+  display: none;
+}
+
 /* Campo de entrada durante a edição */
 .campo-edicao {
   /* Aparência integrada ao design existente */
-  background: var(--gray-500) !important;
-  color: var(--gray-100) !important;
-  border: 2px solid var(--purple-dark) !important;
-  border-radius: 4px !important;
+  background: var(--gray-500);
+  color: var(--gray-100);
+  border: 2px solid var(--purple-dark);
+  border-radius: 4px;
 
   /* Tipografia consistente com o resto da aplicação */
-  font-family: inherit !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  line-height: 140% !important;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
 
   /* Layout que se adapta ao container */
-  padding: 4px 8px !important;
-  width: 100% !important;
-  margin: 0 !important;
+  padding: 4px 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
 
   /* Comportamento suave e responsivo */
-  outline: none !important;
-  transition: border-color 0.2s ease !important;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
 /* Estado de foco do campo de edição */
 .campo-edicao:focus {
-  border-color: var(--purple) !important;
-  box-shadow: 0 0 0 2px rgba(130, 132, 250, 0.2) !important;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 2px rgba(130, 132, 250, 0.2);
 }
 
 /* Indicação visual de que o texto da tarefa é editável */

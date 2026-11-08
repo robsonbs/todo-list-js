@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { montarDOMDeTeste, criarTarefaFixture } from './helpers/fixtures.js';
 import {
   criarElementoTarefa,
   criarEstadoVazio,
@@ -8,12 +9,9 @@ import {
   obterContainerTarefas,
 } from '../js/dom.js';
 
-// Configura happy-dom com um container para testar renderização
+// Monta o DOM mínimo (formulário, contadores e lista) antes de cada teste.
 beforeEach(() => {
-  document.body.innerHTML = `
-    <section class="tarefas-box" id="tarefas-box"></section>
-    <main class="tarefas-container"></main>
-  `;
+  montarDOMDeTeste();
 });
 
 afterEach(() => {
@@ -23,13 +21,17 @@ afterEach(() => {
 
 describe('criarElementoTarefa — Estrutura visual', () => {
   it('deve criar um div com classe tarefa', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: false, atividade: 'Estudar' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: false, atividade: 'Estudar' })
+    );
     expect(elemento.tagName).toBe('DIV');
     expect(elemento.classList.contains('tarefa')).toBe(true);
   });
 
   it('deve conter um checkbox com tipo e id corretos', () => {
-    const elemento = criarElementoTarefa({ id: 42, completa: false, atividade: 'Tarefa' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 42, completa: false, atividade: 'Tarefa' })
+    );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox).not.toBeNull();
     expect(checkbox.id).toBe('tarefa-42');
@@ -37,17 +39,23 @@ describe('criarElementoTarefa — Estrutura visual', () => {
   });
 
   it('deve ter aria-checked no checkbox', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: true, atividade: 'Tarefa' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: true, atividade: 'Tarefa' })
+    );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox.getAttribute('aria-checked')).toBe('true');
 
-    const elemento2 = criarElementoTarefa({ id: 2, completa: false, atividade: 'Tarefa 2' });
+    const elemento2 = criarElementoTarefa(
+      criarTarefaFixture({ id: 2, completa: false, atividade: 'Tarefa 2' })
+    );
     const checkbox2 = elemento2.querySelector('input[type="checkbox"]');
     expect(checkbox2.getAttribute('aria-checked')).toBe('false');
   });
 
   it('deve ter aria-label descritivo no checkbox', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: false, atividade: 'Ler livro' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: false, atividade: 'Ler livro' })
+    );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox.getAttribute('aria-label')).toBe('Marcar "Ler livro" como concluída');
   });
@@ -64,7 +72,9 @@ describe('criarElementoTarefa — Estrutura visual', () => {
   });
 
   it('não deve aplicar classes de estilo ao ícone de exclusão', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: false, atividade: 'Tarefa' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: false, atividade: 'Tarefa' })
+    );
     const iconeExclusao = elemento.querySelector('.icone-exclusao');
     expect(iconeExclusao).not.toBeNull();
     // O icone-exclusao não deve ter a classe texto-tarefa
@@ -72,7 +82,9 @@ describe('criarElementoTarefa — Estrutura visual', () => {
   });
 
   it('deve conter um botão de remover com classe remove-btn', () => {
-    const elemento = criarElementoTarefa({ id: 7, completa: false, atividade: 'Tarefa' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 7, completa: false, atividade: 'Tarefa' })
+    );
     const botao = elemento.querySelector('.remove-btn');
     expect(botao).not.toBeNull();
     expect(botao.tagName).toBe('BUTTON');
@@ -83,7 +95,9 @@ describe('criarElementoTarefa — Estrutura visual', () => {
   });
 
   it('deve conter um ícone SVG dentro do botão de excluir', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: false, atividade: 'Tarefa' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: false, atividade: 'Tarefa' })
+    );
     const botao = elemento.querySelector('.remove-btn');
     const svg = botao.querySelector('svg');
     expect(svg).not.toBeNull();
@@ -92,7 +106,9 @@ describe('criarElementoTarefa — Estrutura visual', () => {
   });
 
   it('deve ter a estrutura correta: checkbox → span → botão', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: false, atividade: 'Tarefa' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: false, atividade: 'Tarefa' })
+    );
     const children = Array.from(elemento.children);
     expect(children[0].tagName).toBe('INPUT');
     expect(children[0].type).toBe('checkbox');
@@ -101,18 +117,30 @@ describe('criarElementoTarefa — Estrutura visual', () => {
     expect(children[2].tagName).toBe('BUTTON');
     expect(children[2].classList.contains('remove-btn')).toBe(true);
   });
+
+  it('deve expor data-id e role listitem no elemento raiz', () => {
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 7, completa: false, atividade: 'Tarefa' })
+    );
+    expect(elemento.dataset.id).toBe('7');
+    expect(elemento.getAttribute('role')).toBe('listitem');
+  });
 });
 
 describe('criarElementoTarefa — Estado concluído vs pendente', () => {
   it('checkbox deve estar marcado quando tarefa está completa', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: true, atividade: 'Feito' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: true, atividade: 'Feito' })
+    );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox.checked).toBe(true);
     expect(checkbox.getAttribute('aria-checked')).toBe('true');
   });
 
   it('checkbox não deve estar marcado quando tarefa está pendente', () => {
-    const elemento = criarElementoTarefa({ id: 1, completa: false, atividade: 'Pendente' });
+    const elemento = criarElementoTarefa(
+      criarTarefaFixture({ id: 1, completa: false, atividade: 'Pendente' })
+    );
     const checkbox = elemento.querySelector('input[type="checkbox"]');
     expect(checkbox.checked).toBe(false);
     expect(checkbox.getAttribute('aria-checked')).toBe('false');
@@ -196,8 +224,8 @@ describe('renderizarLista — Renderização completa no container', () => {
   it('deve renderizar tarefas no container .tarefas-box', () => {
     const container = document.getElementById('tarefas-box');
     renderizarLista([
-      { id: 1, completa: false, atividade: 'Tarefa 1' },
-      { id: 2, completa: true, atividade: 'Tarefa 2' },
+      criarTarefaFixture({ id: 1, atividade: 'Tarefa 1' }),
+      criarTarefaFixture({ id: 2, completa: true, atividade: 'Tarefa 2' }),
     ]);
 
     const tarefas = container.querySelectorAll('.tarefa');
