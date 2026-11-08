@@ -2,11 +2,11 @@
 
 ## 📋 **Informações Gerais**
 
-* **⏱️ Duração:** 8 aulas de 50 minutos cada
-* **🎯 Público-alvo:** Iniciantes em programação web
-* **📚 Pré-requisitos:** Conhecimentos básicos de HTML e CSS
-* **🏗️ Projeto Final:** Lista de Tarefas funcional com JavaScript
-* **🌐 Branch:** `learn/javascript`
+- **⏱️ Duração:** 8 aulas de 50 minutos cada
+- **🎯 Público-alvo:** Iniciantes em programação web
+- **📚 Pré-requisitos:** Conhecimentos básicos de HTML e CSS
+- **🏗️ Projeto Final:** Lista de Tarefas funcional com JavaScript
+- **🌐 Branch:** `learn/javascript`
 
 ---
 
@@ -14,18 +14,18 @@
 
 ### **🎓 Gerais:**
 
-* Compreender os fundamentos do JavaScript moderno
-* Aplicar conceitos através de um projeto prático
-* Desenvolver lógica de programação
-* Criar interfaces interativas
+- Compreender os fundamentos do JavaScript moderno
+- Aplicar conceitos através de um projeto prático
+- Desenvolver lógica de programação
+- Criar interfaces interativas
 
 ### **🔧 Específicos:**
 
-* Manipular o DOM (Document Object Model)
-* Trabalhar com eventos do usuário
-* Gerenciar dados com arrays e objetos
-* Implementar persistência de dados (localStorage)
-* Aplicar boas práticas de código
+- Manipular o DOM (Document Object Model)
+- Trabalhar com eventos do usuário
+- Gerenciar dados com arrays e objetos
+- Implementar persistência de dados (localStorage)
+- Aplicar boas práticas de código
 
 ---
 
@@ -37,9 +37,9 @@
 
 #### **🎯 Objetivos:**
 
-* Entender o que é JavaScript e sua função
-* Conhecer variáveis, tipos de dados e operadores
-* Configurar o ambiente de desenvolvimento
+- Entender o que é JavaScript e sua função
+- Conhecer variáveis, tipos de dados e operadores
+- Configurar o ambiente de desenvolvimento
 
 #### **📋 Conteúdo:**
 
@@ -54,32 +54,30 @@
    - Console do navegador
 
 3. **Variáveis e Tipos de Dados (15min)**
-   
 
 ```javascript
-   // Variáveis básicas
-   let nome = "João";
-   let idade = 25;
-   let ativo = true;
+// Variáveis básicas
+let nome = 'João';
+let idade = 25;
+let ativo = true;
 
-   // Arrays (listas)
-   let tarefas = ["Estudar", "Trabalhar", "Exercitar"];
+// Arrays (listas)
+let tarefas = ['Estudar', 'Trabalhar', 'Exercitar'];
 
-   // Objetos
-   let tarefa = {
-       texto: "Aprender JavaScript",
-       completa: false
-   };
+// Objetos
+let tarefa = {
+  texto: 'Aprender JavaScript',
+  completa: false,
+};
 ```
 
 4. **Primeira Interação (10min)**
-   
 
 ```javascript
-   // Primeira função simples
-   function mostrarMensagem() {
-       alert("Olá, JavaScript!");
-   }
+// Primeira função simples
+function mostrarMensagem() {
+  alert('Olá, JavaScript!');
+}
 ```
 
 5. **Exercício Prático (5min)**
@@ -89,8 +87,8 @@
 
 #### **🏠 Para Casa:**
 
-* Ler sobre tipos de dados em JavaScript
-* Experimentar no console do navegador
+- Ler sobre tipos de dados em JavaScript
+- Experimentar no console do navegador
 
 ---
 
@@ -100,9 +98,9 @@
 
 #### **🎯 Objetivos:**
 
-* Entender o conceito de DOM
-* Selecionar elementos HTML com JavaScript
-* Modificar conteúdo e estilos
+- Entender o conceito de DOM
+- Selecionar elementos HTML com JavaScript
+- Modificar conteúdo e estilos
 
 #### **📋 Conteúdo:**
 
@@ -112,27 +110,25 @@
    - JavaScript como "animador" da página
 
 2. **Selecionando Elementos (15min)**
-   
 
 ```javascript
-   // Diferentes formas de selecionar
-   const titulo = document.getElementById("titulo");
-   const botoes = document.getElementsByClassName("botao");
-   const lista = document.querySelector("#lista-tarefas");
-   const todos = document.querySelectorAll(".tarefa");
+// Diferentes formas de selecionar
+const titulo = document.getElementById('titulo');
+const botoes = document.getElementsByClassName('botao');
+const lista = document.querySelector('#lista-tarefas');
+const todos = document.querySelectorAll('.tarefa');
 ```
 
 3. **Modificando Elementos (15min)**
-   
 
 ```javascript
-   // Mudando conteúdo
-   titulo.textContent = "Minha Lista";
-   titulo.innerHTML = "<strong>Minha Lista</strong>";
+// Mudando conteúdo
+titulo.textContent = 'Minha Lista';
+titulo.innerHTML = '<strong>Minha Lista</strong>';
 
-   // Mudando estilos
-   titulo.style.color = "blue";
-   titulo.classList.add("destaque");
+// Mudando estilos
+titulo.style.color = 'blue';
+titulo.classList.add('destaque');
 ```
 
 4. **Projeto: Estrutura Básica (10min)**
@@ -142,8 +138,8 @@
 
 #### **🎯 Exercício:**
 
-* Criar botão que muda cor do título
-* Adicionar/remover classes CSS via JS
+- Criar botão que muda cor do título
+- Adicionar/remover classes CSS via JS
 
 ---
 
@@ -153,40 +149,38 @@
 
 #### **🎯 Objetivos:**
 
-* Compreender sistema de eventos
-* Implementar event listeners
-* Capturar dados de formulários
+- Compreender sistema de eventos
+- Implementar event listeners
+- Capturar dados de formulários
 
 #### **📋 Conteúdo:**
 
 1. **Sistema de Eventos (15min)**
-   
 
 ```javascript
-   // Diferentes tipos de eventos
-   botao.addEventListener("click", function() {
-       console.log("Botão clicado!");
-   });
+// Diferentes tipos de eventos
+botao.addEventListener('click', function () {
+  console.log('Botão clicado!');
+});
 
-   input.addEventListener("keypress", function(evento) {
-       if (evento.key === "Enter") {
-           console.log("Enter pressionado!");
-       }
-   });
+input.addEventListener('keypress', function (evento) {
+  if (evento.key === 'Enter') {
+    console.log('Enter pressionado!');
+  }
+});
 ```
 
 2. **Capturando Dados (15min)**
-   
 
 ```javascript
-   // Pegando valor de input
-   const inputTarefa = document.getElementById("nova-tarefa");
-   const textoTarefa = inputTarefa.value;
+// Pegando valor de input
+const inputTarefa = document.getElementById('nova-tarefa');
+const textoTarefa = inputTarefa.value;
 
-   // Validando dados
-   if (textoTarefa.trim() !== "") {
-       console.log("Tarefa válida:", textoTarefa);
-   }
+// Validando dados
+if (textoTarefa.trim() !== '') {
+  console.log('Tarefa válida:', textoTarefa);
+}
 ```
 
 3. **Projeto: Primeira Funcionalidade (20min)**
@@ -198,15 +192,15 @@
 
 ```javascript
 function adicionarTarefa() {
-    const input = document.getElementById("nova-tarefa");
-    const texto = input.value.trim();
+  const input = document.getElementById('nova-tarefa');
+  const texto = input.value.trim();
 
-    if (texto !== "") {
-        console.log("Nova tarefa:", texto);
-        input.value = ""; // Limpar campo
-    } else {
-        alert("Digite uma tarefa!");
-    }
+  if (texto !== '') {
+    console.log('Nova tarefa:', texto);
+    input.value = ''; // Limpar campo
+  } else {
+    alert('Digite uma tarefa!');
+  }
 }
 ```
 
@@ -218,42 +212,40 @@ function adicionarTarefa() {
 
 #### **🎯 Objetivos:**
 
-* Trabalhar com arrays em JavaScript
-* Adicionar, remover e modificar elementos
-* Implementar estrutura de dados para tarefas
+- Trabalhar com arrays em JavaScript
+- Adicionar, remover e modificar elementos
+- Implementar estrutura de dados para tarefas
 
 #### **📋 Conteúdo:**
 
 1. **Arrays Avançados (15min)**
-   
 
 ```javascript
-   let tarefas = [];
+let tarefas = [];
 
-   // Adicionando elementos
-   tarefas.push("Nova tarefa");
+// Adicionando elementos
+tarefas.push('Nova tarefa');
 
-   // Removendo elementos
-   tarefas.splice(index, 1);
+// Removendo elementos
+tarefas.splice(index, 1);
 
-   // Encontrando elementos
-   const tarefa = tarefas.find(t => t.id === 1);
+// Encontrando elementos
+const tarefa = tarefas.find((t) => t.id === 1);
 ```
 
 2. **Objetos como Estrutura de Dados (15min)**
-   
 
 ```javascript
-   // Estrutura de uma tarefa
-   const tarefa = {
-       id: Date.now(),
-       texto: "Aprender JavaScript",
-       completa: false,
-       dataCriacao: new Date()
-   };
+// Estrutura de uma tarefa
+const tarefa = {
+  id: Date.now(),
+  texto: 'Aprender JavaScript',
+  completa: false,
+  dataCriacao: new Date(),
+};
 
-   // Array de objetos
-   let listaTarefas = [tarefa];
+// Array de objetos
+let listaTarefas = [tarefa];
 ```
 
 3. **Projeto: Sistema de Dados (20min)**
@@ -267,14 +259,14 @@ function adicionarTarefa() {
 let listaDeTarefas = [];
 
 function criarTarefa(texto) {
-    const novaTarefa = {
-        id: Date.now(),
-        texto: texto,
-        completa: false
-    };
+  const novaTarefa = {
+    id: Date.now(),
+    texto: texto,
+    completa: false,
+  };
 
-    listaDeTarefas.push(novaTarefa);
-    console.log("Tarefas atuais:", listaDeTarefas);
+  listaDeTarefas.push(novaTarefa);
+  console.log('Tarefas atuais:', listaDeTarefas);
 }
 ```
 
@@ -286,66 +278,63 @@ function criarTarefa(texto) {
 
 #### **🎯 Objetivos:**
 
-* Criar elementos HTML via JavaScript
-* Montar estrutura complexa de componentes
-* Implementar visualização das tarefas
+- Criar elementos HTML via JavaScript
+- Montar estrutura complexa de componentes
+- Implementar visualização das tarefas
 
 #### **📋 Conteúdo:**
 
 1. **Criação de Elementos (15min)**
-   
 
 ```javascript
-   // Criando elementos
-   const div = document.createElement("div");
-   const p = document.createElement("p");
-   const button = document.createElement("button");
+// Criando elementos
+const div = document.createElement('div');
+const p = document.createElement('p');
+const button = document.createElement('button');
 
-   // Configurando elementos
-   div.className = "tarefa";
-   p.textContent = "Minha tarefa";
-   button.textContent = "Deletar";
+// Configurando elementos
+div.className = 'tarefa';
+p.textContent = 'Minha tarefa';
+button.textContent = 'Deletar';
 
-   // Montando estrutura
-   div.appendChild(p);
-   div.appendChild(button);
+// Montando estrutura
+div.appendChild(p);
+div.appendChild(button);
 ```
 
 2. **Template de Tarefa (20min)**
-   
 
 ```javascript
-   function criarElementoTarefa(tarefa) {
-       const li = document.createElement("li");
-       li.innerHTML = `
+function criarElementoTarefa(tarefa) {
+  const li = document.createElement('li');
+  li.innerHTML = `
        <input type="checkbox" ${tarefa.completa ? 'checked' : ''}>
        <span class="texto-tarefa">${tarefa.texto}</span>
        <button class="botao-deletar">🗑️</button>
      `;
-       return li;
-   }
+  return li;
+}
 ```
 
 3. **Renderização da Lista (15min)**
-   
 
 ```javascript
-   function renderizarTarefas() {
-       const lista = document.getElementById("lista-tarefas");
-       lista.innerHTML = ""; // Limpar lista
+function renderizarTarefas() {
+  const lista = document.getElementById('lista-tarefas');
+  lista.innerHTML = ''; // Limpar lista
 
-       listaDeTarefas.forEach(tarefa => {
-           const elemento = criarElementoTarefa(tarefa);
-           lista.appendChild(elemento);
-       });
-   }
+  listaDeTarefas.forEach((tarefa) => {
+    const elemento = criarElementoTarefa(tarefa);
+    lista.appendChild(elemento);
+  });
+}
 ```
 
 #### **🎯 Exercício:**
 
-* Implementar função completa de renderização
-* Testar com diferentes tarefas
-* Adicionar estilos CSS para os elementos
+- Implementar função completa de renderização
+- Testar com diferentes tarefas
+- Adicionar estilos CSS para os elementos
 
 ---
 
@@ -355,46 +344,44 @@ function criarTarefa(texto) {
 
 #### **🎯 Objetivos:**
 
-* Implementar marcar/desmarcar tarefas
-* Adicionar funcionalidade de deletar
-* Trabalhar com eventos em elementos dinâmicos
+- Implementar marcar/desmarcar tarefas
+- Adicionar funcionalidade de deletar
+- Trabalhar com eventos em elementos dinâmicos
 
 #### **📋 Conteúdo:**
 
 1. **Event Delegation (15min)**
-   
 
 ```javascript
-   // Escutando eventos em elementos dinâmicos
-   document.addEventListener("click", function(evento) {
-       if (evento.target.classList.contains("botao-deletar")) {
-           const tarefaId = evento.target.dataset.id;
-           deletarTarefa(tarefaId);
-       }
-   });
+// Escutando eventos em elementos dinâmicos
+document.addEventListener('click', function (evento) {
+  if (evento.target.classList.contains('botao-deletar')) {
+    const tarefaId = evento.target.dataset.id;
+    deletarTarefa(tarefaId);
+  }
+});
 ```
 
 2. **Funcionalidades CRUD (25min)**
-   
 
 ```javascript
-   // Marcar como completa
-   function toggleTarefa(id) {
-       const tarefa = listaDeTarefas.find(t => t.id == id);
-       if (tarefa) {
-           tarefa.completa = !tarefa.completa;
-           renderizarTarefas();
-       }
-   }
+// Marcar como completa
+function toggleTarefa(id) {
+  const tarefa = listaDeTarefas.find((t) => t.id == id);
+  if (tarefa) {
+    tarefa.completa = !tarefa.completa;
+    renderizarTarefas();
+  }
+}
 
-   // Deletar tarefa
-   function deletarTarefa(id) {
-       const index = listaDeTarefas.findIndex(t => t.id == id);
-       if (index > -1) {
-           listaDeTarefas.splice(index, 1);
-           renderizarTarefas();
-       }
-   }
+// Deletar tarefa
+function deletarTarefa(id) {
+  const index = listaDeTarefas.findIndex((t) => t.id == id);
+  if (index > -1) {
+    listaDeTarefas.splice(index, 1);
+    renderizarTarefas();
+  }
+}
 ```
 
 3. **Projeto: Integração Completa (10min)**
@@ -404,9 +391,9 @@ function criarTarefa(texto) {
 
 #### **🐛 Debugging:**
 
-* Uso do console.log
-* Inspetor de elementos
-* Breakpoints no DevTools
+- Uso do console.log
+- Inspetor de elementos
+- Breakpoints no DevTools
 
 ---
 
@@ -416,41 +403,39 @@ function criarTarefa(texto) {
 
 #### **🎯 Objetivos:**
 
-* Entender localStorage
-* Implementar salvamento automático
-* Carregar dados ao abrir página
+- Entender localStorage
+- Implementar salvamento automático
+- Carregar dados ao abrir página
 
 #### **📋 Conteúdo:**
 
 1. **LocalStorage API (15min)**
-   
 
 ```javascript
-   // Salvando dados
-   localStorage.setItem("chave", "valor");
+// Salvando dados
+localStorage.setItem('chave', 'valor');
 
-   // Salvando objetos (JSON)
-   localStorage.setItem("tarefas", JSON.stringify(listaDeTarefas));
+// Salvando objetos (JSON)
+localStorage.setItem('tarefas', JSON.stringify(listaDeTarefas));
 
-   // Recuperando dados
-   const dados = localStorage.getItem("tarefas");
-   const tarefas = JSON.parse(dados);
+// Recuperando dados
+const dados = localStorage.getItem('tarefas');
+const tarefas = JSON.parse(dados);
 ```
 
 2. **Funções de Persistência (20min)**
-   
 
 ```javascript
-   function salvarTarefas() {
-       localStorage.setItem("todoList", JSON.stringify(listaDeTarefas));
-   }
+function salvarTarefas() {
+  localStorage.setItem('todoList', JSON.stringify(listaDeTarefas));
+}
 
-   function carregarTarefas() {
-       const dadosSalvos = localStorage.getItem("todoList");
-       if (dadosSalvos) {
-           listaDeTarefas = JSON.parse(dadosSalvos);
-       }
-   }
+function carregarTarefas() {
+  const dadosSalvos = localStorage.getItem('todoList');
+  if (dadosSalvos) {
+    listaDeTarefas = JSON.parse(dadosSalvos);
+  }
+}
 ```
 
 3. **Integração Automática (15min)**
@@ -462,15 +447,15 @@ function criarTarefa(texto) {
 
 ```javascript
 // Inicialização
-document.addEventListener("DOMContentLoaded", function() {
-    carregarTarefas();
-    renderizarTarefas();
+document.addEventListener('DOMContentLoaded', function () {
+  carregarTarefas();
+  renderizarTarefas();
 });
 
 // Salvar após modificações
 function adicionarTarefa(texto) {
-    // ... código da função
-    salvarTarefas(); // Adicionar esta linha
+  // ... código da função
+  salvarTarefas(); // Adicionar esta linha
 }
 ```
 
@@ -482,43 +467,41 @@ function adicionarTarefa(texto) {
 
 #### **🎯 Objetivos:**
 
-* Implementar edição de tarefas
-* Adicionar contadores e estatísticas
-* Finalizar e testar projeto
+- Implementar edição de tarefas
+- Adicionar contadores e estatísticas
+- Finalizar e testar projeto
 
 #### **📋 Conteúdo:**
 
 1. **Edição Inline (20min)**
-   
 
 ```javascript
-   function iniciarEdicao(id) {
-       const elemento = document.querySelector(`[data-id="${id}"]`);
-       const span = elemento.querySelector(".texto-tarefa");
-       const textoAtual = span.textContent;
+function iniciarEdicao(id) {
+  const elemento = document.querySelector(`[data-id="${id}"]`);
+  const span = elemento.querySelector('.texto-tarefa');
+  const textoAtual = span.textContent;
 
-       const input = document.createElement("input");
-       input.value = textoAtual;
-       input.className = "campo-edicao";
+  const input = document.createElement('input');
+  input.value = textoAtual;
+  input.className = 'campo-edicao';
 
-       span.replaceWith(input);
-       input.focus();
-   }
+  span.replaceWith(input);
+  input.focus();
+}
 ```
 
 2. **Contadores e Estatísticas (15min)**
-   
 
 ```javascript
-   function atualizarContadores() {
-       const total = listaDeTarefas.length;
-       const completas = listaDeTarefas.filter(t => t.completa).length;
-       const pendentes = total - completas;
+function atualizarContadores() {
+  const total = listaDeTarefas.length;
+  const completas = listaDeTarefas.filter((t) => t.completa).length;
+  const pendentes = total - completas;
 
-       document.getElementById("total").textContent = total;
-       document.getElementById("completas").textContent = completas;
-       document.getElementById("pendentes").textContent = pendentes;
-   }
+  document.getElementById('total').textContent = total;
+  document.getElementById('completas').textContent = completas;
+  document.getElementById('pendentes').textContent = pendentes;
+}
 ```
 
 3. **Polimento e Testes (15min)**
@@ -530,13 +513,14 @@ function adicionarTarefa(texto) {
 #### **🎯 Projeto Final:**
 
 Lista de tarefas completa com:
-* ✅ Adicionar tarefas
-* ✅ Marcar como completa
-* ✅ Deletar tarefas
-* ✅ Editar tarefas
-* ✅ Persistência de dados
-* ✅ Contadores
-* ✅ Interface responsiva
+
+- ✅ Adicionar tarefas
+- ✅ Marcar como completa
+- ✅ Deletar tarefas
+- ✅ Editar tarefas
+- ✅ Persistência de dados
+- ✅ Contadores
+- ✅ Interface responsiva
 
 ---
 
@@ -544,18 +528,18 @@ Lista de tarefas completa com:
 
 ### **🛠️ Ferramentas Necessárias:**
 
-* VS Code ou editor de código
-* Navegador moderno (Chrome, Firefox, Safari)
-* Extensão Live Server (opcional)
-* DevTools do navegador
+- VS Code ou editor de código
+- Navegador moderno (Chrome, Firefox, Safari)
+- Extensão Live Server (opcional)
+- DevTools do navegador
 
 ### **📋 Material de Apoio:**
 
-* Slides para cada aula
-* Código inicial (templates)
-* Exercícios práticos
-* Checklists de conceitos
-* Glossário de termos
+- Slides para cada aula
+- Código inicial (templates)
+- Exercícios práticos
+- Checklists de conceitos
+- Glossário de termos
 
 ### **🎯 Metodologia:**
 
@@ -566,9 +550,9 @@ Lista de tarefas completa com:
 
 ### **📊 Avaliação:**
 
-* **Participação em aula (30%)**
-* **Exercícios práticos (40%)**
-* **Projeto final (30%)**
+- **Participação em aula (30%)**
+- **Exercícios práticos (40%)**
+- **Projeto final (30%)**
 
 ---
 
@@ -576,28 +560,28 @@ Lista de tarefas completa com:
 
 ### **🔧 Técnicas:**
 
-* Manipulação do DOM
-* Event handling
-* Estruturas de dados (arrays, objetos)
-* LocalStorage API
-* Debugging
-* JSON
-* ES6+ features
+- Manipulação do DOM
+- Event handling
+- Estruturas de dados (arrays, objetos)
+- LocalStorage API
+- Debugging
+- JSON
+- ES6+ features
 
 ### **🧠 Conceituais:**
 
-* Lógica de programação
-* Pensamento algorítmico
-* Arquitetura de aplicações
-* Separação de responsabilidades
-* Boas práticas de código
+- Lógica de programação
+- Pensamento algorítmico
+- Arquitetura de aplicações
+- Separação de responsabilidades
+- Boas práticas de código
 
 ### **🤝 Comportamentais:**
 
-* Resolução de problemas
-* Pensamento crítico
-* Trabalho autônomo
-* Persistência na depuração
+- Resolução de problemas
+- Pensamento crítico
+- Trabalho autônomo
+- Persistência na depuração
 
 ---
 
@@ -622,19 +606,19 @@ Após completar este curso, os alunos estarão preparados para:
 
 ### **📚 Estudos Avançados:**
 
-* Frameworks (React, Vue, Angular)
-* Node.js e desenvolvimento backend
-* APIs e AJAX
-* Testes automatizados
-* Bundlers (Webpack, Vite)
+- Frameworks (React, Vue, Angular)
+- Node.js e desenvolvimento backend
+- APIs e AJAX
+- Testes automatizados
+- Bundlers (Webpack, Vite)
 
 ### **🏗️ Projetos Sugestionados:**
 
-* Calculadora avançada
-* Jogo da memória
-* App de clima
-* Blog pessoal
-* E-commerce simples
+- Calculadora avançada
+- Jogo da memória
+- App de clima
+- Blog pessoal
+- E-commerce simples
 
 ---
 

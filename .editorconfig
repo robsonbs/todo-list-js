@@ -1,0 +1,19 @@
+# ============================================================
+# .EDITORCONFIG — Convenções de edição entre editores/IDEs
+# ------------------------------------------------------------
+# Garante que todos usem o mesmo recuo, fim de linha e encoding,
+# mesmo que a IDE de cada pessoa tenha outra configuração.
+# ============================================================
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown precisa de espaços no fim da linha para quebras.
+[*.md]
+trim_trailing_whitespace = false

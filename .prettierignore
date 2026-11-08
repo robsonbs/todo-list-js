@@ -1,0 +1,15 @@
+# Dependências
+node_modules/
+
+# Arquivos gerados (não faz sentido formatar)
+package-lock.json
+
+# Artefatos de teste
+playwright-report/
+test-results/
+tests/e2e/screenshots/
+coverage/
+
+# Material didático legado (mantido como exemplo, fora do escopo atual)
+curso/
+iniciante/
