@@ -183,7 +183,7 @@ export function atualizarContadores(total, completas) {
  * Lê e normaliza o valor do campo de nova tarefa.
  * @returns {string}
  */
-export function obterValorInput() {
+export function obterValorCampoEntrada() {
   const input = selecionar(SELETORES.campoEntrada);
   return input ? input.value.trim() : '';
 }
@@ -191,7 +191,7 @@ export function obterValorInput() {
 /**
  * Limpa o campo de nova tarefa.
  */
-export function limparInput() {
+export function limparCampoEntrada() {
   const input = selecionar(SELETORES.campoEntrada);
   if (input) {
     input.value = '';

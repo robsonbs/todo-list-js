@@ -13,7 +13,7 @@ import {
   adicionarTarefa,
   removerTarefa,
   editarTarefa,
-  toggleConcluida,
+  alternarConcluida,
   obterContadores,
   substituirTarefas,
 } from './state.js';
@@ -23,8 +23,8 @@ import { salvarTarefas, carregarTarefas } from './storage.js';
 import {
   renderizarLista,
   atualizarContadores,
-  obterValorInput,
-  limparInput,
+  obterValorCampoEntrada,
+  limparCampoEntrada,
   iniciarEdicaoTarefa,
   obterContainerTarefas,
   atualizarCheckboxTarefa,
@@ -70,7 +70,7 @@ export function inicializarAplicacao() {
   renderizarLista(obterTarefas());
   sincronizarContadores();
   configurarFormulario();
-  configurarEventDelegation();
+  configurarDelegacaoDeEventos();
 }
 
 // ========== FORMULÁRIO ==========
@@ -83,7 +83,7 @@ function aoSubmeterFormulario(evento) {
   // Impede o comportamento padrão do navegador (recarregar a página).
   evento.preventDefault();
 
-  const texto = obterValorInput();
+  const texto = obterValorCampoEntrada();
 
   if (texto === '') {
     mostrarMensagem(MENSAGENS.textoVazio);
@@ -96,7 +96,7 @@ function aoSubmeterFormulario(evento) {
   }
 
   adicionarTarefa(texto);
-  limparInput();
+  limparCampoEntrada();
   persistirERenderizar();
 }
 
@@ -127,7 +127,7 @@ function obterIdDaTarefa(alvo) {
  * Assim, tarefas criadas depois também funcionam sem novos listeners
  * (é isso que chamamos de delegação de eventos).
  */
-function configurarEventDelegation() {
+function configurarDelegacaoDeEventos() {
   const container = obterContainerTarefas();
   if (!container) {
     return;
@@ -150,7 +150,7 @@ function configurarEventDelegation() {
     if (alvo.matches('input[type="checkbox"][id^="tarefa-"]')) {
       const id = obterIdDaTarefa(alvo);
       if (id !== null) {
-        toggleConcluida(id);
+        alternarConcluida(id);
         salvarTarefas(obterTarefas());
 
         const tarefa = obterTarefaPorId(id);

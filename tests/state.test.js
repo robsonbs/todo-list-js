@@ -5,7 +5,7 @@ import {
   adicionarTarefa,
   removerTarefa,
   editarTarefa,
-  toggleConcluida,
+  alternarConcluida,
   obterContadores,
   substituirTarefas,
   obterTarefaPorId,
@@ -124,20 +124,20 @@ describe('state.js', () => {
     });
   });
 
-  describe('toggleConcluida', () => {
+  describe('alternarConcluida', () => {
     it('deve alternar o status de concluída', () => {
       const tarefa = adicionarTarefa('Para completar');
       expect(tarefa.completa).toBe(false);
 
-      toggleConcluida(tarefa.id);
+      alternarConcluida(tarefa.id);
       expect(obterTarefaPorId(tarefa.id).completa).toBe(true);
 
-      toggleConcluida(tarefa.id);
+      alternarConcluida(tarefa.id);
       expect(obterTarefaPorId(tarefa.id).completa).toBe(false);
     });
 
     it('deve retornar false para ID inexistente', () => {
-      expect(toggleConcluida(9999)).toBe(false);
+      expect(alternarConcluida(9999)).toBe(false);
     });
   });
 
@@ -146,7 +146,7 @@ describe('state.js', () => {
       adicionarTarefa('Tarefa 1');
       adicionarTarefa('Tarefa 2');
       const t3 = adicionarTarefa('Tarefa 3');
-      toggleConcluida(t3.id);
+      alternarConcluida(t3.id);
 
       const contadores = obterContadores();
       expect(contadores.total).toBe(3);

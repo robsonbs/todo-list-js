@@ -126,7 +126,7 @@ export function editarTarefa(id, novoTexto) {
  * @param {number} id
  * @returns {boolean} true se alterou, false se não encontrou
  */
-export function toggleConcluida(id) {
+export function alternarConcluida(id) {
   const indice = obterIndicePorId(id);
   if (indice === -1) {
     return false;
