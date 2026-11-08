@@ -5,12 +5,14 @@
   "description": "Lista de Tarefas educacional em HTML/CSS/JS puro",
   "private": true,
   "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
     "@eslint/js": "^10.0.1",
     "eslint": "^10.14.0",
     "globals": "^15.0.0",
+    "happy-dom": "^15.0.0",
     "prettier": "^3.9.10",
-    "vitest": "^5.1.0",
-    "happy-dom": "^15.0.0"
+    "vitest": "^5.1.0"
   },
   "scripts": {
     "lint": "eslint .",
