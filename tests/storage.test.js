@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // Mock simples do localStorage antes de importar storage.js.
 // Assim os testes não dependem do navegador real.
@@ -31,6 +31,10 @@ beforeEach(() => {
   localStorageMock.clear();
 });
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe('storage.js', () => {
   describe('salvarTarefas', () => {
     it('deve salvar dados no localStorage', () => {
@@ -41,16 +45,23 @@ describe('storage.js', () => {
     });
 
     it('deve retornar false em caso de erro', () => {
-      // Simular erro fazendo localStorage lançar exceção.
-      const originalSetItem = localStorageMock.setItem;
-      localStorageMock.setItem = () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(localStorageMock, 'setItem').mockImplementation(() => {
         throw new Error('Quota excedida');
-      };
+      });
 
       const resultado = salvarTarefas([{ id: 1 }]);
       expect(resultado).toBe(false);
+      expect(localStorageMock.getItem(CHAVE_ARMAZENAMENTO)).toBeNull();
+    });
 
-      localStorageMock.setItem = originalSetItem;
+    it('deve retornar false quando a serialização falha', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const circular = {};
+      circular.referencia = circular;
+
+      expect(salvarTarefas([circular])).toBe(false);
+      expect(localStorageMock.getItem(CHAVE_ARMAZENAMENTO)).toBeNull();
     });
   });
 
@@ -68,7 +79,17 @@ describe('storage.js', () => {
     });
 
     it('deve retornar null para dados corrompidos', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
       localStorageMock.setItem(CHAVE_ARMAZENAMENTO, 'não é json válido');
+      expect(carregarTarefas()).toBeNull();
+    });
+
+    it('deve retornar null quando a leitura do localStorage lança erro', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(localStorageMock, 'getItem').mockImplementation(() => {
+        throw new Error('Acesso bloqueado');
+      });
+
       expect(carregarTarefas()).toBeNull();
     });
   });
