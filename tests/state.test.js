@@ -1,0 +1,158 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import {
+  obterTarefas,
+  adicionarTarefa,
+  removerTarefa,
+  editarTarefa,
+  toggleConcluida,
+  obterContadores,
+  substituirTarefas,
+  obterTarefaPorId,
+} from '../js/state.js';
+
+beforeEach(() => {
+  substituirTarefas([]);
+});
+
+describe('state.js', () => {
+  describe('adicionarTarefa', () => {
+    it('deve adicionar uma tarefa com ID único', () => {
+      const tarefa = adicionarTarefa('Estudar JavaScript');
+      expect(tarefa).not.toBeNull();
+      expect(tarefa.atividade).toBe('Estudar JavaScript');
+      expect(tarefa.completa).toBe(false);
+      expect(typeof tarefa.id).toBe('number');
+    });
+
+    it('deve gerar IDs únicos para cada tarefa', () => {
+      const t1 = adicionarTarefa('Tarefa 1');
+      const t2 = adicionarTarefa('Tarefa 2');
+      expect(t1.id).not.toBe(t2.id);
+    });
+
+    it('deve retornar null para texto vazio', () => {
+      const resultado = adicionarTarefa('');
+      expect(resultado).toBeNull();
+    });
+
+    it('deve retornar null para texto apenas com espaços', () => {
+      const resultado = adicionarTarefa('   ');
+      expect(resultado).toBeNull();
+    });
+
+    it('deve fazer trim no texto da tarefa', () => {
+      const tarefa = adicionarTarefa('  Estudar  ');
+      expect(tarefa.atividade).toBe('Estudar');
+    });
+  });
+
+  describe('obterTarefas', () => {
+    it('deve retornar array vazio inicialmente', () => {
+      expect(obterTarefas()).toEqual([]);
+    });
+
+    it('deve retornar cópia do array (não a referência original)', () => {
+      adicionarTarefa('Tarefa 1');
+      const tarefas = obterTarefas();
+      tarefas.push('não é um objeto');
+      expect(obterTarefas().length).toBe(1);
+    });
+  });
+
+  describe('obterTarefaPorId', () => {
+    it('deve retornar a tarefa correta pelo ID', () => {
+      const tarefa = adicionarTarefa('Minha tarefa');
+      const encontrada = obterTarefaPorId(tarefa.id);
+      expect(encontrada).not.toBeNull();
+      expect(encontrada.atividade).toBe('Minha tarefa');
+    });
+
+    it('deve retornar null para ID inexistente', () => {
+      expect(obterTarefaPorId(9999)).toBeNull();
+    });
+  });
+
+  describe('removerTarefa', () => {
+    it('deve remover uma tarefa pelo ID', () => {
+      const tarefa = adicionarTarefa('Para remover');
+      const resultado = removerTarefa(tarefa.id);
+      expect(resultado).toBe(true);
+      expect(obterTarefaPorId(tarefa.id)).toBeNull();
+      expect(obterContadores().total).toBe(0);
+    });
+
+    it('deve retornar false para ID inexistente', () => {
+      expect(removerTarefa(9999)).toBe(false);
+    });
+  });
+
+  describe('editarTarefa', () => {
+    it('deve editar o texto de uma tarefa existente', () => {
+      const tarefa = adicionarTarefa('Texto original');
+      const resultado = editarTarefa(tarefa.id, 'Texto editado');
+      expect(resultado).toBe(true);
+      expect(obterTarefaPorId(tarefa.id).atividade).toBe('Texto editado');
+    });
+
+    it('deve retornar false para ID inexistente', () => {
+      expect(editarTarefa(9999, 'Novo texto')).toBe(false);
+    });
+
+    it('deve retornar false para texto vazio', () => {
+      const tarefa = adicionarTarefa('Valida');
+      expect(editarTarefa(tarefa.id, '')).toBe(false);
+      expect(obterTarefaPorId(tarefa.id).atividade).toBe('Valida');
+    });
+  });
+
+  describe('toggleConcluida', () => {
+    it('deve alternar o status de concluída', () => {
+      const tarefa = adicionarTarefa('Para completar');
+      expect(tarefa.completa).toBe(false);
+
+      toggleConcluida(tarefa.id);
+      expect(obterTarefaPorId(tarefa.id).completa).toBe(true);
+
+      toggleConcluida(tarefa.id);
+      expect(obterTarefaPorId(tarefa.id).completa).toBe(false);
+    });
+
+    it('deve retornar false para ID inexistente', () => {
+      expect(toggleConcluida(9999)).toBe(false);
+    });
+  });
+
+  describe('obterContadores', () => {
+    it('deve retornar total e completas corretos', () => {
+      adicionarTarefa('Tarefa 1');
+      adicionarTarefa('Tarefa 2');
+      const t3 = adicionarTarefa('Tarefa 3');
+      toggleConcluida(t3.id);
+
+      const contadores = obterContadores();
+      expect(contadores.total).toBe(3);
+      expect(contadores.completas).toBe(1);
+    });
+
+    it('deve retornar zeros quando não há tarefas', () => {
+      const contadores = obterContadores();
+      expect(contadores.total).toBe(0);
+      expect(contadores.completas).toBe(0);
+    });
+  });
+
+  describe('substituirTarefas', () => {
+    it('deve substituir todas as tarefas', () => {
+      adicionarTarefa('Antiga');
+      substituirTarefas([{ id: 100, completa: false, atividade: 'Nova' }]);
+      expect(obterTarefas().length).toBe(1);
+      expect(obterTarefaPorId(100).atividade).toBe('Nova');
+    });
+
+    it('deve limpar quando passado undefined ou null', () => {
+      adicionarTarefa('Temporária');
+      substituirTarefas(null);
+      expect(obterTarefas().length).toBe(0);
+    });
+  });
+});
