@@ -40,6 +40,9 @@ todo-list-js/
 ├── 🎭 playwright.config.js    # Configuração Playwright (apenas via Docker)
 ├── 🐳 Dockerfile.playwright   # Imagem Docker para testes E2E
 ├── 🐳 docker-compose.yml      # Orquestração servidor + Playwright (Docker)
+├── 📨 commitlint.config.js    # Regras para mensagens de commit
+├── 🌐 .vercelignore           # Arquivos internos fora do site publicado
+├── ⚙️ .github/workflows/ci.yml # CI, Commitlint e deploy via Vercel
 │
 ├── 📂 js/                     # Módulos JavaScript (ES modules)
 │   ├── constants.js           # Classes, seletores estáticos/dinâmicos, mensagens e config
@@ -234,6 +237,16 @@ suíte. O Dockerfile instala apenas a versão do runner compatível com o navega
 da imagem, e copia os specs depois da instalação para manter o cache de build.
 
 O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright` e `docker-compose.yml`, mas **não é uma dependência local** do projeto.
+
+### CI/CD do GitHub
+
+- `.github/workflows/ci.yml` roda `npm run verify`, valida Conventional Commits,
+  executa o E2E no Docker e valida o próprio YAML do workflow com actionlint.
+- O deploy Vercel de produção só acontece em `main` após os checks; previews
+  são limitados a PRs internos. Nunca expor secrets a PRs de forks.
+- Node.js 22.x é necessário para as versões atuais de ESLint, Vitest e Commitlint.
+- Para testar o histórico local com as regras de commit:
+  `npx commitlint --from origin/main --to HEAD --strict`.
 
 ---
 

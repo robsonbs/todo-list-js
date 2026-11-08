@@ -35,6 +35,10 @@ todo-list-js/
 ├── .editorconfig           # Convenções de edição entre IDEs
 ├── vitest.config.js        # Configuração do Vitest
 ├── playwright.config.js    # Configuração do Playwright (via Docker)
+├── commitlint.config.js    # Regras de mensagens Conventional Commits
+├── .vercelignore           # Arquivos internos excluídos do site publicado
+├── .github/workflows/
+│   └── ci.yml              # CI, validação de commits e deploy via Vercel
 ├── js/
 │   ├── constants.js        # Classes, seletores, mensagens e configurações
 │   ├── validacao.js        # Regra única de validação do texto
@@ -136,6 +140,32 @@ Usuário → main.js → state.js → storage.js
   de recarga usam a mesma página/contexto para verificar a persistência real.
 - **Escopo E2E:** cobre as jornadas integradas no Chromium; validações de
   permutações de dados e regras puras permanecem nos testes Vitest.
+
+## 🚀 CI/CD no GitHub
+
+O workflow `.github/workflows/ci.yml` roda em pushes e PRs para `main`:
+
+- `workflows`: valida a sintaxe do GitHub Actions com actionlint.
+- `qualidade`: instala pelo `npm ci`, executa `npm run verify` e valida todas
+  as mensagens novas com Commitlint (Conventional Commits).
+- `e2e`: roda os testes Playwright usando Docker Compose e envia traces/screenshots
+  como artefatos quando falham.
+- PRs internos recebem deploy de preview no Vercel depois de todos os checks;
+  pushes para `main` publicam produção. PRs de forks não recebem secrets.
+
+### Configuração inicial do Vercel
+
+1. Configure o projeto Vercel como **Other**, sem build command, servindo a raiz
+   estática do repositório. `.vercelignore` exclui testes, configuração e
+   documentação interna, preservando a aplicação, `curso/` e `iniciante/`.
+2. Crie os ambientes GitHub `preview` e `production` e configure em ambos os
+   secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID`.
+3. No ambiente `production`, restrinja deployments à branch `main`; configure
+   aprovação manual se desejar uma confirmação adicional antes de publicar.
+4. Se o repositório já estiver conectado ao deploy automático do Vercel,
+   desative essa integração para evitar deploys duplicados.
+5. Proteja `main` exigindo os checks `Sintaxe dos workflows`,
+   `Qualidade e mensagens de commit` e `Testes de navegador (Docker)`.
 
 ## ♿ Acessibilidade
 
