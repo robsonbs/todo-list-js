@@ -17,8 +17,9 @@ services:
     environment:
       - BASE_URL=http://servidor:8080
       # CI=1 deixa o Playwright em modo não interativo:
-      # reporter "list", workers sequenciais e retries.
+      # reporter "list", workers limitados e retries.
       - CI=1
+      - PLAYWRIGHT_WORKERS=${PLAYWRIGHT_WORKERS:-4}
     volumes:
       # Monta os testes do host: as screenshots geradas aparecem
       # em tests/e2e/screenshots sem precisar rebuildar a imagem.

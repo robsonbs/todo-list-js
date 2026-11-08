@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { criarTarefa, tarefaComTexto } from './helpers';
 
 test.describe('Jornadas principais da aplicação', () => {

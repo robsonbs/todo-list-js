@@ -3,15 +3,23 @@ import { defineConfig, devices } from '@playwright/test';
 // No Docker, o serviço "servidor" é acessado por http://servidor:8080.
 // Fora do Docker, usamos o servidor local em localhost.
 const baseURL = process.env.BASE_URL || 'http://localhost:8080';
+const quantidadeWorkersInformada = Number(process.env.PLAYWRIGHT_WORKERS);
+const workers =
+  Number.isInteger(quantidadeWorkersInformada) && quantidadeWorkersInformada > 0
+    ? quantidadeWorkersInformada
+    : process.env.CI
+      ? 4
+      : undefined;
 
 const config = {
   testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers,
   // No CI/Docker usamos o reporter "list" porque o HTML abre um
   // servidor local e mantém o processo vivo, travando o `docker compose up`.
+  // PLAYWRIGHT_WORKERS permite ajustar o paralelismo em máquinas menores.
   reporter: process.env.CI ? 'list' : 'html',
   use: {
     baseURL,

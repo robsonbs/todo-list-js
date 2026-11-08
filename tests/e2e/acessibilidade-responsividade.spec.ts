@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { criarTarefa } from './helpers';
 
 test.describe('Acessibilidade básica e responsividade', () => {
