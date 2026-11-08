@@ -1,0 +1,25 @@
+{
+  "name": "todo-list-js",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lista de Tarefas educacional em HTML/CSS/JS puro",
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "globals": "^15.0.0",
+    "prettier": "^3.9.10",
+    "vitest": "^5.1.0",
+    "happy-dom": "^15.0.0"
+  },
+  "scripts": {
+    "lint": "eslint js/**/*.js tests/**/*.js",
+    "lint:fix": "eslint js/**/*.js tests/**/*.js --fix",
+    "format": "prettier --write js/**/*.js style.css tests/**/*.js",
+    "format:check": "prettier --check js/**/*.js style.css tests/**/*.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "docker-compose up --build playwright",
+    "test:e2e:headed": "docker-compose run --service-ports playwright npx playwright test --project=chromium --headed"
+  }
+}
