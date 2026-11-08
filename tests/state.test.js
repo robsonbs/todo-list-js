@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { criarTarefaFixture } from './helpers/fixtures.js';
+import { CONFIG } from '../js/constants.js';
 import {
   obterTarefas,
   adicionarTarefa,
@@ -122,6 +123,21 @@ describe('state.js', () => {
       expect(editarTarefa(tarefa.id, 'a'.repeat(101))).toBe(false);
       expect(obterTarefaPorId(tarefa.id).atividade).toBe('Valida');
     });
+
+    it('deve aceitar o limite exato e normalizar espaços ao editar', () => {
+      const tarefa = adicionarTarefa('Original');
+      const texto = 'a'.repeat(CONFIG.MAX_CARACTERES_TAREFA);
+
+      expect(editarTarefa(tarefa.id, `  ${texto}  `)).toBe(true);
+      expect(obterTarefaPorId(tarefa.id).atividade).toBe(texto);
+    });
+
+    it('deve preservar o texto existente quando a edição contém só espaços', () => {
+      const tarefa = adicionarTarefa('Original');
+
+      expect(editarTarefa(tarefa.id, ' \t\n ')).toBe(false);
+      expect(obterTarefaPorId(tarefa.id).atividade).toBe('Original');
+    });
   });
 
   describe('alternarConcluida', () => {
@@ -219,6 +235,19 @@ describe('state.js', () => {
       substituirTarefas([criarTarefaFixture({ id: 42, atividade: 'Existente' })]);
       const nova = adicionarTarefa('Nova');
       expect(nova.id).toBe(43);
+    });
+
+    it('não reutiliza ID removido e continua após o maior ID carregado', () => {
+      const removida = adicionarTarefa('Removida');
+      removerTarefa(removida.id);
+      const depoisDaRemocao = adicionarTarefa('Depois da remoção');
+      expect(depoisDaRemocao.id).toBeGreaterThan(removida.id);
+
+      substituirTarefas([
+        criarTarefaFixture({ id: 12, atividade: 'Maior ID' }),
+        criarTarefaFixture({ id: 4, atividade: 'Outro ID' }),
+      ]);
+      expect(adicionarTarefa('Depois da carga').id).toBe(13);
     });
   });
 });

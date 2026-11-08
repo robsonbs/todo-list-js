@@ -22,6 +22,11 @@ describe('validarTexto', () => {
     expect(validarTexto('   ')).toEqual({ valido: false, motivo: 'textoVazio' });
   });
 
+  it('trata tabulações e quebras de linha como espaços em branco', () => {
+    expect(validarTexto('\t \n')).toEqual({ valido: false, motivo: 'textoVazio' });
+    expect(validarTexto('\t tarefa \n')).toEqual({ valido: true, texto: 'tarefa' });
+  });
+
   it('trata valores ausentes como texto vazio', () => {
     expect(validarTexto(undefined)).toEqual({ valido: false, motivo: 'textoVazio' });
     expect(validarTexto(null)).toEqual({ valido: false, motivo: 'textoVazio' });
@@ -41,5 +46,14 @@ describe('validarTexto', () => {
   it('mede o limite depois de remover os espaços das pontas', () => {
     const texto = `  ${'a'.repeat(CONFIG.MAX_CARACTERES_TAREFA)}  `;
     expect(validarTexto(texto).valido).toBe(true);
+  });
+
+  it('conta emoji suplementar como duas unidades UTF-16 no limite', () => {
+    const noLimite = `${'a'.repeat(CONFIG.MAX_CARACTERES_TAREFA - 2)}😀`;
+    const acimaDoLimite = `${'a'.repeat(CONFIG.MAX_CARACTERES_TAREFA - 1)}😀`;
+
+    expect(noLimite.length).toBe(CONFIG.MAX_CARACTERES_TAREFA);
+    expect(validarTexto(noLimite)).toEqual({ valido: true, texto: noLimite });
+    expect(validarTexto(acimaDoLimite)).toEqual({ valido: false, motivo: 'textoMuitoLongo' });
   });
 });
