@@ -3,7 +3,6 @@ import { test, expect } from '@playwright/test';
 test.use({ screenshot: 'only-on-failure' });
 
 test.describe('Validação visual - Todo List', () => {
-
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
@@ -55,14 +54,18 @@ test.describe('Validação visual - Todo List', () => {
     const texto = tarefa.locator('span.texto-tarefa');
 
     // Antes de marcar
-    await expect(texto).toHaveCSS('text-decoration', 'none');
+    await expect(texto).toHaveCSS('text-decoration-line', 'none');
 
     // Marcar como concluído
     await checkbox.check();
     await expect(checkbox).toBeChecked();
 
+    // Tira o mouse de cima do checkbox: o estado :hover usa
+    // --purple (#8284FA), e aqui queremos validar a cor de repouso.
+    await page.mouse.move(0, 0);
+
     // Depois de marcar: texto deve ficar riscado
-    await expect(texto).toHaveCSS('text-decoration', /line-through/);
+    await expect(texto).toHaveCSS('text-decoration-line', 'line-through');
     await expect(texto).toHaveCSS('color', /rgb\(128, 128, 128\)/); // --gray-300 = #808080
 
     // Checkbox deve ficar roxo (--purple-dark = #5E60CE)
@@ -109,7 +112,7 @@ test.describe('Validação visual - Todo List', () => {
     // Cancelar com Esc
     await campoEdicao.press('Escape');
     await expect(campoEdicao).not.toBeVisible();
-    await expect(texto).toHaveCSS('display', '');
+    await expect(texto).not.toHaveCSS('display', 'none');
     await expect(texto).toHaveText('Tarefa para editar');
   });
 
@@ -145,7 +148,7 @@ test.describe('Validação visual - Todo List', () => {
 
   test('Estado vazio quando não há tarefas', async ({ page }) => {
     await expect(page.locator('.tarefas-empty')).toBeVisible();
-    await expect(page.locator('.tarefas-empty span')).toHaveText(
+    await expect(page.locator('.tarefas-empty__titulo')).toHaveText(
       'Você ainda não tem tarefas cadastradas'
     );
   });
@@ -165,5 +168,4 @@ test.describe('Validação visual - Todo List', () => {
 
     await expect(page.locator('#contador-concluidas')).toHaveText('1 de 2');
   });
-
 });
