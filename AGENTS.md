@@ -61,6 +61,7 @@ todo-list-js/
 │   └── main.test.js           # Testes de orquestração (fluxo completo)
 │
 ├── 🎭 tests/e2e/              # Testes end-to-end Playwright (APENAS via Docker)
+│   ├── fixtures.ts            # Contexto comum; bloqueia fontes externas nos testes
 │   ├── helpers.ts             # Ações reutilizáveis via interface acessível
 │   ├── aplicacao.spec.ts      # Jornadas de criação, conclusão, remoção e edição
 │   ├── validacao.spec.ts      # Limites, mensagens e proteção contra XSS
@@ -224,6 +225,13 @@ papéis e textos para interações; seletores CSS são apropriados para testar
 estilos. Cada caso deve ser independente; testes de recarga mantêm o mesmo
 contexto para verificar o `localStorage`. Regras puras e permutações extensas
 de dados continuam cobertas pelo Vitest, sem duplicar cada combinação no E2E.
+
+O Docker executa quatro workers por padrão (`fullyParallel`). Em máquinas com
+menos recursos, ajuste sem editar arquivos com `PLAYWRIGHT_WORKERS=2 npm run
+test:e2e`. `tests/e2e/fixtures.ts` bloqueia Google Fonts: o carregamento de
+fontes externas não é parte do contrato visual dos testes e não deve atrasar a
+suíte. O Dockerfile instala apenas a versão do runner compatível com o navegador
+da imagem, e copia os specs depois da instalação para manter o cache de build.
 
 O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright` e `docker-compose.yml`, mas **não é uma dependência local** do projeto.
 

@@ -54,6 +54,7 @@ todo-list-js/
 │   ├── dom.test.js         # Testes de estrutura e acessibilidade do DOM
 │   ├── main.test.js        # Testes de orquestração (fluxo completo)
 │   └── e2e/
+│       ├── fixtures.ts                       # Contexto rápido e fontes externas bloqueadas
 │       ├── helpers.ts                      # Ações comuns baseadas na interface acessível
 │       ├── aplicacao.spec.ts                # Criação, conclusão, remoção e edição
 │       ├── validacao.spec.ts                # Limites, mensagens e conteúdo seguro
@@ -128,6 +129,9 @@ Usuário → main.js → state.js → storage.js
 - **E2E (Playwright):** `tests/e2e/` organiza cenários por jornada; interações
   preferem rótulos e papéis acessíveis, enquanto seletores CSS ficam para
   verificações visuais. A suíte roda somente via Docker com `npm run test:e2e`.
+- **Desempenho E2E:** o container usa quatro workers por padrão; ajuste com
+  `PLAYWRIGHT_WORKERS=2 npm run test:e2e` em máquinas com menos recursos. A
+  fixture bloqueia Google Fonts, que não fazem parte do contrato visual testado.
 - **Isolamento E2E:** cada teste recebe contexto de navegador isolado. Cenários
   de recarga usam a mesma página/contexto para verificar a persistência real.
 - **Escopo E2E:** cobre as jornadas integradas no Chromium; validações de
