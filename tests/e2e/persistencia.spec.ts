@@ -22,6 +22,68 @@ test.describe('Persistência no navegador', () => {
     await expect(page.locator('#contador-concluidas')).toHaveText('1 de 1');
   });
 
+  test('mantém desmarcação após recarregar novamente', async ({ page }) => {
+    await page.goto('/');
+    await criarTarefa(page, 'Tarefa desmarcada');
+    const checkbox = tarefaComTexto(page, 'Tarefa desmarcada').getByRole('checkbox');
+    await checkbox.check();
+    await page.reload();
+    await tarefaComTexto(page, 'Tarefa desmarcada').getByRole('checkbox').uncheck();
+    await page.reload();
+
+    await expect(tarefaComTexto(page, 'Tarefa desmarcada').getByRole('checkbox')).not.toBeChecked();
+    await expect(page.locator('#contador-concluidas')).toHaveText('0 de 1');
+  });
+
+  test('mantém a remoção após recarregar a página', async ({ page }) => {
+    await page.goto('/');
+    await criarTarefa(page, 'Permanece');
+    await criarTarefa(page, 'Removida');
+    await tarefaComTexto(page, 'Removida')
+      .getByRole('button', { name: 'Deletar tarefa: Removida' })
+      .click();
+    await page.reload();
+
+    await expect(tarefaComTexto(page, 'Removida')).toHaveCount(0);
+    await expect(tarefaComTexto(page, 'Permanece')).toBeVisible();
+    await expect(page.locator('#contador-criadas')).toHaveText('1');
+  });
+
+  test('remove tarefa concluída sem alterar as demais', async ({ page }) => {
+    await page.goto('/');
+    await criarTarefa(page, 'Concluída a remover');
+    await criarTarefa(page, 'Pendente a manter');
+    await tarefaComTexto(page, 'Concluída a remover').getByRole('checkbox').check();
+    await tarefaComTexto(page, 'Concluída a remover')
+      .getByRole('button', { name: 'Deletar tarefa: Concluída a remover' })
+      .click();
+
+    await expect(tarefaComTexto(page, 'Concluída a remover')).toHaveCount(0);
+    await expect(tarefaComTexto(page, 'Pendente a manter')).toBeVisible();
+    await expect(page.locator('#contador-criadas')).toHaveText('1');
+    await expect(page.locator('#contador-concluidas')).toHaveText('0 de 1');
+  });
+
+  test('mantém estado utilizável se getItem do localStorage lançar erro', async ({ page }) => {
+    const errosDaPagina = [];
+    page.on('pageerror', (erro) => errosDaPagina.push(erro));
+    await page.addInitScript(() => {
+      const obterOriginal = Storage.prototype.getItem;
+      Storage.prototype.getItem = function (chave) {
+        if (chave === 'tarefas') {
+          throw new DOMException('Acesso bloqueado', 'SecurityError');
+        }
+        return obterOriginal.call(this, chave);
+      };
+    });
+    await page.goto('/');
+
+    await expect(page.locator('.tarefas-empty')).toBeVisible();
+    await criarTarefa(page, 'Continua utilizável');
+    await expect(tarefaComTexto(page, 'Continua utilizável')).toBeVisible();
+    expect(errosDaPagina).toHaveLength(0);
+  });
+
   test('mantém edição após recarregar a página', async ({ page }) => {
     await page.goto('/');
     await criarTarefa(page, 'Antes de recarregar');
@@ -33,6 +95,24 @@ test.describe('Persistência no navegador', () => {
     await page.reload();
 
     await expect(tarefaComTexto(page, 'Depois de recarregar')).toBeVisible();
+    await expect(page.locator('#contador-criadas')).toHaveText('1');
+  });
+
+  test('edita no limite de caracteres e persiste após recarregar', async ({ page }) => {
+    const limiteDeCaracteres = 100;
+    const textoNoLimite = 'x'.repeat(limiteDeCaracteres);
+    await page.goto('/');
+    await criarTarefa(page, 'Tarefa editável');
+    await tarefaComTexto(page, 'Tarefa editável')
+      .getByRole('button', { name: 'Editar tarefa: Tarefa editável' })
+      .press('Enter');
+    const campoEdicao = page.getByRole('textbox', { name: 'Editar tarefa' });
+    await expect(campoEdicao).toHaveAttribute('maxlength', String(limiteDeCaracteres));
+    await campoEdicao.fill(textoNoLimite);
+    await campoEdicao.press('Enter');
+    await page.reload();
+
+    await expect(tarefaComTexto(page, textoNoLimite)).toBeVisible();
     await expect(page.locator('#contador-criadas')).toHaveText('1');
   });
 

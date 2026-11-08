@@ -29,11 +29,31 @@ test.describe('Acessibilidade básica e responsividade', () => {
     ).toBeVisible();
   });
 
+  test('checkbox e exclusão podem ser ativados por teclado', async ({ page }) => {
+    await page.goto('/');
+    await criarTarefa(page, 'Ações por teclado');
+    const checkbox = page.getByRole('checkbox', {
+      name: 'Marcar "Ações por teclado" como concluída',
+    });
+    await checkbox.focus();
+    await page.keyboard.press('Space');
+    await expect(checkbox).toBeChecked();
+    await expect(page.locator('#contador-concluidas')).toHaveText('1 de 1');
+
+    const botaoRemover = page.getByRole('button', {
+      name: 'Deletar tarefa: Ações por teclado',
+    });
+    await botaoRemover.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.tarefas-empty')).toBeVisible();
+    await expect(page.locator('#contador-criadas')).toHaveText('0');
+  });
+
   test('não apresenta rolagem horizontal em telas móveis, tablet e desktop', async ({ page }) => {
     await page.goto('/');
-    await criarTarefa(page, 'Tarefa responsiva '.repeat(5));
+    await criarTarefa(page, 'x'.repeat(100));
 
-    for (const largura of [375, 768, 1280]) {
+    for (const largura of [320, 375, 768, 1280]) {
       await page.setViewportSize({ width: largura, height: 900 });
       await expect(page.getByLabel('Nova tarefa', { exact: true })).toBeVisible();
       await expect(page.getByRole('listitem')).toBeVisible();

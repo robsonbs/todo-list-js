@@ -52,12 +52,34 @@ test.describe('Validação e conteúdo seguro', () => {
   });
 
   test('substitui o aviso anterior e remove o aviso temporário', async ({ page }) => {
+    await page.clock.install({ time: new Date('2026-11-08T00:00:00Z') });
+    await page.clock.pauseAt(new Date('2026-11-08T00:00:00Z'));
+    await page.evaluate(() => {
+      const gravarOriginal = Storage.prototype.setItem;
+      let falharProximaGravacao = true;
+      Storage.prototype.setItem = function (chave, valor) {
+        if (chave === 'tarefas' && falharProximaGravacao) {
+          falharProximaGravacao = false;
+          throw new DOMException('Armazenamento indisponível', 'QuotaExceededError');
+        }
+        gravarOriginal.call(this, chave, valor);
+      };
+    });
+    await criarTarefa(page, 'Primeira mensagem de falha');
+    await expect(page.getByRole('alert')).toHaveText(
+      'Não foi possível salvar as tarefas no navegador.'
+    );
+    await page.clock.runFor(1000);
+
     const botaoCriar = page.getByRole('button', { name: 'Criar nova tarefa' });
-    await botaoCriar.click();
+    await page.getByLabel('Nova tarefa', { exact: true }).fill('');
     await botaoCriar.click();
 
     await expect(page.getByRole('alert')).toHaveCount(1);
     await expect(page.getByRole('alert')).toHaveText('Digite uma tarefa antes de criar.');
-    await expect(page.getByRole('alert')).toHaveCount(0, { timeout: 5000 });
+    await page.clock.runFor(2000);
+    await expect(page.getByRole('alert')).toHaveText('Digite uma tarefa antes de criar.');
+    await page.clock.runFor(1000);
+    await expect(page.getByRole('alert')).toHaveCount(0);
   });
 });

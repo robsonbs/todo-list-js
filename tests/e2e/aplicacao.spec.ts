@@ -151,4 +151,54 @@ test.describe('Jornadas principais da aplicação', () => {
     await expect(tarefaComTexto(page, 'Preservar texto')).toBeVisible();
     await expect(page.locator('.mensagem-flash')).toHaveCount(0);
   });
+
+  test('fechar uma edição sem mudar o texto não persiste nem exibe aviso', async ({ page }) => {
+    await criarTarefa(page, 'Texto inalterado');
+    const dadosAntes = await page.evaluate(() => localStorage.getItem('tarefas'));
+    await tarefaComTexto(page, 'Texto inalterado')
+      .getByRole('button', { name: 'Editar tarefa: Texto inalterado' })
+      .press('Enter');
+    await page.getByRole('textbox', { name: 'Editar tarefa' }).press('Enter');
+
+    await expect(tarefaComTexto(page, 'Texto inalterado')).toBeVisible();
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.getByRole('textbox', { name: 'Editar tarefa' })).toHaveCount(0);
+    const dadosDepois = await page.evaluate(() => localStorage.getItem('tarefas'));
+    expect(dadosDepois).toBe(dadosAntes);
+  });
+
+  test('cancela a edição pendente ao iniciar edição em outra tarefa', async ({ page }) => {
+    await criarTarefa(page, 'Primeira original');
+    await criarTarefa(page, 'Segunda original');
+    await tarefaComTexto(page, 'Primeira original')
+      .getByRole('button', { name: 'Editar tarefa: Primeira original' })
+      .press('Enter');
+    await page.getByRole('textbox', { name: 'Editar tarefa' }).fill('Rascunho descartado');
+
+    await tarefaComTexto(page, 'Segunda original')
+      .getByRole('button', { name: 'Editar tarefa: Segunda original' })
+      .press('Enter');
+
+    await expect(tarefaComTexto(page, 'Primeira original')).toBeVisible();
+    await expect(tarefaComTexto(page, 'Rascunho descartado')).toHaveCount(0);
+    await expect(page.getByRole('textbox', { name: 'Editar tarefa' })).toHaveValue(
+      'Segunda original'
+    );
+    await page.getByRole('textbox', { name: 'Editar tarefa' }).press('Escape');
+    await expect(page.locator('.campo-edicao')).toHaveCount(0);
+  });
+
+  test('foco de teclado inicia edição sem depender de duplo clique', async ({ page }) => {
+    await criarTarefa(page, 'Edição acessível');
+    const acionador = page.getByRole('button', { name: 'Editar tarefa: Edição acessível' });
+    await acionador.focus();
+    await expect(acionador).toBeFocused();
+    await acionador.press('Space');
+
+    const campoEdicao = page.getByRole('textbox', { name: 'Editar tarefa' });
+    await expect(campoEdicao).toBeFocused();
+    await campoEdicao.fill('Salva pelo teclado');
+    await campoEdicao.press('Enter');
+    await expect(tarefaComTexto(page, 'Salva pelo teclado')).toBeVisible();
+  });
 });
