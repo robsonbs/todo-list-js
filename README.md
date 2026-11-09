@@ -13,11 +13,20 @@ open index.html
 # Ou usar uma extensão como "Live Server" no VS Code
 ```
 
-Para rodar testes e ferramentas de qualidade, instale as dependências de desenvolvimento:
+Para rodar testes e ferramentas de qualidade, use Node.js 26.13.0 e npm 11 ou
+compatíveis. Com [nvm](https://github.com/nvm-sh/nvm), entre na pasta do projeto
+e ative a versão fixada:
 
 ```bash
-npm install
+nvm install
+nvm use
+npm ci
 ```
+
+O `.nvmrc` fixa a versão do Node e o `.npmrc` faz o npm rejeitar versões
+incompatíveis e salvar novas dependências com versões exatas. O `package-lock.json`
+trava toda a árvore de dependências; após mudanças nas dependências, atualize-o
+deliberadamente e valide com `npm ci`.
 
 ## 📁 Estrutura do projeto
 
@@ -35,6 +44,8 @@ todo-list-js/
 ├── AGENTS.md               # Instruções para agentes de IA
 ├── package.json            # Scripts de desenvolvimento
 ├── package-lock.json       # Versões travadas (builds reprodutíveis)
+├── .nvmrc                  # Versão exata do Node.js (26.13.0)
+├── .npmrc                  # Versões exatas e validação estrita do Node
 ├── eslint.config.js        # Configuração do ESLint (flat config)
 ├── .prettierrc             # Configuração do Prettier
 ├── .prettierignore         # Arquivos ignorados pelo Prettier
@@ -64,7 +75,9 @@ todo-list-js/
 │   ├── dom.test.js         # Testes de estrutura e acessibilidade do DOM
 │   ├── main.test.js        # Testes de orquestração (fluxo completo)
 │   └── e2e/
-│       ├── fixtures.ts                       # Contexto rápido e fontes externas bloqueadas
+│       ├── package.json                      # Runner Playwright (somente no Docker)
+│       ├── package-lock.json                 # Árvore E2E travada
+│       ├── fixtures.ts                       # Contexto comum dos testes E2E
 │       ├── helpers.ts                      # Ações comuns baseadas na interface acessível
 │       ├── aplicacao.spec.ts                # Criação, conclusão, remoção e edição
 │       ├── validacao.spec.ts                # Limites, mensagens e conteúdo seguro
@@ -151,10 +164,14 @@ Usuário → main.js → state.js → storage.js
 - **E2E (Playwright):** `tests/e2e/` organiza cenários por jornada; interações
   preferem rótulos e papéis acessíveis, enquanto seletores CSS ficam para
   verificações visuais. A suíte roda somente via Docker com `npm run test:e2e`.
+- **Imagens E2E:** `Dockerfile.playwright` usa Playwright `1.65.0` com os
+  navegadores correspondentes; o servidor usa Python `3.15.2-slim-trixie`.
+  Ambas as imagens são fixadas por digest, e o runner tem lockfile próprio em
+  `tests/e2e/`. Atualize imagem, versão do runner e lockfile em conjunto.
 - **Desempenho E2E:** o container usa quatro workers por padrão; ajuste com
   `PLAYWRIGHT_WORKERS=2 npm run test:e2e` em máquinas com menos recursos. A
-  aplicação não carrega fontes externas, então a suíte não depende da rede além
-  do próprio servidor.
+  aplicação não carrega recursos externos; o primeiro build precisa acessar os
+  registries para baixar as imagens e dependências fixadas.
 - **Isolamento E2E:** cada teste recebe contexto de navegador isolado. Cenários
   de recarga usam a mesma página/contexto para verificar a persistência real.
 - **Escopo E2E:** cobre as jornadas integradas no Chromium; validações de

@@ -23,6 +23,7 @@ Este arquivo fornece instruções e contexto para agentes de IA (IA agents) que 
 | CSS3              | Estilização             | Custom Properties (variáveis CSS), Flexbox, Media Queries, Dark Theme |
 | JavaScript (ES6+) | Lógica e interatividade | Vanilla JS, sem frameworks, manipulação do DOM, localStorage          |
 | Navegador         | Runtime                 | Qualquer navegador moderno (Chrome, Firefox, Safari, Edge)            |
+| Node.js           | Ferramentas de dev      | 26.13.0 (fixado em `.nvmrc`); npm 11 ou superior                      |
 
 ---
 
@@ -35,6 +36,8 @@ todo-list-js/
 ├── 🖼️ favicon.svg             # Ícone da aba (evita o 404 de /favicon.ico)
 ├── ⚡ vercel.json             # Cache HTTP da fonte no deploy
 ├── 📂 assets/fonts/           # Fonte Inter local (woff2 + licença OFL)
+├── 📌 .nvmrc                  # Versão exata do Node.js (26.13.0)
+├── ⚙️ .npmrc                   # Versões exatas e validação estrita do Node
 ├── 🤖 AGENTS.md               # Este arquivo - instruções para agentes de IA
 ├── 📖 README.md               # Documentação completa do projeto
 ├── 📦 package.json            # Scripts de desenvolvimento (sem dependências locais de E2E)
@@ -68,6 +71,8 @@ todo-list-js/
 │
 ├── 🎭 tests/e2e/              # Testes end-to-end Playwright (APENAS via Docker)
 │   ├── fixtures.ts            # Contexto comum dos testes E2E
+│   ├── package.json           # Runner Playwright (somente no Docker)
+│   ├── package-lock.json      # Árvore de dependências E2E travada
 │   ├── helpers.ts             # Ações reutilizáveis via interface acessível
 │   ├── aplicacao.spec.ts      # Jornadas de criação, conclusão, remoção e edição
 │   ├── validacao.spec.ts      # Limites, mensagens e proteção contra XSS
@@ -180,7 +185,9 @@ todo-list-js/
 Não há dependências de runtime (não usa frameworks, bundlers, etc.). As dependências de desenvolvimento (ESLint, Prettier, Vitest) só são necessárias para rodar as verificações:
 
 ```bash
-npm install   # instala as ferramentas de desenvolvimento
+nvm install   # instala a versão definida em .nvmrc (na primeira configuração)
+nvm use       # ativa Node.js 26.13.0
+npm ci        # instala exatamente as versões do package-lock.json
 ```
 
 ```bash
@@ -190,10 +197,11 @@ npm install   # instala as ferramentas de desenvolvimento
 
 **Fluxo de desenvolvimento recomendado:**
 
-1. Abra `index.html` no navegador
-2. Faça alterações em `js/*.js`, `style.css` ou `index.html`
-3. Recarregue a página para ver as mudanças
-4. Use o DevTools do navegador (F12) para debug e console.log
+1. Instale/ative Node.js 26.13.0 com `nvm install && nvm use` e rode `npm ci`
+2. Abra `index.html` no navegador
+3. Faça alterações em `js/*.js`, `style.css` ou `index.html`
+4. Recarregue a página para ver as mudanças
+5. Use o DevTools do navegador (F12) para debug e console.log
 
 ---
 
@@ -235,10 +243,14 @@ de dados continuam cobertas pelo Vitest, sem duplicar cada combinação no E2E.
 
 O Docker executa quatro workers por padrão (`fullyParallel`). Em máquinas com
 menos recursos, ajuste sem editar arquivos com `PLAYWRIGHT_WORKERS=2 npm run
-test:e2e`. A aplicação não carrega fontes externas (a Inter é local), então a
-suíte não depende da rede além do próprio servidor. O Dockerfile instala apenas
-a versão do runner compatível com o navegador da imagem, e copia os specs depois
-da instalação para manter o cache de build.
+test:e2e`. O navegador usa Playwright `1.65.0` em imagem oficial fixada por
+digest; a versão do runner deve sempre coincidir com a versão da imagem para
+encontrar os navegadores corretos. A dependência E2E e sua árvore ficam travadas
+em `tests/e2e/package-lock.json` e são instaladas somente dentro do Docker.
+O servidor estático usa Python `3.15.2-slim-trixie`, também fixado por digest.
+A aplicação não carrega recursos externos; o primeiro build precisa acessar os
+registries para baixar imagens e dependências. O Dockerfile copia os manifests
+antes dos specs para preservar o cache ao editar testes.
 
 O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright` e `docker-compose.yml`, mas **não é uma dependência local** do projeto.
 
@@ -248,7 +260,10 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
   executa o E2E no Docker e valida o próprio YAML do workflow com actionlint.
 - O deploy Vercel de produção só acontece em `main` após os checks; previews
   são limitados a PRs internos. Nunca expor secrets a PRs de forks.
-- Node.js 22.x é necessário para as versões atuais de ESLint, Vitest e Commitlint.
+- Node.js 26.13.0 e npm 11 são os requisitos para as ferramentas locais; `.nvmrc`
+  define a versão e `.npmrc` (`engine-strict=true`) rejeita versões incompatíveis.
+- Dependências de desenvolvimento usam versões exatas em `package.json`; atualize
+  `package-lock.json` intencionalmente e valide a instalação com `npm ci`.
 - Para testar o histórico local com as regras de commit:
   `npx commitlint --from origin/main --to HEAD --strict`.
 
