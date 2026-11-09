@@ -1,16 +1,17 @@
 # Imagem oficial do Playwright: já traz os navegadores e as
 # dependências de sistema necessárias (nada é instalado na máquina local).
-FROM mcr.microsoft.com/playwright:v1.48.0-jammy
+FROM mcr.microsoft.com/playwright:v1.65.0-noble@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d
 
 WORKDIR /app
 
 # Copia a configuração e os testes E2E.
 COPY playwright.config.js ./
 
-# O container precisa somente do runner E2E. Não copiamos o package.json
-# da aplicação para evitar instalar ESLint, Vitest e outras ferramentas.
-# A versão coincide com os navegadores que já vêm na imagem base.
-RUN npm init -y && npm install --no-save @playwright/test@1.48.0
+# O container instala somente o runner E2E, a partir de um lockfile próprio.
+# O pacote Playwright precisa corresponder à versão dos navegadores da imagem.
+COPY tests/e2e/package.json tests/e2e/package-lock.json ./
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+RUN npm ci
 
 # Mantém os testes disponíveis mesmo quando o volume do Compose não é usado.
 # Essa cópia fica depois da instalação para preservar o cache ao editar specs.
