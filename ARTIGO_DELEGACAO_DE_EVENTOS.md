@@ -110,6 +110,33 @@ No projeto, não é literalmente um único ouvinte para tudo. A lista registra
 **um ouvinte para cada tipo de evento delegado**: `click`, `dblclick` e
 `keydown`. O importante é que eles ficam no container, e não em cada tarefa.
 
+### Por que esse jeito combina com este projeto?
+
+Porque a nossa lista é **viva**: a pessoa pode criar e apagar tarefas, e a
+interface é redesenhada em alguns desses momentos. A função `renderizarLista()`
+em `js/dom.js` usa `replaceChildren()` para trocar os itens que estão dentro de
+`.tarefas-box`. Se cada botão e cada caixinha tivesse seu próprio ouvinte, ao
+trocar os itens também trocaríamos esses elementos — e seria preciso instalar
+todos os ouvintes de novo, sem esquecer nenhum.
+
+Com a delegação, os itens podem sair e entrar, mas a “sala” `.tarefas-box`
+continua no lugar com seus ouvintes. A tarefa nova já chega podendo ser marcada,
+editada e removida. O `data-id` funciona como crachá para `main.js` descobrir
+qual tarefa recebeu a ação.
+
+Isso também deixa o projeto mais fácil de aprender: três ouvintes ficam juntos
+em `configurarDelegacaoDeEventos()`, e três funções explicam as ações da lista
+(`aoClicarNaLista()`, `aoDuploCliqueNaLista()` e `aoPressionarTeclaNaLista()`).
+Em vez de decorar cada cadeira com um sininho, aprendemos uma regra importante
+do navegador: os eventos sobem até seus pais.
+
+> **A escolha não é porque delegação sempre deixa tudo mais rápido.** Nesta
+> lista pequena, a diferença de velocidade provavelmente é quase invisível.
+> Ela foi indicada principalmente porque os itens são dinâmicos e são trocados
+> durante a renderização; delegar evita religar ouvintes em cada item e mantém
+> o código organizado. Para um controle único e permanente, um ouvinte direto
+> também pode ser uma ótima escolha.
+
 O formulário de criar tarefa tem um ouvinte separado para `submit`, porque ele
 fica fora da lista. Assim, clicar em **Criar** ou apertar Enter no campo é
 tratado por `aoSubmeterFormulario()` no formulário, não pela delegação da sala

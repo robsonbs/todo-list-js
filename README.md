@@ -41,6 +41,7 @@ todo-list-js/
 │       ├── inter-latin.woff2 # Fonte Inter local (subset latin, variável)
 │       └── OFL.txt           # Licença SIL OFL 1.1 da Inter
 ├── README.md               # Este arquivo
+├── ARTIGO_DELEGACAO_DE_EVENTOS.md # Guia didático sobre eventos na lista
 ├── AGENTS.md               # Instruções para agentes de IA
 ├── package.json            # Scripts de desenvolvimento
 ├── package-lock.json       # Versões travadas (builds reprodutíveis)

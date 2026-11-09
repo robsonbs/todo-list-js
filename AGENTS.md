@@ -40,6 +40,7 @@ todo-list-js/
 ├── ⚙️ .npmrc                   # Versões exatas e validação estrita do Node
 ├── 🤖 AGENTS.md               # Este arquivo - instruções para agentes de IA
 ├── 📖 README.md               # Documentação completa do projeto
+├── 📚 ARTIGO_DELEGACAO_DE_EVENTOS.md # Guia didático sobre eventos na lista
 ├── 📦 package.json            # Scripts de desenvolvimento (sem dependências locais de E2E)
 ├── ⚙️ eslint.config.js        # Configuração ESLint v10
 ├── 📝 .prettierrc             # Configuração Prettier
