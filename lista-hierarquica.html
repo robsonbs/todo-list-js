@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+  <!--
+    VARIANTE HIERÁRQUICA — mantém a lista original intacta e usa
+    módulos e uma chave localStorage próprios para a árvore.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="assets/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>Lista de Tarefas em Camadas</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style-hierarquia.css" />
+    <link rel="modulepreload" href="js/hierarquia/constants.js" />
+    <link rel="modulepreload" href="js/hierarquia/state.js" />
+    <link rel="modulepreload" href="js/hierarquia/storage.js" />
+    <link rel="modulepreload" href="js/hierarquia/dom.js" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header id="header">
+        <h1><span class="logo-icon" aria-hidden="true"></span> Tarefas em camadas</h1>
+        <p class="subtitulo-hierarquia">Organize cada plano em até três níveis.</p>
+        <a class="link-versao" href="index.html">Voltar à lista simples</a>
+      </header>
+
+      <form id="todo-form" aria-label="Adicionar tarefa principal">
+        <label for="todo-input" class="sr-only">Nova tarefa principal</label>
+        <input
+          type="text"
+          id="todo-input"
+          name="nova-tarefa"
+          placeholder="Ex.: Preparar uma viagem"
+          maxlength="100"
+          autocomplete="off"
+        />
+        <button type="submit" id="btn-criar" aria-label="Criar tarefa principal"></button>
+      </form>
+
+      <p
+        id="mensagem-hierarquia"
+        class="mensagem-hierarquia"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
+
+      <main class="tarefas-container">
+        <header class="tarefas-header" aria-live="polite">
+          <div class="tarefas-criadas">
+            <span>Tarefas em todos os níveis</span>
+            <p id="contador-criadas" aria-label="Número total de tarefas">0</p>
+          </div>
+          <div class="tarefas-concluidas">
+            <span>Concluídas</span>
+            <p id="contador-concluidas" aria-label="Número de tarefas concluídas">0 de 0</p>
+          </div>
+        </header>
+
+        <section class="tarefas-box" aria-label="Árvore de tarefas">
+          <div id="lista-hierarquica"></div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="js/hierarquia/main.js"></script>
+  </body>
+</html>

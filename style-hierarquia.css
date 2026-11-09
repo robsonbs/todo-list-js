@@ -1,0 +1,242 @@
+/* ============================================================
+   STYLE-HIERARQUIA.CSS — Estilos exclusivos da variante em camadas
+   Usa a identidade visual compartilhada de style.css.
+   ============================================================ */
+
+.subtitulo-hierarquia {
+  margin-top: 0.5rem;
+  color: var(--gray-200);
+  text-align: center;
+}
+
+#header {
+  height: auto;
+  min-height: 12.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+}
+
+#todo-form button {
+  width: 3.375rem;
+  min-width: 3.375rem;
+  padding: 0;
+}
+
+.logo-icon svg {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+}
+
+.link-versao {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--blue);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.link-versao:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 4px;
+}
+
+.tarefas-box #lista-hierarquica {
+  width: 100%;
+}
+
+.lista-hierarquica,
+.lista-hierarquica__filhos {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+}
+
+.tarefa-hierarquica {
+  display: block;
+  min-height: 0;
+  padding: 0.75rem;
+}
+
+.tarefa-hierarquica__linha {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tarefa-hierarquica__acoes {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tarefa-hierarquica .texto-tarefa {
+  flex: 1 1 10rem;
+}
+
+.tarefa-hierarquica input[type='checkbox']:indeterminate {
+  background: var(--purple-dark);
+  border-color: var(--purple-dark);
+}
+
+.tarefa-hierarquica input[type='checkbox']:indeterminate::after {
+  content: '−';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+  transform: translate(-50%, -56%);
+}
+
+.tarefa-hierarquica input[type='checkbox']:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.lista-hierarquica button {
+  display: inline-flex;
+  min-width: 2.5rem;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: 1px solid var(--gray-400);
+  border-radius: 0.375rem;
+  background: var(--gray-600);
+  color: var(--gray-100);
+  font-size: 0.8rem;
+}
+
+.tarefa-hierarquica__acoes .botao-subtarefa {
+  color: var(--blue);
+}
+
+.tarefa-hierarquica__acoes .botao-editar-tarefa {
+  color: var(--gray-200);
+}
+
+.icone-adicionar svg,
+.icone-editar svg,
+.icone-exclusao svg,
+.icone-salvar svg,
+.icone-cancelar svg {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.lista-hierarquica button:hover {
+  border-color: var(--purple);
+  background: var(--gray-500);
+}
+
+.lista-hierarquica button:focus-visible,
+.formulario-item input:focus-visible,
+.formulario-item button:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.lista-hierarquica__filhos {
+  margin-top: 0.75rem;
+  padding-left: clamp(0.75rem, 4vw, 1.5rem);
+  border-left: 2px solid var(--gray-400);
+}
+
+.formulario-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-left: 2.1rem;
+}
+
+.formulario-item .campo-formulario-item {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--gray-400);
+  border-radius: 0.375rem;
+  background: var(--gray-600);
+  color: var(--gray-100);
+}
+
+.acoes-formulario-item {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mensagem-hierarquia {
+  width: min(46rem, calc(100% - 2rem));
+  margin: 0 auto -2.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-400);
+  border-radius: 0.5rem;
+  color: var(--gray-100);
+  text-align: center;
+}
+
+.mensagem-hierarquia[hidden] {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .tarefa-hierarquica__linha {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    align-items: start;
+    gap: 0.5rem;
+  }
+
+  .tarefa-hierarquica__linha input[type='checkbox'] {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  .tarefa-hierarquica__linha .texto-tarefa {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+
+  .tarefa-hierarquica__acoes {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .tarefa-hierarquica__acoes button {
+    min-height: 2.5rem;
+  }
+
+  .formulario-item {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  #todo-form button {
+    align-self: flex-end;
+    flex: 0 0 3.375rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lista-hierarquica *,
+  .lista-hierarquica *::before,
+  .lista-hierarquica *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
