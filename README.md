@@ -33,7 +33,9 @@ deliberadamente e valide com `npm ci`.
 ```
 todo-list-js/
 ├── index.html              # Página principal (HTML semântico)
+├── lista-hierarquica.html  # Variante independente com tarefas em até 3 níveis
 ├── style.css               # Estilos (variáveis CSS, Flexbox, responsivo)
+├── style-hierarquia.css    # Estilos extras da variante hierárquica
 ├── favicon.svg             # Ícone da aba (evita o 404 de /favicon.ico)
 ├── vercel.json             # Cache HTTP da fonte no deploy
 ├── assets/
@@ -64,7 +66,8 @@ todo-list-js/
 │   ├── storage.js          # Abstração do localStorage
 │   ├── icones.js           # SVGs estáticos da interface
 │   ├── dom.js              # Manipulação pura de DOM
-│   └── main.js             # Orquestração e eventos
+│   ├── main.js              # Orquestração e eventos
+│   └── hierarquia/          # Estado, DOM, storage e eventos da árvore
 ├── tests/
 │   ├── helpers/
 │   │   ├── fixtures.js     # DOM e dados reutilizáveis nos testes
@@ -75,10 +78,12 @@ todo-list-js/
 │   ├── storage.test.js     # Testes unitários do storage.js
 │   ├── dom.test.js         # Testes de estrutura e acessibilidade do DOM
 │   ├── main.test.js        # Testes de orquestração (fluxo completo)
+│   ├── hierarquia/          # Testes unitários da árvore, DOM e persistência
 │   └── e2e/
 │       ├── package.json                      # Runner Playwright (somente no Docker)
 │       ├── package-lock.json                 # Árvore E2E travada
 │       ├── fixtures.ts                       # Contexto comum dos testes E2E
+│       ├── hierarquia.spec.ts                 # Jornadas da variante em camadas
 │       ├── helpers.ts                      # Ações comuns baseadas na interface acessível
 │       ├── aplicacao.spec.ts                # Criação, conclusão, remoção e edição
 │       ├── validacao.spec.ts                # Limites, mensagens e conteúdo seguro
@@ -88,6 +93,20 @@ todo-list-js/
 ├── curso/                  # Material do curso (9 aulas)
 └── iniciante/              # Versões simplificadas para iniciantes
 ```
+
+## 🌳 Variante com tarefas hierárquicas
+
+A página [`lista-hierarquica.html`](lista-hierarquica.html) é uma variante
+independente: organiza tarefas principais, subtarefas e sub-subtarefas (três
+níveis no total). O estado de uma tarefa que tem filhos é calculado a partir
+deles; folhas podem ser marcadas diretamente e a marcação parcial é mostrada
+quando apenas parte dos descendentes está concluída. Remover um ramo remove
+também seus descendentes.
+
+Ela usa a chave `tarefas-hierarquicas` no `localStorage`, sem alterar a chave
+`tarefas` da lista original. Os testes da árvore rodam localmente com `npm test`;
+os cenários de navegador ficam em `tests/e2e/hierarquia.spec.ts` e rodam via
+Docker com `npm run test:e2e`.
 
 ## ⚡ Performance
 

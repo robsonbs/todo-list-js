@@ -32,7 +32,9 @@ Este arquivo fornece instruções e contexto para agentes de IA (IA agents) que 
 ```
 todo-list-js/
 ├── 📄 index.html              # Página principal (HTML semântico, acessível)
+├── 🌳 lista-hierarquica.html  # Variante independente com tarefas em até 3 níveis
 ├── 🎨 style.css               # Estilos principais (CSS variáveis, flexbox, responsivo)
+├── 🎨 style-hierarquia.css   # Estilos extras da variante hierárquica
 ├── 🖼️ favicon.svg             # Ícone da aba (evita o 404 de /favicon.ico)
 ├── ⚡ vercel.json             # Cache HTTP da fonte no deploy
 ├── 📂 assets/fonts/           # Fonte Inter local (woff2 + licença OFL)
@@ -58,7 +60,13 @@ todo-list-js/
 │   ├── storage.js             # Abstração do localStorage (salvarTarefas/carregarTarefas)
 │   ├── icones.js              # SVGs estáticos da interface
 │   ├── dom.js                 # Manipulação pura de DOM (createElement + textContent, sem XSS)
-│   └── main.js                # Orquestração de eventos (event delegation)
+│   ├── main.js                # Orquestração de eventos (event delegation)
+│   └── hierarquia/            # Módulos independentes da lista em árvore
+│       ├── constants.js       # Limites, seletores, classes e chave própria
+│       ├── state.js           # Árvore, níveis e conclusão calculada
+│       ├── storage.js         # Persistência isolada em tarefas-hierarquicas
+│       ├── dom.js             # Listas aninhadas e formulários acessíveis
+│       └── main.js            # Delegação de eventos e coordenação
 │
 ├── 🧪 tests/
 │   ├── helpers/fixtures.js    # DOM e dados reutilizáveis nos testes
@@ -68,19 +76,23 @@ todo-list-js/
 │   ├── state.test.js          # Testes unitários de lógica de negócio (Vitest)
 │   ├── storage.test.js        # Testes unitários de persistência (Vitest)
 │   ├── dom.test.js            # Testes unitários de estrutura DOM e ARIA (Vitest)
-│   └── main.test.js           # Testes de orquestração (fluxo completo)
-│
-├── 🎭 tests/e2e/              # Testes end-to-end Playwright (APENAS via Docker)
-│   ├── fixtures.ts            # Contexto comum dos testes E2E
-│   ├── package.json           # Runner Playwright (somente no Docker)
-│   ├── package-lock.json      # Árvore de dependências E2E travada
-│   ├── helpers.ts             # Ações reutilizáveis via interface acessível
-│   ├── aplicacao.spec.ts      # Jornadas de criação, conclusão, remoção e edição
-│   ├── validacao.spec.ts      # Limites, mensagens e proteção contra XSS
-│   ├── persistencia.spec.ts   # Recarga, dados inválidos e falha ao salvar
-│   ├── acessibilidade-responsividade.spec.ts # Teclado e tamanhos de tela
-│   ├── visual.spec.ts         # Aparência e estados visuais
-│   └── screenshots/           # Capturas de tela em caso de falha
+│   ├── main.test.js           # Testes de orquestração (fluxo completo)
+│   ├── hierarquia/            # Testes unitários da árvore, DOM e persistência
+│   │   ├── state.test.js
+│   │   ├── dom.test.js
+│   │   └── storage.test.js
+│   └── e2e/                   # Playwright (APENAS via Docker)
+│       ├── fixtures.ts        # Contexto comum dos testes E2E
+│       ├── hierarquia.spec.ts # Jornadas da variante em camadas
+│       ├── package.json       # Runner Playwright (somente no Docker)
+│       ├── package-lock.json  # Árvore de dependências E2E travada
+│       ├── helpers.ts         # Ações reutilizáveis via interface acessível
+│       ├── aplicacao.spec.ts  # Jornadas de criação, conclusão, remoção e edição
+│       ├── validacao.spec.ts  # Limites, mensagens e proteção contra XSS
+│       ├── persistencia.spec.ts # Recarga, dados inválidos e falha ao salvar
+│       ├── acessibilidade-responsividade.spec.ts # Teclado e tamanhos de tela
+│       ├── visual.spec.ts     # Aparência e estados visuais
+│       └── screenshots/       # Capturas de tela em caso de falha
 │
 ├── 📚 MELHORIAS_PARA_INICIANTES.md  # Documentação das melhorias educativas
 ├── 📖 PLANO_CURSO_JAVASCRIPT.md     # Plano de curso de 8 aulas de JavaScript
@@ -147,6 +159,13 @@ todo-list-js/
 - `alternarConcluida()`, `obterContadores()`, `substituirTarefas()`
 - Normaliza dados carregados: exige `id` inteiro positivo e descarta IDs repetidos
 - Não manipula DOM, não acessa localStorage
+
+### `js/hierarquia/`
+
+- Implementa a variante independente de tarefas aninhadas com profundidade máxima de três níveis
+- Mantém a chave `tarefas-hierarquicas`, sem ler ou sobrescrever a chave `tarefas`
+- Folhas podem ser marcadas; pais com filhos calculam conclusão e estado parcial a partir dos descendentes
+- Remover uma tarefa remove toda a subárvore; dados carregados são validados e limitados a três níveis
 
 ### `js/storage.js`
 
@@ -263,6 +282,10 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
   são limitados a PRs internos. Nunca expor secrets a PRs de forks.
 - Node.js 26.13.0 e npm 11 são os requisitos para as ferramentas locais; `.nvmrc`
   define a versão e `.npmrc` (`engine-strict=true`) rejeita versões incompatíveis.
+- A página hierárquica é independente da lista plana, usa `tarefas-hierarquicas`
+  no localStorage e limita a árvore a três níveis. Pais com filhos são calculados;
+  remover um pai remove também toda a subárvore. Preserve esse isolamento ao
+  alterar qualquer uma das versões.
 - Dependências de desenvolvimento usam versões exatas em `package.json`; atualize
   `package-lock.json` intencionalmente e valide a instalação com `npm ci`.
 - Para testar o histórico local com as regras de commit:
