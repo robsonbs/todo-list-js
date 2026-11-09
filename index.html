@@ -12,23 +12,36 @@
     <!-- Charset UTF-8: permite acentos e caracteres especiais (pt-BR). -->
     <meta charset="UTF-8" />
 
-    <!-- Preconecta aos servidores de fonte para acelerar o carregamento. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
     <!-- Viewport: base do design responsivo em celulares e tablets. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Fonte Inter (400, 600 e 700) com display=swap para evitar atraso. -->
+    <!-- Favicon local: evita o pedido automático a /favicon.ico. -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+    <!-- Fonte Inter servida localmente (assets/fonts).
+         O preload antecipa o download do .woff2; "crossorigin" é
+         obrigatório no preload de fontes, mesmo same-origin. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="assets/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     <title>Lista de Tarefas - TODO List</title>
 
     <!-- Folha de estilos externa: toda a aparência da aplicação. -->
     <link rel="stylesheet" href="style.css" />
+
+    <!-- modulepreload: baixa os módulos em paralelo, sem esperar a
+         descoberta em cadeia a partir de main.js. -->
+    <link rel="modulepreload" href="js/state.js" />
+    <link rel="modulepreload" href="js/storage.js" />
+    <link rel="modulepreload" href="js/validacao.js" />
+    <link rel="modulepreload" href="js/dom.js" />
+    <link rel="modulepreload" href="js/constants.js" />
+    <link rel="modulepreload" href="js/icones.js" />
   </head>
 
   <body>

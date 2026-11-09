@@ -32,6 +32,9 @@ Este arquivo fornece instruções e contexto para agentes de IA (IA agents) que 
 todo-list-js/
 ├── 📄 index.html              # Página principal (HTML semântico, acessível)
 ├── 🎨 style.css               # Estilos principais (CSS variáveis, flexbox, responsivo)
+├── 🖼️ favicon.svg             # Ícone da aba (evita o 404 de /favicon.ico)
+├── ⚡ vercel.json             # Cache HTTP da fonte no deploy
+├── 📂 assets/fonts/           # Fonte Inter local (woff2 + licença OFL)
 ├── 🤖 AGENTS.md               # Este arquivo - instruções para agentes de IA
 ├── 📖 README.md               # Documentação completa do projeto
 ├── 📦 package.json            # Scripts de desenvolvimento (sem dependências locais de E2E)
@@ -64,7 +67,7 @@ todo-list-js/
 │   └── main.test.js           # Testes de orquestração (fluxo completo)
 │
 ├── 🎭 tests/e2e/              # Testes end-to-end Playwright (APENAS via Docker)
-│   ├── fixtures.ts            # Contexto comum; bloqueia fontes externas nos testes
+│   ├── fixtures.ts            # Contexto comum dos testes E2E
 │   ├── helpers.ts             # Ações reutilizáveis via interface acessível
 │   ├── aplicacao.spec.ts      # Jornadas de criação, conclusão, remoção e edição
 │   ├── validacao.spec.ts      # Limites, mensagens e proteção contra XSS
@@ -99,7 +102,8 @@ todo-list-js/
 - Atributos ARIA pontuais (`role="list"`, `aria-label`, mensagens com `role="alert"`)
 - Carrega `js/main.js` como módulo ES (`<script type="module">`)
 - Meta tags para charset UTF-8 e viewport (responsividade)
-- Fonte Inter importada do Google Fonts
+- Fonte Inter servida localmente (`assets/fonts/`) com `preload` e `crossorigin`
+- `modulepreload` dos módulos ES para download em paralelo
 - O `maxlength` do campo acompanha `CONFIG.MAX_CARACTERES_TAREFA` (verificado por contrato)
 
 ### `style.css`
@@ -231,10 +235,10 @@ de dados continuam cobertas pelo Vitest, sem duplicar cada combinação no E2E.
 
 O Docker executa quatro workers por padrão (`fullyParallel`). Em máquinas com
 menos recursos, ajuste sem editar arquivos com `PLAYWRIGHT_WORKERS=2 npm run
-test:e2e`. `tests/e2e/fixtures.ts` bloqueia Google Fonts: o carregamento de
-fontes externas não é parte do contrato visual dos testes e não deve atrasar a
-suíte. O Dockerfile instala apenas a versão do runner compatível com o navegador
-da imagem, e copia os specs depois da instalação para manter o cache de build.
+test:e2e`. A aplicação não carrega fontes externas (a Inter é local), então a
+suíte não depende da rede além do próprio servidor. O Dockerfile instala apenas
+a versão do runner compatível com o navegador da imagem, e copia os specs depois
+da instalação para manter o cache de build.
 
 O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright` e `docker-compose.yml`, mas **não é uma dependência local** do projeto.
 
@@ -308,6 +312,7 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 8. **Checkbox sem `id`:** o checkbox é acessível pelo `aria-label` e o estado nativo substitui `aria-checked`.
 9. **Classes e seletores:** use `CLASSES` e `SELETORES` de `js/constants.js`; o teste de contrato falha se o HTML ou o CSS ficarem dessincronizados.
 10. **Playwright apenas via Docker:** Nunca instalar Playwright como dependência local.
+11. **Sem fontes externas:** a Inter fica em `assets/fonts/` e é carregada via `@font-face`. Não reintroduza `fonts.googleapis.com`/`fonts.gstatic.com`: o CSS externo bloqueia a renderização. O teste de contrato falha se a fonte externa voltar.
 
 ---
 

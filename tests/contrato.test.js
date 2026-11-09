@@ -6,7 +6,7 @@
 // Se um seletor mudar no index.html, o teste aponta exatamente qual.
 // ============================================================
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { CONFIG, CLASSES, SELETORES_ESTATICOS } from '../js/constants.js';
@@ -57,5 +57,32 @@ describe('contrato — classes do JavaScript e style.css', () => {
     for (const [nome, classe] of Object.entries(CLASSES)) {
       expect(css, `classe "${nome}" (.${classe})`).toContain(`.${classe}`);
     }
+  });
+});
+
+describe('contrato — fonte local e carregamento', () => {
+  const pagina = analisarHTML(html);
+
+  it('não depende de fontes externas (Google Fonts)', () => {
+    expect(html).not.toContain('fonts.googleapis.com');
+    expect(html).not.toContain('fonts.gstatic.com');
+  });
+
+  it('pré-carrega a fonte Inter local com crossorigin', () => {
+    const preload = pagina.querySelector('link[rel="preload"][as="font"]');
+    expect(preload).not.toBeNull();
+    expect(preload.getAttribute('href')).toBe('assets/fonts/inter-latin.woff2');
+    expect(preload.hasAttribute('crossorigin')).toBe(true);
+  });
+
+  it('o arquivo da fonte existe no projeto', () => {
+    const caminho = resolve(process.cwd(), 'assets/fonts/inter-latin.woff2');
+    expect(existsSync(caminho), caminho).toBe(true);
+  });
+
+  it('o style.css declara o @font-face local com font-display: swap', () => {
+    expect(css).toContain('@font-face');
+    expect(css).toContain('assets/fonts/inter-latin.woff2');
+    expect(css).toContain('font-display: swap');
   });
 });

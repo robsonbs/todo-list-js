@@ -25,6 +25,12 @@ npm install
 todo-list-js/
 ├── index.html              # Página principal (HTML semântico)
 ├── style.css               # Estilos (variáveis CSS, Flexbox, responsivo)
+├── favicon.svg             # Ícone da aba (evita o 404 de /favicon.ico)
+├── vercel.json             # Cache HTTP da fonte no deploy
+├── assets/
+│   └── fonts/
+│       ├── inter-latin.woff2 # Fonte Inter local (subset latin, variável)
+│       └── OFL.txt           # Licença SIL OFL 1.1 da Inter
 ├── README.md               # Este arquivo
 ├── AGENTS.md               # Instruções para agentes de IA
 ├── package.json            # Scripts de desenvolvimento
@@ -68,6 +74,18 @@ todo-list-js/
 ├── curso/                  # Material do curso (9 aulas)
 └── iniciante/              # Versões simplificadas para iniciantes
 ```
+
+## ⚡ Performance
+
+- **Fonte local:** a Inter é servida de `assets/fonts/inter-latin.woff2` com
+  `@font-face` e `font-display: swap`. Não há requisição ao Google Fonts, então
+  nenhum CSS de terceiros bloqueia a renderização.
+- **Preload:** o `.woff2` é pré-carregado no `<head>` (`rel="preload"` com
+  `crossorigin`) para antecipar o download.
+- **modulepreload:** os módulos ES são baixados em paralelo, sem esperar a
+  descoberta em cadeia a partir de `main.js`.
+- **Cache:** `vercel.json` define cache longo e imutável apenas para a fonte.
+  JS e CSS continuam com a revalidação padrão da Vercel (os nomes não têm hash).
 
 ## 🛠️ Scripts disponíveis
 
@@ -135,7 +153,8 @@ Usuário → main.js → state.js → storage.js
   verificações visuais. A suíte roda somente via Docker com `npm run test:e2e`.
 - **Desempenho E2E:** o container usa quatro workers por padrão; ajuste com
   `PLAYWRIGHT_WORKERS=2 npm run test:e2e` em máquinas com menos recursos. A
-  fixture bloqueia Google Fonts, que não fazem parte do contrato visual testado.
+  aplicação não carrega fontes externas, então a suíte não depende da rede além
+  do próprio servidor.
 - **Isolamento E2E:** cada teste recebe contexto de navegador isolado. Cenários
   de recarga usam a mesma página/contexto para verificar a persistência real.
 - **Escopo E2E:** cobre as jornadas integradas no Chromium; validações de
