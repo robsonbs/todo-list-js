@@ -11,12 +11,14 @@
  * Exportado para que o teste de contrato valide os mesmos seletores.
  */
 export const HTML_DOM_TESTE = `
-  <header id="header"></header>
+  <header id="header">
+    <h1><span class="logo-icon" aria-hidden="true"></span>TODO List</h1>
+  </header>
 
   <form id="todo-form">
     <label for="todo-input" class="sr-only">Nova tarefa</label>
     <input type="text" id="todo-input" maxlength="100" />
-    <button type="submit" id="btn-criar">Criar</button>
+    <button type="submit" id="btn-criar"><span class="icone-adicionar" aria-hidden="true"></span>Criar</button>
   </form>
 
   <main class="tarefas-container">

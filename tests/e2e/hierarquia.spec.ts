@@ -46,6 +46,50 @@ test.describe('Lista em até três níveis', () => {
     await expect(page).toHaveURL(/index\.html$/);
   });
 
+  test('reordena entre irmãos, indenta e promove mantendo a subárvore', async ({ page }) => {
+    await criarPrincipal(page, 'Projeto A');
+    await criarPrincipal(page, 'Projeto B');
+    await adicionarFilha(page, 'Projeto B', 'Detalhe de B');
+
+    const principais = () =>
+      page.locator(
+        '#lista-hierarquica > .lista-hierarquica > li > .tarefa-hierarquica__linha > .texto-tarefa'
+      );
+    const filhasPrincipais = () =>
+      page.locator(
+        '#lista-hierarquica > .lista-hierarquica > li > .lista-hierarquica__filhos > li > .tarefa-hierarquica__linha > .texto-tarefa'
+      );
+
+    const abrirReordenacao = page.getByRole('button', {
+      name: 'Reordenar tarefa: Projeto B',
+    });
+    await abrirReordenacao.focus();
+    await abrirReordenacao.press('Enter');
+    await expect(abrirReordenacao).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByRole('button', { name: 'Mover para cima: Projeto B' })).toBeFocused();
+    await page.getByRole('button', { name: 'Mover para cima: Projeto B' }).click();
+    await expect(principais()).toHaveText(['Projeto B', 'Projeto A']);
+
+    await page.getByRole('button', { name: 'Mover para baixo: Projeto B' }).click();
+    await page.getByRole('button', { name: 'Indentar sob o irmão anterior: Projeto B' }).click();
+    await expect(principais()).toHaveText(['Projeto A']);
+    await expect(filhasPrincipais()).toHaveText(['Projeto B']);
+
+    await page.getByRole('button', { name: 'Promover um nível: Projeto B' }).click();
+    await expect(principais()).toHaveText(['Projeto A', 'Projeto B']);
+    await expect(page.getByText('Detalhe de B', { exact: true })).toBeVisible();
+
+    await page.reload();
+    await expect(principais()).toHaveText(['Projeto A', 'Projeto B']);
+    await expect(page.getByText('Detalhe de B', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Reordenar tarefa: Projeto B' }).click();
+    await page.getByRole('button', { name: 'Mover para cima: Projeto B' }).press('Escape');
+    await expect(page.getByRole('button', { name: 'Reordenar tarefa: Projeto B' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+  });
+
   test('cria tarefa principal, subtarefa e sub-subtarefa, mas não um quarto nível', async ({
     page,
   }) => {
@@ -164,7 +208,7 @@ test.describe('Lista em até três níveis', () => {
     const larguraBotaoCriar = await page
       .locator('#btn-criar')
       .evaluate((botao) => botao.getBoundingClientRect().width);
-    expect(larguraBotaoCriar).toBeLessThanOrEqual(60);
+    expect(larguraBotaoCriar).toBeGreaterThan(300);
 
     const largurasDosTextos = await page
       .locator('.texto-tarefa')
@@ -172,5 +216,13 @@ test.describe('Lista em até três níveis', () => {
         elementos.map((elemento) => elemento.getBoundingClientRect().width)
       );
     expect(Math.min(...largurasDosTextos)).toBeGreaterThan(150);
+
+    await page
+      .getByRole('button', {
+        name: 'Reordenar tarefa: Uma tarefa com texto que precisa caber no celular',
+      })
+      .click();
+    const larguraComMenuAberto = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(larguraComMenuAberto).toBeLessThanOrEqual(375);
   });
 });

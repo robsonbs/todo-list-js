@@ -6,6 +6,7 @@ import {
   obterContadores,
   obterTarefaPorId,
   obterTarefas,
+  reordenarTarefa,
   removerTarefa,
   substituirTarefas,
 } from '../../js/hierarquia/state.js';
@@ -169,5 +170,67 @@ describe('state hierárquico', () => {
     ]);
 
     expect(obterTarefaPorId(1)).toMatchObject({ completa: true, parcial: false });
+  });
+
+  it('move tarefas para cima e para baixo somente entre irmãos', () => {
+    const primeira = adicionarTarefa('Primeira');
+    const segunda = adicionarTarefa('Segunda');
+    const terceira = adicionarTarefa('Terceira');
+
+    expect(reordenarTarefa(segunda.id, 'cima')).toBe(true);
+    expect(obterTarefas().map((tarefa) => tarefa.id)).toEqual([
+      segunda.id,
+      primeira.id,
+      terceira.id,
+    ]);
+    expect(reordenarTarefa(segunda.id, 'baixo')).toBe(true);
+    expect(obterTarefas().map((tarefa) => tarefa.id)).toEqual([
+      primeira.id,
+      segunda.id,
+      terceira.id,
+    ]);
+    expect(reordenarTarefa(primeira.id, 'cima')).toBe(false);
+    expect(reordenarTarefa(terceira.id, 'baixo')).toBe(false);
+  });
+
+  it('indenta sob o irmão anterior e promove para depois do pai', () => {
+    const primeira = adicionarTarefa('Primeira');
+    const segunda = adicionarTarefa('Segunda');
+    const filha = adicionarTarefa('Filha da segunda', segunda.id);
+
+    expect(reordenarTarefa(segunda.id, 'indentar')).toBe(true);
+    expect(obterTarefas().map((tarefa) => tarefa.atividade)).toEqual(['Primeira']);
+    expect(obterTarefaPorId(primeira.id).filhos.map((tarefa) => tarefa.id)).toEqual([segunda.id]);
+
+    expect(reordenarTarefa(segunda.id, 'promover')).toBe(true);
+    expect(obterTarefas().map((tarefa) => tarefa.id)).toEqual([primeira.id, segunda.id]);
+    expect(obterTarefaPorId(segunda.id).filhos[0].id).toBe(filha.id);
+    expect(obterTarefaPorId(primeira.id)).toMatchObject({ completa: false, filhos: [] });
+    expect(reordenarTarefa(primeira.id, 'promover')).toBe(false);
+  });
+
+  it('impede indentar uma subárvore se algum descendente exceder o terceiro nível', () => {
+    const anterior = adicionarTarefa('Anterior');
+    const ramo = adicionarTarefa('Ramo');
+    const filha = adicionarTarefa('Filha', ramo.id);
+    const neta = adicionarTarefa('Neta', filha.id);
+
+    expect(reordenarTarefa(ramo.id, 'indentar')).toBe(false);
+    expect(obterTarefas().map((tarefa) => tarefa.id)).toEqual([anterior.id, ramo.id]);
+    expect(obterTarefaPorId(ramo.id).filhos[0].filhos[0].id).toBe(neta.id);
+  });
+
+  it('recalcula o pai após promover uma filha concluída', () => {
+    const pai = adicionarTarefa('Pai');
+    const concluida = adicionarTarefa('Concluída', pai.id);
+    const aberta = adicionarTarefa('Aberta', pai.id);
+    alternarConcluida(concluida.id);
+
+    expect(obterTarefaPorId(pai.id).parcial).toBe(true);
+    expect(reordenarTarefa(concluida.id, 'promover')).toBe(true);
+    expect(obterTarefaPorId(pai.id)).toMatchObject({ completa: false, parcial: false });
+    expect(obterContadores()).toEqual({ total: 3, completas: 1 });
+    expect(obterTarefas().map((tarefa) => tarefa.id)).toEqual([pai.id, concluida.id]);
+    expect(obterTarefaPorId(pai.id).filhos[0].id).toBe(aberta.id);
   });
 });

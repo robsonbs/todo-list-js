@@ -9,8 +9,15 @@ test.describe('Estados visuais', () => {
   test('página apresenta os elementos visuais principais', async ({ page }) => {
     await expect(page).toHaveTitle(/Lista de Tarefas/);
     await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('.logo-icon svg')).toBeVisible();
     await expect(page.getByLabel('Nova tarefa', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Criar nova tarefa' })).toBeVisible();
+    await expect(page.locator('#btn-criar .icone-adicionar svg')).toBeVisible();
+    await expect(page.locator('.logo-icon svg')).toHaveAttribute('viewBox', '0 0 256 256');
+    await expect(page.locator('#btn-criar .icone-adicionar svg')).toHaveAttribute(
+      'viewBox',
+      '0 0 256 256'
+    );
     await expect(page.locator('.tarefas-box')).toBeVisible();
     await expect(page.locator('#contador-criadas')).toBeVisible();
     await expect(page.locator('#contador-concluidas')).toBeVisible();
@@ -27,6 +34,7 @@ test.describe('Estados visuais', () => {
     await expect(tarefa.locator('input[type="checkbox"]')).not.toBeChecked();
     await expect(tarefa.locator('.texto-tarefa')).toHaveText('Estudar JavaScript');
     await expect(tarefa.locator('.remove-btn svg')).toBeVisible();
+    await expect(tarefa.locator('.remove-btn svg')).toHaveAttribute('viewBox', '0 0 256 256');
     await expect(page.locator('#contador-criadas')).toHaveText('1');
   });
 

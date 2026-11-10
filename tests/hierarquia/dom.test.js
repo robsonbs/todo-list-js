@@ -3,7 +3,7 @@ import { abrirFormularioItem, renderizarLista } from '../../js/hierarquia/dom.js
 
 beforeEach(() => {
   document.body.innerHTML =
-    '<span class="logo-icon"></span><button id="btn-criar" aria-label="Criar tarefa principal"></button><div id="lista-hierarquica"></div>';
+    '<span class="logo-icon"></span><button id="btn-criar" aria-label="Criar tarefa principal"><span class="icone-adicionar" aria-hidden="true"></span>Criar</button><div id="lista-hierarquica"></div>';
 });
 
 describe('DOM da lista hierárquica', () => {
@@ -44,15 +44,31 @@ describe('DOM da lista hierárquica', () => {
     expect(botaoRemover.getAttribute('aria-label')).toBe('Remover tarefa: Projeto');
     expect(document.querySelector('.logo-icon svg')).not.toBeNull();
     expect(document.querySelector('#btn-criar .icone-adicionar svg')).not.toBeNull();
-    expect(document.querySelector('#btn-criar').textContent.trim()).toBe('');
+    const viewBoxes = new Set(
+      [...document.querySelectorAll('svg')].map((svg) => svg.getAttribute('viewBox'))
+    );
+    expect(viewBoxes).toEqual(new Set(['0 0 256 256']));
+    expect(document.querySelector('#btn-criar').textContent.trim()).toBe('Criar');
     expect(document.querySelector('#btn-criar').getAttribute('aria-label')).toBe(
       'Criar tarefa principal'
     );
+    const botoesDeMovimento = [...document.querySelectorAll('[data-movimento]')];
+    expect(botoesDeMovimento).toHaveLength(12);
+    expect(botoesDeMovimento.every((botao) => botao.hasAttribute('aria-label'))).toBe(true);
+    expect(botoesDeMovimento.filter((botao) => botao.disabled)).toHaveLength(10);
     expect(
       document.querySelector(
         '[data-acao="adicionar-filho"][aria-label="Adicionar subtarefa a: Detalhe"]'
       )
     ).toBeNull();
+
+    const reordenacao = document.querySelector('[data-id="3"] .tarefa-hierarquica__reordenacao');
+    const botaoAbrir = reordenacao.querySelector('.botao-abrir-reordenacao');
+    expect(botaoAbrir.getAttribute('aria-label')).toBe('Reordenar tarefa: Detalhe');
+    expect(botaoAbrir.getAttribute('aria-expanded')).toBe('false');
+    expect(reordenacao.querySelector('.acoes-reordenacao').hidden).toBe(true);
+    expect(reordenacao.querySelector('[data-movimento="indentar"]').disabled).toBe(true);
+    expect(reordenacao.querySelector('[data-movimento="promover"]').disabled).toBe(false);
   });
 
   it('apresenta pai parcial e impede alternar manualmente uma tarefa com filhos', () => {

@@ -45,6 +45,11 @@ describe('contrato — index.html e constants.js', () => {
     }
   });
 
+  it('mantém os espaços SVG do cabeçalho e do botão principal', () => {
+    expect(pagina.querySelector('#header .logo-icon')).not.toBeNull();
+    expect(pagina.querySelector('#btn-criar .icone-adicionar')).not.toBeNull();
+  });
+
   it('o DOM dos testes replica todos os seletores estáticos', () => {
     const fixture = analisarHTML(HTML_DOM_TESTE);
 
@@ -103,6 +108,8 @@ describe('contrato — variante hierárquica', () => {
     expect(pagina.querySelector('#lista-hierarquica')).not.toBeNull();
     expect(pagina.querySelector('#contador-criadas')).not.toBeNull();
     expect(pagina.querySelector('#contador-concluidas')).not.toBeNull();
+    expect(pagina.querySelector('#header .logo-icon')).not.toBeNull();
+    expect(pagina.querySelector('#btn-criar .icone-adicionar')).not.toBeNull();
   });
 
   it('mantém o limite do campo sincronizado e limita a árvore a três níveis', () => {
