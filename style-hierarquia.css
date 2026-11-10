@@ -3,45 +3,6 @@
    Usa a identidade visual compartilhada de style.css.
    ============================================================ */
 
-.subtitulo-hierarquia {
-  margin-top: 0.5rem;
-  color: var(--gray-200);
-  text-align: center;
-}
-
-#header {
-  height: auto;
-  min-height: 12.5rem;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 2rem 1rem;
-}
-
-#todo-form button {
-  width: 3.375rem;
-  min-width: 3.375rem;
-  padding: 0;
-}
-
-.logo-icon svg {
-  display: block;
-  width: 2rem;
-  height: 2rem;
-}
-
-.link-versao {
-  display: inline-block;
-  margin-top: 0.75rem;
-  color: var(--blue);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-}
-
-.link-versao:focus-visible {
-  outline: 2px solid var(--purple);
-  outline-offset: 4px;
-}
-
 .tarefas-box #lista-hierarquica {
   width: 100%;
 }
@@ -123,9 +84,10 @@
   color: var(--gray-200);
 }
 
-.icone-adicionar svg,
 .icone-editar svg,
 .icone-exclusao svg,
+.icone-reordenar svg,
+.icone-movimento svg,
 .icone-salvar svg,
 .icone-cancelar svg {
   display: block;
@@ -136,6 +98,63 @@
 .lista-hierarquica button:hover {
   border-color: var(--purple);
   background: var(--gray-500);
+}
+
+.tarefa-hierarquica__reordenacao {
+  position: relative;
+}
+
+.botao-abrir-reordenacao {
+  display: inline-flex;
+  width: 2.5rem;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gray-400);
+  border-radius: 0.375rem;
+  background: var(--gray-600);
+  color: var(--gray-200);
+  cursor: pointer;
+  list-style: none;
+}
+
+.botao-abrir-reordenacao:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.botao-abrir-reordenacao:hover {
+  border-color: var(--purple);
+  background: var(--gray-500);
+}
+
+.acoes-reordenacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  padding: 0.5rem;
+  border: 1px solid var(--gray-400);
+  border-radius: 0.5rem;
+  background: var(--gray-600);
+}
+
+.acoes-reordenacao[hidden] {
+  display: none;
+}
+
+.acoes-reordenacao .botao-mover-tarefa {
+  flex: 0 0 2.5rem;
+}
+
+.acoes-reordenacao button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.lista-hierarquica button:disabled:hover {
+  border-color: var(--gray-400);
+  background: var(--gray-600);
 }
 
 .lista-hierarquica button:focus-visible,
@@ -174,20 +193,6 @@
   gap: 0.5rem;
 }
 
-.mensagem-hierarquia {
-  width: min(46rem, calc(100% - 2rem));
-  margin: 0 auto -2.5rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--gray-400);
-  border-radius: 0.5rem;
-  color: var(--gray-100);
-  text-align: center;
-}
-
-.mensagem-hierarquia[hidden] {
-  display: none;
-}
-
 @media (max-width: 600px) {
   .tarefa-hierarquica__linha {
     display: grid;
@@ -222,13 +227,6 @@
 
   .formulario-item {
     padding-left: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  #todo-form button {
-    align-self: flex-end;
-    flex: 0 0 3.375rem;
   }
 }
 

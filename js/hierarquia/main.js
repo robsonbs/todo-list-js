@@ -12,6 +12,7 @@ import {
   obterContadores,
   obterTarefaPorId,
   obterTarefas,
+  reordenarTarefa,
   removerTarefa,
   substituirTarefas,
 } from './state.js';
@@ -37,7 +38,7 @@ function sincronizarTela() {
 
 function persistir() {
   if (!salvarTarefas(obterTarefas())) {
-    mostrarMensagem(MENSAGENS.falhaAoSalvar);
+    mostrarMensagem(MENSAGENS.falhaAoSalvar, 'erro');
   }
 }
 
@@ -47,11 +48,11 @@ function aoSubmeterFormularioPrincipal(evento) {
   const novaTarefa = adicionarTarefa(atividade);
 
   if (!novaTarefa) {
-    mostrarMensagem(MENSAGENS.textoInvalido);
+    mostrarMensagem(MENSAGENS.textoInvalido, 'erro');
     return;
   }
 
-  mostrarMensagem('Tarefa principal adicionada.');
+  mostrarMensagem('Tarefa principal adicionada.', 'sucesso');
   limparCampoPrincipal();
   persistir();
   sincronizarTela();
@@ -80,10 +81,24 @@ function aoClicarNaLista(evento) {
   }
 
   const { item, tarefa } = encontrado;
+  const botaoAbrirReordenacao = evento.target.closest(SELETORES.botaoAbrirReordenacao);
+  if (botaoAbrirReordenacao) {
+    const menu = item.querySelector(SELETORES.acoesReordenacao);
+    if (menu) {
+      const abrir = menu.hidden;
+      menu.hidden = !abrir;
+      botaoAbrirReordenacao.setAttribute('aria-expanded', String(abrir));
+      if (abrir) {
+        (menu.querySelector('button:not(:disabled)') || botaoAbrirReordenacao).focus();
+      }
+    }
+    return;
+  }
+
   const botaoAdicionar = evento.target.closest(SELETORES.botaoAdicionarFilho);
   if (botaoAdicionar) {
     if (Number(item.dataset.nivel) >= CONFIG.MAX_NIVEIS) {
-      mostrarMensagem(MENSAGENS.nivelMaximo);
+      mostrarMensagem(MENSAGENS.nivelMaximo, 'erro');
       return;
     }
     abrirFormularioItem(item, 'adicionar', tarefa);
@@ -100,10 +115,22 @@ function aoClicarNaLista(evento) {
     const tarefaPai = item.parentElement.closest(SELETORES.tarefa);
     const idParaFoco = Number(proximoItem?.dataset.id || tarefaPai?.dataset.id || 0);
     removerTarefa(tarefa.id);
-    mostrarMensagem('Tarefa e subtarefas removidas.');
+    mostrarMensagem('Tarefa e subtarefas removidas.', 'sucesso');
     persistir();
     sincronizarTela();
     focarTarefa(idParaFoco);
+    return;
+  }
+
+  const botaoMovimento = evento.target.closest(SELETORES.botaoMovimento);
+  if (botaoMovimento) {
+    const movimento = botaoMovimento.dataset.movimento;
+    if (reordenarTarefa(tarefa.id, movimento)) {
+      mostrarMensagem(MENSAGENS.tarefaReordenada, 'sucesso');
+      persistir();
+      sincronizarTela();
+      focarTarefa(tarefa.id, 'reordenar');
+    }
     return;
   }
 
@@ -140,12 +167,12 @@ function aoSubmeterFormularioDaLista(evento) {
   }
 
   if (!sucesso) {
-    mostrarMensagem(MENSAGENS.textoInvalido);
+    mostrarMensagem(MENSAGENS.textoInvalido, 'erro');
     campo?.focus();
     return;
   }
 
-  mostrarMensagem(tipo === 'editar' ? 'Tarefa atualizada.' : 'Subtarefa adicionada.');
+  mostrarMensagem(tipo === 'editar' ? 'Tarefa atualizada.' : 'Subtarefa adicionada.', 'sucesso');
   persistir();
   sincronizarTela();
   focarTarefa(idParaFoco);
@@ -163,6 +190,22 @@ function iniciarEdicaoPeloTexto(evento) {
 }
 
 function aoPressionarTeclaNaLista(evento) {
+  if (evento.key === 'Escape') {
+    const botaoMovimento = evento.target.closest(SELETORES.botaoMovimento);
+    if (botaoMovimento) {
+      const item = botaoMovimento.closest(SELETORES.tarefa);
+      const menu = item?.querySelector(SELETORES.acoesReordenacao);
+      const botaoAbrir = item?.querySelector(SELETORES.botaoAbrirReordenacao);
+      if (menu && botaoAbrir && !menu.hidden) {
+        menu.hidden = true;
+        botaoAbrir.setAttribute('aria-expanded', 'false');
+        botaoAbrir.focus();
+        evento.preventDefault();
+      }
+      return;
+    }
+  }
+
   if (evento.key !== 'Enter' && evento.key !== ' ') {
     return;
   }

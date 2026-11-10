@@ -12,6 +12,7 @@ export const CHAVE_ARMAZENAMENTO = 'tarefas-hierarquicas';
 export const CONFIG = {
   MAX_NIVEIS: 3,
   MAX_CARACTERES_TAREFA: CONFIG_BASE.MAX_CARACTERES_TAREFA,
+  DURACAO_MENSAGEM_MS: CONFIG_BASE.DURACAO_MENSAGEM_MS,
 };
 
 export const CLASSES = {
@@ -21,11 +22,17 @@ export const CLASSES = {
   filhos: 'lista-hierarquica__filhos',
   linha: 'tarefa-hierarquica__linha',
   acoes: 'tarefa-hierarquica__acoes',
+  reordenacao: 'tarefa-hierarquica__reordenacao',
+  botaoAbrirReordenacao: 'botao-abrir-reordenacao',
+  acoesReordenacao: 'acoes-reordenacao',
+  botaoMover: 'botao-mover-tarefa',
   iconeExclusao: 'icone-exclusao',
   iconeAdicionar: 'icone-adicionar',
   iconeEditar: 'icone-editar',
   iconeSalvar: 'icone-salvar',
   iconeCancelar: 'icone-cancelar',
+  iconeReordenar: 'icone-reordenar',
+  iconeMovimento: 'icone-movimento',
   iconeListaVazia: 'tarefas-empty__icone',
   texto: 'texto-tarefa',
   botaoAdicionarFilho: 'botao-subtarefa',
@@ -34,7 +41,6 @@ export const CLASSES = {
   formularioItem: 'formulario-item',
   campoFormulario: 'campo-formulario-item',
   acoesFormulario: 'acoes-formulario-item',
-  mensagem: 'mensagem-hierarquia',
 };
 
 export const SELETORES = {
@@ -50,6 +56,9 @@ export const SELETORES = {
   botaoAdicionarFilho: `.${CLASSES.botaoAdicionarFilho}`,
   botaoEditar: `.${CLASSES.botaoEditar}`,
   botaoRemover: `.${CLASSES.botaoRemover}`,
+  botaoAbrirReordenacao: `.${CLASSES.botaoAbrirReordenacao}`,
+  acoesReordenacao: `.${CLASSES.acoesReordenacao}`,
+  botaoMovimento: 'button[data-movimento]',
   formularioItem: `.${CLASSES.formularioItem}`,
 };
 
@@ -58,4 +67,5 @@ export const MENSAGENS = {
   nivelMaximo: `Uma tarefa pode ter até ${CONFIG.MAX_NIVEIS} níveis.`,
   textoInvalido: `Digite uma tarefa com até ${CONFIG.MAX_CARACTERES_TAREFA} caracteres.`,
   falhaAoSalvar: 'Não foi possível salvar as tarefas neste navegador.',
+  tarefaReordenada: 'Ordem ou nível da tarefa atualizado.',
 };

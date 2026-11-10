@@ -28,6 +28,7 @@ export const CLASSES = {
   textoTarefa: 'texto-tarefa',
   botaoRemover: 'remove-btn',
   iconeExclusao: 'icone-exclusao',
+  iconeAdicionar: 'icone-adicionar',
   campoEdicao: 'campo-edicao',
   mensagemFlash: 'mensagem-flash',
   estadoVazio: 'tarefas-empty',

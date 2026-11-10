@@ -42,9 +42,10 @@ function recalcularLista(lista) {
 }
 
 function localizarTarefa(id, lista = tarefas, nivel = 1, ancestral = null) {
-  for (const tarefa of lista) {
+  for (let indice = 0; indice < lista.length; indice += 1) {
+    const tarefa = lista[indice];
     if (tarefa.id === id) {
-      return { tarefa, nivel, ancestral };
+      return { tarefa, lista, indice, nivel, ancestral };
     }
 
     const encontrada = localizarTarefa(id, tarefa.filhos, nivel + 1, tarefa);
@@ -157,6 +158,69 @@ export function removerTarefa(id) {
     recalcularLista(tarefas);
   }
   return removida;
+}
+
+function obterAlturaDaSubarvore(tarefa) {
+  if (tarefa.filhos.length === 0) {
+    return 1;
+  }
+  return 1 + Math.max(...tarefa.filhos.map(obterAlturaDaSubarvore));
+}
+
+function desanexarTarefa(contexto) {
+  const [tarefa] = contexto.lista.splice(contexto.indice, 1);
+  if (contexto.ancestral && contexto.lista.length === 0) {
+    // Um pai sem filhos volta a ser uma folha aberta.
+    contexto.ancestral.completa = false;
+  }
+  return tarefa;
+}
+
+/** Move entre irmãos ou muda o nível sem quebrar o limite da árvore. */
+export function reordenarTarefa(id, movimento) {
+  const contexto = localizarTarefa(id);
+  if (!contexto) {
+    return false;
+  }
+
+  if (movimento === 'cima' || movimento === 'baixo') {
+    const deslocamento = movimento === 'cima' ? -1 : 1;
+    const novoIndice = contexto.indice + deslocamento;
+    if (novoIndice < 0 || novoIndice >= contexto.lista.length) {
+      return false;
+    }
+
+    [contexto.lista[contexto.indice], contexto.lista[novoIndice]] = [
+      contexto.lista[novoIndice],
+      contexto.lista[contexto.indice],
+    ];
+  } else if (movimento === 'indentar') {
+    const irmaoAnterior = contexto.lista[contexto.indice - 1];
+    const altura = obterAlturaDaSubarvore(contexto.tarefa);
+    if (!irmaoAnterior || contexto.nivel + altura > CONFIG.MAX_NIVEIS) {
+      return false;
+    }
+
+    const tarefa = desanexarTarefa(contexto);
+    irmaoAnterior.filhos.push(tarefa);
+  } else if (movimento === 'promover') {
+    if (!contexto.ancestral) {
+      return false;
+    }
+
+    const contextoPai = localizarTarefa(contexto.ancestral.id);
+    if (!contextoPai) {
+      return false;
+    }
+
+    const tarefa = desanexarTarefa(contexto);
+    contextoPai.lista.splice(contextoPai.indice + 1, 0, tarefa);
+  } else {
+    return false;
+  }
+
+  recalcularLista(tarefas);
+  return true;
 }
 
 /** Conta todos os nós da árvore, incluindo pais e subtarefas. */

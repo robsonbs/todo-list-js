@@ -10,12 +10,18 @@ import {
   obterIconeAdicionar,
   obterIconeCancelar,
   obterIconeEditar,
+  obterIconeIndentar,
   obterIconeListaVazia,
   obterIconeLixeira,
+  obterIconeMoverBaixo,
+  obterIconeMoverCima,
+  obterIconePromover,
+  obterIconeReordenar,
   obterIconeSalvar,
 } from '../icones.js';
 
 const selecionar = (seletor, raiz = document) => raiz.querySelector(seletor);
+let temporizadorMensagem = null;
 
 function criarBotao(classe, classeIcone, svg, acao, rotulo) {
   const botao = document.createElement('button');
@@ -35,6 +41,25 @@ function criarIcone(classe, svg) {
   // Estes SVGs são constantes do projeto, nunca texto digitado pelo usuário.
   icone.innerHTML = svg;
   return icone;
+}
+
+function criarBotaoMovimento(movimento, svg, rotulo, desabilitado) {
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = CLASSES.botaoMover;
+  botao.dataset.movimento = movimento;
+  botao.disabled = desabilitado;
+  botao.setAttribute('aria-label', rotulo);
+  botao.title = rotulo;
+  botao.append(criarIcone(CLASSES.iconeMovimento, svg));
+  return botao;
+}
+
+function obterAlturaDaSubarvore(tarefa) {
+  if (tarefa.filhos.length === 0) {
+    return 1;
+  }
+  return 1 + Math.max(...tarefa.filhos.map(obterAlturaDaSubarvore));
 }
 
 function criarFormularioItem(tipo, tarefa) {
@@ -87,7 +112,7 @@ function criarFormularioItem(tipo, tarefa) {
   return formulario;
 }
 
-function criarItem(tarefa, nivel) {
+function criarItem(tarefa, nivel, indice, quantidadeIrmaos) {
   const item = document.createElement('li');
   item.className = `${CLASSES.tarefa} ${CLASSES.tarefaHierarquica}`;
   item.dataset.id = String(tarefa.id);
@@ -147,13 +172,67 @@ function criarItem(tarefa, nivel) {
       `Remover tarefa: ${tarefa.atividade}`
     )
   );
+
+  const reordenacao = document.createElement('div');
+  reordenacao.className = CLASSES.reordenacao;
+
+  const abrirReordenacao = document.createElement('button');
+  abrirReordenacao.type = 'button';
+  abrirReordenacao.className = CLASSES.botaoAbrirReordenacao;
+  abrirReordenacao.setAttribute('aria-label', `Reordenar tarefa: ${tarefa.atividade}`);
+  abrirReordenacao.title = `Reordenar tarefa: ${tarefa.atividade}`;
+  abrirReordenacao.setAttribute('aria-expanded', 'false');
+  abrirReordenacao.setAttribute('aria-controls', `opcoes-movimento-${tarefa.id}`);
+  abrirReordenacao.append(criarIcone(CLASSES.iconeReordenar, obterIconeReordenar()));
+
+  const acoesReordenacao = document.createElement('div');
+  acoesReordenacao.className = CLASSES.acoesReordenacao;
+  acoesReordenacao.id = `opcoes-movimento-${tarefa.id}`;
+  acoesReordenacao.hidden = true;
+  acoesReordenacao.setAttribute('role', 'group');
+  acoesReordenacao.setAttribute('aria-label', `Movimentação de: ${tarefa.atividade}`);
+
+  const alturaSubarvore = obterAlturaDaSubarvore(tarefa);
+  acoesReordenacao.append(
+    criarBotaoMovimento(
+      'cima',
+      obterIconeMoverCima(),
+      `Mover para cima: ${tarefa.atividade}`,
+      indice === 0
+    ),
+    criarBotaoMovimento(
+      'baixo',
+      obterIconeMoverBaixo(),
+      `Mover para baixo: ${tarefa.atividade}`,
+      indice === quantidadeIrmaos - 1
+    ),
+    criarBotaoMovimento(
+      'indentar',
+      obterIconeIndentar(),
+      `Indentar sob o irmão anterior: ${tarefa.atividade}`,
+      indice === 0 || nivel + alturaSubarvore > CONFIG.MAX_NIVEIS
+    ),
+    criarBotaoMovimento(
+      'promover',
+      obterIconePromover(),
+      `Promover um nível: ${tarefa.atividade}`,
+      nivel === 1
+    )
+  );
+
+  reordenacao.append(abrirReordenacao, acoesReordenacao);
+  acoes.append(reordenacao);
   item.append(linha);
 
   if (tarefa.filhos.length > 0) {
     const listaFilhos = document.createElement('ul');
     listaFilhos.className = CLASSES.filhos;
     listaFilhos.setAttribute('aria-label', `Subtarefas de: ${tarefa.atividade}`);
-    listaFilhos.append(...tarefa.filhos.map((filho) => criarItem(filho, nivel + 1)));
+    listaFilhos.append(
+      ...tarefa.filhos.map((filho, indiceFilho, irmaos) =>
+        criarItem(filho, nivel + 1, indiceFilho, irmaos.length)
+      )
+    );
     item.append(listaFilhos);
   }
 
@@ -168,8 +247,9 @@ export function renderizarLista(tarefas) {
   }
 
   const botaoPrincipal = selecionar('#btn-criar');
-  if (botaoPrincipal && !botaoPrincipal.querySelector('svg')) {
-    botaoPrincipal.prepend(criarIcone(CLASSES.iconeAdicionar, obterIconeAdicionar()));
+  const iconeCriar = selecionar(`#btn-criar .${CLASSES.iconeAdicionar}`);
+  if (iconeCriar && !iconeCriar.querySelector('svg')) {
+    iconeCriar.innerHTML = obterIconeAdicionar();
   }
   if (botaoPrincipal) {
     botaoPrincipal.title = botaoPrincipal.getAttribute('aria-label') || 'Criar tarefa principal';
@@ -201,7 +281,9 @@ export function renderizarLista(tarefas) {
   const lista = document.createElement('ul');
   lista.className = CLASSES.lista;
   lista.setAttribute('aria-label', 'Tarefas principais');
-  lista.append(...tarefas.map((tarefa) => criarItem(tarefa, 1)));
+  lista.append(
+    ...tarefas.map((tarefa, indice, principais) => criarItem(tarefa, 1, indice, principais.length))
+  );
   container.replaceChildren(lista);
 }
 
@@ -254,11 +336,24 @@ export function abrirFormularioItem(item, tipo, tarefa) {
 }
 
 /** Mostra mensagem e informa leitores de tela sem interromper o fluxo. */
-export function mostrarMensagem(texto) {
+export function mostrarMensagem(texto, tipo = 'info') {
   const mensagem = selecionar(SELETORES.mensagem);
-  if (mensagem) {
-    mensagem.textContent = texto;
-    mensagem.hidden = !texto;
+  if (!mensagem) {
+    return;
+  }
+
+  clearTimeout(temporizadorMensagem);
+  mensagem.className = `mensagem-flash mensagem-flash--${tipo}`;
+  mensagem.textContent = texto;
+  mensagem.hidden = !texto;
+  mensagem.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
+  mensagem.setAttribute('aria-live', tipo === 'erro' ? 'assertive' : 'polite');
+
+  if (texto) {
+    temporizadorMensagem = setTimeout(() => {
+      mensagem.hidden = true;
+      mensagem.textContent = '';
+    }, CONFIG.DURACAO_MENSAGEM_MS);
   }
 }
 
@@ -277,6 +372,17 @@ export function focarTarefa(id, controle = 'texto') {
     texto: SELETORES.texto,
     checkbox: SELETORES.checkbox,
     editar: SELETORES.botaoEditar,
+    reordenar: `.${CLASSES.botaoAbrirReordenacao}`,
   };
+  if (controle === 'reordenar') {
+    const menu = selecionar(SELETORES.acoesReordenacao, item);
+    const botao = selecionar(SELETORES.botaoAbrirReordenacao, item);
+    if (menu && botao) {
+      menu.hidden = false;
+      botao.setAttribute('aria-expanded', 'true');
+      (selecionar('button:not(:disabled)', menu) || botao).focus();
+      return;
+    }
+  }
   selecionar(seletores[controle] || seletores.texto, item)?.focus();
 }

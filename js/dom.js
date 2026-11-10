@@ -10,7 +10,7 @@
 
 import { CLASSES, SELETORES, CONFIG, MENSAGENS } from './constants.js';
 import { validarTexto } from './validacao.js';
-import { obterIconeLixeira, obterIconeListaVazia } from './icones.js';
+import { obterIconeAdicionar, obterIconeLixeira, obterIconeListaVazia } from './icones.js';
 
 // Atalho para consultar um elemento usando os seletores centralizados.
 const selecionar = (seletor) => document.querySelector(seletor);
@@ -102,6 +102,16 @@ export function criarEstadoVazio() {
  * @param {import('./state.js').Tarefa[]} tarefas
  */
 export function renderizarLista(tarefas) {
+  const iconeCabecalho = selecionar('.logo-icon');
+  if (iconeCabecalho && !iconeCabecalho.querySelector('svg')) {
+    iconeCabecalho.innerHTML = obterIconeListaVazia();
+  }
+
+  const iconeCriar = selecionar(`#btn-criar .${CLASSES.iconeAdicionar}`);
+  if (iconeCriar && !iconeCriar.querySelector('svg')) {
+    iconeCriar.innerHTML = obterIconeAdicionar();
+  }
+
   const container = selecionar(SELETORES.containerTarefas);
   if (!container) {
     return;

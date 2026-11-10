@@ -27,9 +27,7 @@
   <body>
     <div class="container">
       <header id="header">
-        <h1><span class="logo-icon" aria-hidden="true"></span> Tarefas em camadas</h1>
-        <p class="subtitulo-hierarquia">Organize cada plano em até três níveis.</p>
-        <a class="link-versao" href="index.html">Voltar à lista simples</a>
+        <h1><span class="logo-icon" aria-hidden="true"></span> TODO List</h1>
       </header>
 
       <form id="todo-form" aria-label="Adicionar tarefa principal">
@@ -42,12 +40,15 @@
           maxlength="100"
           autocomplete="off"
         />
-        <button type="submit" id="btn-criar" aria-label="Criar tarefa principal"></button>
+        <button type="submit" id="btn-criar" aria-label="Criar tarefa principal">
+          <span class="icone-adicionar" aria-hidden="true"></span>
+          Criar
+        </button>
       </form>
 
       <p
         id="mensagem-hierarquia"
-        class="mensagem-hierarquia"
+        class="mensagem-flash"
         role="status"
         aria-live="polite"
         hidden
@@ -56,8 +57,8 @@
       <main class="tarefas-container">
         <header class="tarefas-header" aria-live="polite">
           <div class="tarefas-criadas">
-            <span>Tarefas em todos os níveis</span>
-            <p id="contador-criadas" aria-label="Número total de tarefas">0</p>
+            <span>Tarefas criadas</span>
+            <p id="contador-criadas" aria-label="Número total de tarefas em todos os níveis">0</p>
           </div>
           <div class="tarefas-concluidas">
             <span>Concluídas</span>
@@ -69,6 +70,10 @@
           <div id="lista-hierarquica"></div>
         </section>
       </main>
+
+      <p class="link-hierarquia">
+        <a href="index.html">Voltar à lista simples</a>
+      </p>
     </div>
 
     <script type="module" src="js/hierarquia/main.js"></script>
