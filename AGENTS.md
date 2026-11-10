@@ -165,6 +165,7 @@ todo-list-js/
 - Implementa a variante independente de tarefas aninhadas com profundidade máxima de três níveis
 - Mantém a chave `tarefas-hierarquicas`, sem ler ou sobrescrever a chave `tarefas`
 - Folhas podem ser marcadas; pais com filhos calculam conclusão e estado parcial a partir dos descendentes
+- O menu de movimentação reordena irmãos, indenta sob o irmão anterior e promove um nível, sem passar do limite
 - Remover uma tarefa remove toda a subárvore; dados carregados são validados e limitados a três níveis
 
 ### `js/storage.js`

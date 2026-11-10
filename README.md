@@ -101,7 +101,8 @@ independente: organiza tarefas principais, subtarefas e sub-subtarefas (três
 níveis no total). O estado de uma tarefa que tem filhos é calculado a partir
 deles; folhas podem ser marcadas diretamente e a marcação parcial é mostrada
 quando apenas parte dos descendentes está concluída. Remover um ramo remove
-também seus descendentes.
+também seus descendentes. O menu de movimentação permite reordenar irmãos,
+indentar uma tarefa sob o irmão anterior e promovê-la ao nível do pai.
 
 Ela usa a chave `tarefas-hierarquicas` no `localStorage`, sem alterar a chave
 `tarefas` da lista original. Os testes da árvore rodam localmente com `npm test`;
