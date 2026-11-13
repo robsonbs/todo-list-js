@@ -1,0 +1,20 @@
+# Runtime da versão web: Node e dependências de produção, sem fontes/testes.
+FROM node:26.13.0-bookworm-slim@sha256:add5c17c14752c54d2f3d519ec46a3815684d41c33f198bcb09fb998f7dcbf68
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY server ./server
+COPY web ./web
+
+USER node
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/api/health').then((resposta) => process.exit(resposta.ok ? 0 : 1)).catch(() => process.exit(1))"
+
+CMD ["node", "server/index.js"]

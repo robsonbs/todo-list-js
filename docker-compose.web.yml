@@ -1,6 +1,6 @@
 services:
   banco-web:
-    image: postgres:17.6-alpine
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-todo_web}
       POSTGRES_USER: ${POSTGRES_USER:-todo_dev}
@@ -16,20 +16,104 @@ services:
       retries: 10
 
   migrar:
-    image: node:26.13.0
+    image: node:26.13.0-bookworm-slim@sha256:add5c17c14752c54d2f3d519ec46a3815684d41c33f198bcb09fb998f7dcbf68
     working_dir: /app
     volumes:
       - .:/app
     environment:
-      DATABASE_URL: postgres://todo_dev:todo_dev_local_only@banco-web:5432/todo_web
+      DATABASE_URL: postgres://${POSTGRES_USER:-todo_dev}:${POSTGRES_PASSWORD:-todo_dev_local_only}@banco-web:5432/${POSTGRES_DB:-todo_web}
     command: ['npm', 'run', 'db:migrate']
     depends_on:
       banco-web:
         condition: service_healthy
     profiles: ['ferramentas']
 
+  app-web:
+    image: node:26.13.0-bookworm-slim@sha256:add5c17c14752c54d2f3d519ec46a3815684d41c33f198bcb09fb998f7dcbf68
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ['sh', '-c', 'npm run db:migrate && npm run dev']
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-todo_dev}:${POSTGRES_PASSWORD:-todo_dev_local_only}@banco-web:5432/${POSTGRES_DB:-todo_web}
+      SESSION_SECRET: ${SESSION_SECRET:-dev-only-secret-substitua-antes-de-publicar-1234567890}
+      CSRF_SECRET: ${CSRF_SECRET:-dev-only-csrf-substitua-antes-de-publicar-1234567890}
+      EMAIL_MODE: console
+      PUBLIC_URL: http://localhost:${APP_PORT:-3000}
+    ports:
+      - '127.0.0.1:${APP_PORT:-3000}:3000'
+    depends_on:
+      banco-web:
+        condition: service_healthy
+    profiles: ['aplicacao']
+
+  banco-web-e2e:
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    environment:
+      POSTGRES_DB: todo_web_e2e
+      POSTGRES_USER: todo_e2e
+      POSTGRES_PASSWORD: senha_e2e_somente_local
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U todo_e2e -d todo_web_e2e']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    profiles: ['e2e-web']
+
+  app-web-e2e:
+    image: node:26.13.0-bookworm-slim@sha256:add5c17c14752c54d2f3d519ec46a3815684d41c33f198bcb09fb998f7dcbf68
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ['sh', '-c', 'npm run db:migrate && npm run dev']
+    environment:
+      NODE_ENV: test
+      PORT: 3000
+      DATABASE_URL: postgres://todo_e2e:senha_e2e_somente_local@banco-web-e2e:5432/todo_web_e2e
+      SESSION_SECRET: segredo-de-teste-e2e-somente-local-session
+      CSRF_SECRET: segredo-de-teste-e2e-somente-local-csrf
+      EMAIL_MODE: console
+      PUBLIC_URL: http://app-web-e2e:3000
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/health').then((resposta) => process.exit(resposta.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    depends_on:
+      banco-web-e2e:
+        condition: service_healthy
+    profiles: ['e2e-web']
+
+  playwright-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    command:
+      ['npx', 'playwright', 'test', '--config=playwright.web.config.js', 'tests/web-e2e.spec.ts']
+    environment:
+      BASE_URL: http://app-web-e2e:3000
+      CI: '1'
+      PLAYWRIGHT_WORKERS: '2'
+    volumes:
+      - ./tests/e2e:/app/tests/e2e
+      - ./tests/web-e2e.spec.ts:/app/tests/web-e2e.spec.ts
+      - ./test-results:/app/test-results
+    depends_on:
+      app-web-e2e:
+        condition: service_healthy
+    profiles: ['e2e-web']
+
   banco-web-teste:
-    image: postgres:17.6-alpine
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
     environment:
       POSTGRES_DB: todo_web_teste
       POSTGRES_USER: todo_teste
@@ -42,7 +126,7 @@ services:
     profiles: ['testes']
 
   testes-api:
-    image: node:26.13.0
+    image: node:26.13.0-bookworm-slim@sha256:add5c17c14752c54d2f3d519ec46a3815684d41c33f198bcb09fb998f7dcbf68
     working_dir: /app
     volumes:
       - .:/app

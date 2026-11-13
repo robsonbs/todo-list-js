@@ -16,3 +16,9 @@ Dockerfile.playwright
 docker-compose.yml
 playwright-report
 test-results
+server
+web
+Dockerfile.web
+docker-compose.web.yml
+.dockerignore
+.env.example

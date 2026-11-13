@@ -2,7 +2,7 @@
   "name": "todo-list-js",
   "version": "1.0.0",
   "type": "module",
-  "description": "Lista de Tarefas educacional em HTML/CSS/JS puro",
+  "description": "Lista didática local e edição web com Express e PostgreSQL",
   "private": true,
   "engines": {
     "node": ">=26.13.0 <27",
@@ -21,11 +21,13 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server/index.js",
     "dev": "node --env-file-if-exists=.env --watch server/index.js",
+    "dev:docker": "docker compose --env-file .env.example -f docker-compose.web.yml --profile aplicacao up app-web",
     "db:migrate": "node --env-file-if-exists=.env server/db/migrate.js",
     "test:server": "vitest run tests/server",
     "db:migrate:docker": "docker compose --env-file .env.example -f docker-compose.web.yml run --rm migrar",
     "test:integration": "vitest run tests/integration",
-    "test:integration:docker": "docker compose --env-file .env.example -f docker-compose.web.yml --profile testes run --rm testes-api",
+    "test:integration:docker": "docker compose -p todo-list-integration --env-file .env.example -f docker-compose.web.yml --profile testes run --rm testes-api",
+    "test:e2e:web": "docker compose -p todo-list-web-e2e --env-file .env.example -f docker-compose.web.yml --profile e2e-web run --build --rm playwright-web",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

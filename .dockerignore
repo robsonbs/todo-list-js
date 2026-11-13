@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+tests/*
+!tests/e2e/
+!tests/e2e/**
+!tests/web-e2e.spec.ts
+curso
+iniciante
+assets
+playwright-report
+test-results
+coverage
+*.md
