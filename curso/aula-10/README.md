@@ -32,6 +32,12 @@ docker compose --env-file .env.example -f docker-compose.web.yml run --rm migrar
 npm run dev
 ```
 
+Como alternativa, a aplicação e o Node.js também podem rodar dentro do Docker:
+
+```bash
+docker compose --env-file .env.example -f docker-compose.web.yml --profile aplicacao up app-web
+```
+
 O `docker-compose.web.yml` usa somente um PostgreSQL local de desenvolvimento.
 Os valores de `.env.example` são didáticos e não podem ser reaproveitados em
 produção. As migrações registram quais arquivos SQL já foram aplicados. No modo

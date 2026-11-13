@@ -249,7 +249,7 @@ function createStudentCard(student) {
   const completedLessons = Object.values(student.lessons).filter(
     (l) => l.completed
   ).length;
-  const totalLessons = 9;
+  const totalLessons = 10;
 
   return `
         <div class="col-md-6 col-lg-4 mb-4">
@@ -372,6 +372,7 @@ function createProgressChart() {
     "Aula 7",
     "Aula 8",
     "Aula 9",
+    "Aula 10",
   ];
   const completionData = lessons.map((_, index) => {
     const lessonNumber = index + 1;
