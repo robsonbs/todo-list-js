@@ -8,8 +8,13 @@
 
 import express from 'express';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import connectPgSimple from 'connect-pg-simple';
+import { doubleCsrf } from 'csrf-csrf';
+import session from 'express-session';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { criarRotasAutenticacao } from './routes/autenticacao.js';
 
 const diretorioAtual = path.dirname(fileURLToPath(import.meta.url));
 const diretorioWeb = path.resolve(diretorioAtual, '../web');
@@ -18,7 +23,7 @@ const diretorioWeb = path.resolve(diretorioAtual, '../web');
  * Monta a aplicação Express sem iniciar um servidor de rede.
  * @returns {import('express').Express} Aplicação pronta para receber requisições.
  */
-export function criarAplicacao() {
+export function criarAplicacao({ poolBanco, configuracao, enviarEmail } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
@@ -40,6 +45,74 @@ export function criarAplicacao() {
     })
   );
   app.use(express.json({ limit: '10kb' }));
+
+  if (poolBanco && configuracao) {
+    if (configuracao.quantidadeProxies > 0) {
+      app.set('trust proxy', configuracao.quantidadeProxies);
+    }
+
+    app.use(cookieParser());
+
+    const PGStore = connectPgSimple(session);
+    app.use(
+      session({
+        name: configuracao.nomeCookieSessao,
+        secret: configuracao.segredoSessao,
+        store: new PGStore({
+          pool: poolBanco,
+          tableName: 'sessoes_http',
+          createTableIfMissing: false,
+          ttl: 8 * 60 * 60,
+        }),
+        resave: false,
+        saveUninitialized: false,
+        rolling: true,
+        cookie: {
+          httpOnly: true,
+          secure: configuracao.producao,
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 8 * 60 * 60 * 1000,
+        },
+      })
+    );
+
+    const csrf = doubleCsrf({
+      getSecret: () => configuracao.segredoCsrf,
+      getSessionIdentifier: (requisicao) => requisicao.sessionID,
+      cookieName: configuracao.nomeCookieCsrf,
+      cookieOptions: {
+        httpOnly: true,
+        sameSite: 'strict',
+        path: '/',
+        secure: configuracao.producao,
+      },
+      ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+      getCsrfTokenFromRequest: (requisicao) => requisicao.headers['x-csrf-token'],
+    });
+
+    app.get('/api/csrf-token', async (requisicao, resposta) => {
+      // Criar sessão anônima mantém o token CSRF vinculado a um identificador de sessão.
+      requisicao.session.iniciada = true;
+      const token = csrf.generateCsrfToken(requisicao, resposta);
+      await new Promise((resolver, rejeitar) => {
+        requisicao.session.save((erro) => (erro ? rejeitar(erro) : resolver()));
+      });
+      resposta.status(200).json({ token });
+    });
+
+    app.use('/api', csrf.doubleCsrfProtection);
+    app.use('/api/auth', criarRotasAutenticacao({ poolBanco, configuracao, enviarEmail }));
+
+    app.use((erro, _requisicao, resposta, proximo) => {
+      if (erro === csrf.invalidCsrfTokenError) {
+        resposta.status(403).json({ erro: 'A página expirou. Atualize e tente novamente.' });
+        return;
+      }
+
+      proximo(erro);
+    });
+  }
 
   // A rota de saúde permite verificar o processo sem expor configuração interna.
   app.get('/api/health', (_requisicao, resposta) => {

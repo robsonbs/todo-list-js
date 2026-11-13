@@ -9,14 +9,19 @@
 import { criarAplicacao } from './app.js';
 import { obterConfiguracao } from './config.js';
 import { pool } from './db/pool.js';
+import { criarServicoEmail } from './services/email.js';
 
-const { porta } = obterConfiguracao();
-const app = criarAplicacao();
+const configuracao = obterConfiguracao();
+const app = criarAplicacao({
+  poolBanco: pool,
+  configuracao,
+  enviarEmail: criarServicoEmail(configuracao),
+});
 
 await pool.query('SELECT 1');
 
-const servidor = app.listen(porta, () => {
-  console.log(`Lista Web disponível em http://localhost:${porta}`);
+const servidor = app.listen(configuracao.porta, () => {
+  console.log(`Lista Web disponível em http://localhost:${configuracao.porta}`);
 });
 
 // Encerrar o servidor com segurança permite que o runtime finalize requisições.

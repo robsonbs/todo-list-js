@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-todo_dev}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todo_dev_local_only}
     ports:
-      - '${POSTGRES_PORT:-5433}:5432'
+      - '127.0.0.1:${POSTGRES_PORT:-5433}:5432'
     volumes:
       - dados-postgres-web:/var/lib/postgresql/data
     healthcheck:
@@ -27,6 +27,37 @@ services:
       banco-web:
         condition: service_healthy
     profiles: ['ferramentas']
+
+  banco-web-teste:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: todo_web_teste
+      POSTGRES_USER: todo_teste
+      POSTGRES_PASSWORD: senha_teste_somente_local
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U todo_teste -d todo_web_teste']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    profiles: ['testes']
+
+  testes-api:
+    image: node:26.13.0
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: postgres://todo_teste:senha_teste_somente_local@banco-web-teste:5432/todo_web_teste
+      SESSION_SECRET: segredo-de-teste-apenas-local-session
+      CSRF_SECRET: segredo-de-teste-apenas-local-csrf
+      EMAIL_MODE: console
+      PUBLIC_URL: http://localhost:3000
+    command: ['sh', '-c', 'npm run db:migrate && npm run test:integration']
+    depends_on:
+      banco-web-teste:
+        condition: service_healthy
+    profiles: ['testes']
 
 volumes:
   dados-postgres-web:

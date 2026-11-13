@@ -24,6 +24,8 @@
     "db:migrate": "node --env-file-if-exists=.env server/db/migrate.js",
     "test:server": "vitest run tests/server",
     "db:migrate:docker": "docker compose --env-file .env.example -f docker-compose.web.yml run --rm migrar",
+    "test:integration": "vitest run tests/integration",
+    "test:integration:docker": "docker compose --env-file .env.example -f docker-compose.web.yml --profile testes run --rm testes-api",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -35,8 +37,18 @@
     "verify": "npm run lint && npm run format:check && npm test"
   },
   "dependencies": {
+    "argon2": "0.45.2",
+    "connect-pg-simple": "10.0.0",
+    "cookie-parser": "1.4.7",
+    "csrf-csrf": "4.1.0",
     "express": "5.3.0",
+    "express-rate-limit": "8.7.4",
+    "express-session": "1.19.0",
     "helmet": "8.3.0",
+    "nodemailer": "10.5.0",
     "pg": "8.23.1"
+  },
+  "allowScripts": {
+    "argon2@0.45.2": true
   }
 }
