@@ -15,6 +15,7 @@ import session from 'express-session';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { criarRotasAutenticacao } from './routes/autenticacao.js';
+import { criarRotasTarefas } from './routes/tarefas.js';
 
 const diretorioAtual = path.dirname(fileURLToPath(import.meta.url));
 const diretorioWeb = path.resolve(diretorioAtual, '../web');
@@ -103,6 +104,7 @@ export function criarAplicacao({ poolBanco, configuracao, enviarEmail } = {}) {
 
     app.use('/api', csrf.doubleCsrfProtection);
     app.use('/api/auth', criarRotasAutenticacao({ poolBanco, configuracao, enviarEmail }));
+    app.use('/api/tarefas', criarRotasTarefas({ poolBanco }));
 
     app.use((erro, _requisicao, resposta, proximo) => {
       if (erro === csrf.invalidCsrfTokenError) {

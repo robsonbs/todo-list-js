@@ -257,4 +257,68 @@ describe.skipIf(!poolBanco)('integração de autenticação com PostgreSQL', () 
     });
     expect(senhaNova.status).toBe(200);
   });
+
+  it('isola o CRUD por usuário e importa a lista local uma única vez', async () => {
+    const ana = new ClienteAutenticacao(porta);
+    const bia = new ClienteAutenticacao(porta);
+    await criarContaConfirmada(ana, 'ana-tarefas@example.com');
+    await criarContaConfirmada(bia, 'bia-tarefas@example.com');
+
+    await ana.chamar('POST', '/api/auth/login', {
+      email: 'ana-tarefas@example.com',
+      senha: 'senha-segura-de-teste-123',
+    });
+    await ana.obterTokenCsrf();
+    await bia.chamar('POST', '/api/auth/login', {
+      email: 'bia-tarefas@example.com',
+      senha: 'senha-segura-de-teste-123',
+    });
+    await bia.obterTokenCsrf();
+
+    const tarefaAna = await ana.chamar('POST', '/api/tarefas', {
+      texto: 'Tarefa privada da Ana',
+    });
+    const tarefaBia = await bia.chamar('POST', '/api/tarefas', {
+      texto: 'Tarefa privada da Bia',
+    });
+
+    expect(tarefaAna.status).toBe(201);
+    expect(tarefaBia.status).toBe(201);
+
+    const listaAna = await ana.chamar('GET', '/api/tarefas');
+    const listaBia = await bia.chamar('GET', '/api/tarefas');
+    expect(listaAna.corpo.tarefas.map((tarefa) => tarefa.texto)).toEqual(['Tarefa privada da Ana']);
+    expect(listaBia.corpo.tarefas.map((tarefa) => tarefa.texto)).toEqual(['Tarefa privada da Bia']);
+
+    const alteracaoCruzada = await bia.chamar(
+      'PATCH',
+      `/api/tarefas/${tarefaAna.corpo.tarefa.id}`,
+      { texto: 'Tentativa de invasão' }
+    );
+    const remocaoCruzada = await bia.chamar('DELETE', `/api/tarefas/${tarefaAna.corpo.tarefa.id}`);
+    expect(alteracaoCruzada.status).toBe(404);
+    expect(remocaoCruzada.status).toBe(404);
+
+    const importacao = await ana.chamar('POST', '/api/tarefas/importar', {
+      tarefas: [
+        { texto: 'Tarefa antiga pendente', completa: false },
+        { texto: 'Tarefa antiga concluída', completa: true },
+      ],
+    });
+    expect(importacao.status).toBe(201);
+    expect(importacao.corpo.importadas).toBe(2);
+
+    const repeticao = await ana.chamar('POST', '/api/tarefas/importar', {
+      tarefas: [{ texto: 'Não deve duplicar', completa: false }],
+    });
+    expect(repeticao.status).toBe(409);
+
+    const estadoImportacaoBia = await bia.chamar('GET', '/api/tarefas/importacao');
+    expect(estadoImportacaoBia.corpo).toEqual({ importada: false });
+
+    const textoInvalido = await ana.chamar('POST', '/api/tarefas', {
+      texto: '   ',
+    });
+    expect(textoInvalido.status).toBe(400);
+  });
 });
