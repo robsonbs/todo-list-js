@@ -1,4 +1,4 @@
-/* Estilos iniciais da edição online; mantém as cores roxas do curso. */
+/* Estilos da versão online, seguindo a paleta roxa usada no curso. */
 :root {
   color-scheme: light;
   font-family: Inter, 'Segoe UI', sans-serif;
@@ -6,6 +6,12 @@
   background: #f8fafc;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  --cor-primaria: #6366f1;
+  --cor-secundaria: #8b5cf6;
+  --cor-texto-secundario: #64748b;
+  --cor-borda: #dbe3ef;
+  --cor-fundo-suave: #f8fafc;
+  --sombra-cartao: 0 8px 24px rgba(31, 41, 55, 0.08);
 }
 
 * {
@@ -16,11 +22,13 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .cabecalho {
-  padding: 3rem 1.5rem;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  padding: clamp(2rem, 6vw, 3.5rem) 1.5rem;
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria));
   color: white;
   text-align: center;
 }
@@ -42,25 +50,254 @@ body {
 }
 
 .conteudo {
-  width: min(100% - 2rem, 760px);
+  width: min(100% - 2rem, 780px);
   margin: 2rem auto;
+  flex: 1;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 .cartao {
-  padding: 1.5rem;
-  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  border: 1px solid var(--cor-borda);
   border-radius: 1rem;
   background: white;
-  box-shadow: 0 8px 24px rgba(31, 41, 55, 0.08);
+  box-shadow: var(--sombra-cartao);
 }
 
-.cartao h2 {
+.cartao h2,
+.cartao h3 {
   margin-top: 0;
   color: #4338ca;
 }
 
+.texto-ajuda,
+.cartao p {
+  color: var(--cor-texto-secundario);
+}
+
+.mensagem {
+  padding: 0;
+  color: #3730a3;
+  font-weight: 700;
+}
+
+.mensagem:empty {
+  display: none;
+}
+
+.mensagem:not(:empty) {
+  padding: 0.85rem 1rem;
+  border: 1px solid #c7d2fe;
+  border-radius: 0.75rem;
+  background: #eef2ff;
+}
+
+.formulario {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.formulario label {
+  font-weight: 700;
+}
+
+.formulario input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #94a3b8;
+  border-radius: 0.6rem;
+  color: #1f2937;
+  font: inherit;
+}
+
+.formulario input:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, 0.28);
+  border-color: var(--cor-primaria);
+}
+
+.botao {
+  min-height: 2.65rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.botao:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, 0.35);
+  outline-offset: 2px;
+}
+
+.botao:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.botao-principal {
+  background: var(--cor-primaria);
+  color: white;
+}
+
+.botao-principal:hover {
+  background: #4f46e5;
+}
+
+.botao-secundario {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+#abrir-cadastro,
+#voltar-login {
+  margin-top: 0.9rem;
+}
+
+.detalhes-recuperacao {
+  margin-top: 1.2rem;
+}
+
+.detalhes-recuperacao summary {
+  width: fit-content;
+  color: #4338ca;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.formulario-compacto {
+  max-width: 34rem;
+  margin-bottom: 1rem;
+}
+
+.nota-desenvolvimento {
+  margin: 1.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+.cabecalho-tarefas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cabecalho-tarefas h2,
+.cabecalho-tarefas p {
+  margin-bottom: 0.4rem;
+}
+
+.painel-importacao {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-left: 4px solid #06b6d4;
+  border-radius: 0.75rem;
+  background: #ecfeff;
+}
+
+.painel-importacao h3 {
+  margin-bottom: 0.35rem;
+  color: #155e75;
+  font-size: 1.1rem;
+}
+
+.formulario-tarefa {
+  margin: 1.5rem 0;
+}
+
+.linha-tarefa {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.lista-tarefas {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item-tarefa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.8rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.75rem;
+}
+
+.item-tarefa input[type='checkbox'] {
+  width: 1.2rem;
+  min-height: 1.2rem;
+  accent-color: var(--cor-primaria);
+}
+
+.texto-item-tarefa {
+  flex: 1 1 12rem;
+  overflow-wrap: anywhere;
+}
+
+.item-tarefa.concluida .texto-item-tarefa {
+  color: var(--cor-texto-secundario);
+  text-decoration: line-through;
+}
+
+.botoes-tarefa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.botao-pequeno {
+  min-height: 2.2rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.9rem;
+}
+
+.botao-remover {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.editor-tarefa {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lista-vazia {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--cor-fundo-suave);
+  color: var(--cor-texto-secundario);
+  text-align: center;
+}
+
 .rodape {
   padding: 1rem;
-  color: #64748b;
+  color: var(--cor-texto-secundario);
   text-align: center;
+}
+
+@media (max-width: 560px) {
+  .linha-tarefa {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cabecalho-tarefas {
+    align-items: stretch;
+  }
 }

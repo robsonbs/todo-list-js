@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Lista de tarefas online com contas individuais." />
+    <meta
+      name="description"
+      content="Lista de tarefas online com contas individuais e dados privados."
+    />
     <title>Minha Lista Online</title>
     <link rel="stylesheet" href="/style.css" />
     <script type="module" src="/app.js"></script>
@@ -12,14 +15,167 @@
     <header class="cabecalho">
       <p class="selo">MISSÃO: LISTA NA NUVEM</p>
       <h1>📝 Minha Lista Online</h1>
-      <p>Em breve: suas tarefas, com você em qualquer lugar.</p>
+      <p>Suas tarefas, protegidas e disponíveis pela internet.</p>
     </header>
+
     <main class="conteudo">
-      <section class="cartao" aria-labelledby="titulo-status">
-        <h2 id="titulo-status">Conexão com o servidor</h2>
-        <p id="estado-servidor" role="status" aria-live="polite">Verificando a API…</p>
+      <p id="mensagem" class="mensagem" role="status" aria-live="polite"></p>
+
+      <section id="painel-conta" class="cartao" aria-labelledby="titulo-conta">
+        <h2 id="titulo-conta">Entre na sua conta</h2>
+        <p class="texto-ajuda">Cada conta tem sua própria lista. Não compartilhe sua senha.</p>
+
+        <form id="form-login" class="formulario">
+          <label for="email-login">E-mail</label>
+          <input
+            id="email-login"
+            name="email"
+            type="email"
+            autocomplete="username"
+            maxlength="254"
+            required
+          />
+          <label for="senha-login">Senha</label>
+          <input
+            id="senha-login"
+            name="senha"
+            type="password"
+            autocomplete="current-password"
+            maxlength="128"
+            required
+          />
+          <button class="botao botao-principal" type="submit">Entrar</button>
+        </form>
+
+        <button id="abrir-cadastro" class="botao botao-secundario" type="button">
+          Criar uma conta
+        </button>
+
+        <details class="detalhes-recuperacao">
+          <summary>Esqueci minha senha</summary>
+          <form id="form-esqueci-senha" class="formulario formulario-compacto">
+            <label for="email-recuperacao">E-mail da conta</label>
+            <input
+              id="email-recuperacao"
+              name="email"
+              type="email"
+              autocomplete="email"
+              maxlength="254"
+              required
+            />
+            <button class="botao botao-secundario" type="submit">Enviar instruções</button>
+          </form>
+        </details>
+
+        <details class="detalhes-recuperacao">
+          <summary>Não recebi o e-mail de confirmação</summary>
+          <form id="form-reenviar-confirmacao" class="formulario formulario-compacto">
+            <label for="email-confirmacao">E-mail da conta</label>
+            <input
+              id="email-confirmacao"
+              name="email"
+              type="email"
+              autocomplete="email"
+              maxlength="254"
+              required
+            />
+            <button class="botao botao-secundario" type="submit">Reenviar confirmação</button>
+          </form>
+        </details>
+
+        <form id="form-cadastro" class="formulario" hidden>
+          <h3>Criar conta</h3>
+          <label for="email-cadastro">E-mail para a conta</label>
+          <input
+            id="email-cadastro"
+            name="email"
+            type="email"
+            autocomplete="email"
+            maxlength="254"
+            required
+          />
+          <label for="senha-cadastro">Senha (mínimo de 12 caracteres)</label>
+          <input
+            id="senha-cadastro"
+            name="senha"
+            type="password"
+            autocomplete="new-password"
+            minlength="12"
+            maxlength="128"
+            required
+          />
+          <button class="botao botao-principal" type="submit">Cadastrar</button>
+          <button id="voltar-login" class="botao botao-secundario" type="button">
+            Já tenho uma conta
+          </button>
+        </form>
+
+        <form id="form-redefinir-senha" class="formulario" hidden>
+          <h3>Escolha uma nova senha</h3>
+          <label for="senha-nova">Nova senha (mínimo de 12 caracteres)</label>
+          <input
+            id="senha-nova"
+            name="senha"
+            type="password"
+            autocomplete="new-password"
+            minlength="12"
+            maxlength="128"
+            required
+          />
+          <button class="botao botao-principal" type="submit">Salvar nova senha</button>
+        </form>
+
+        <p class="nota-desenvolvimento">
+          No laboratório local, os links de confirmação e recuperação aparecem no terminal do
+          servidor. Isso não acontece em produção.
+        </p>
+      </section>
+
+      <section id="painel-tarefas" class="cartao" aria-labelledby="titulo-tarefas" hidden>
+        <div class="cabecalho-tarefas">
+          <div>
+            <h2 id="titulo-tarefas">Minhas tarefas</h2>
+            <p>Conta: <span id="email-atual"></span></p>
+          </div>
+          <button id="botao-sair" class="botao botao-secundario" type="button">Sair</button>
+        </div>
+
+        <section id="painel-importacao" class="painel-importacao" hidden>
+          <h3>Encontramos tarefas neste navegador</h3>
+          <p>
+            Você pode importá-las para esta conta uma única vez. A lista local não será apagada
+            automaticamente.
+          </p>
+          <button id="botao-importar" class="botao botao-secundario" type="button">
+            Importar tarefas locais
+          </button>
+        </section>
+
+        <form id="form-nova-tarefa" class="formulario formulario-tarefa">
+          <label for="texto-nova-tarefa">Nova tarefa</label>
+          <div class="linha-tarefa">
+            <input
+              id="texto-nova-tarefa"
+              name="texto"
+              type="text"
+              maxlength="100"
+              autocomplete="off"
+              required
+            />
+            <button class="botao botao-principal" type="submit">Adicionar</button>
+          </div>
+        </form>
+
+        <p id="carregamento-tarefas" class="texto-ajuda" role="status" hidden>
+          Carregando suas tarefas…
+        </p>
+        <ul id="lista-tarefas" class="lista-tarefas" aria-label="Suas tarefas"></ul>
+        <p id="lista-vazia" class="lista-vazia" hidden>
+          🎉 Sua lista está vazia. Adicione a primeira tarefa!
+        </p>
       </section>
     </main>
+
     <footer class="rodape">
       <p>Construído passo a passo no curso de JavaScript.</p>
     </footer>
