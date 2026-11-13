@@ -14,6 +14,7 @@ const nomesAmbiente = [
   'SMTP_PASSWORD',
   'EMAIL_FROM',
   'PUBLIC_URL',
+  'RENDER_EXTERNAL_URL',
   'TRUST_PROXY_HOPS',
 ];
 const ambienteOriginal = Object.fromEntries(nomesAmbiente.map((nome) => [nome, process.env[nome]]));
@@ -79,5 +80,18 @@ describe('configuração do servidor', () => {
     process.env.PUBLIC_URL = 'http://tarefas.example.com';
 
     expect(() => obterConfiguracao()).toThrow('PUBLIC_URL deve usar HTTPS');
+  });
+
+  it('usa a URL externa fornecida pelo Render quando PUBLIC_URL não foi definida', () => {
+    process.env.NODE_ENV = 'production';
+    process.env.DATABASE_URL = 'postgres://localhost/tarefas';
+    process.env.SESSION_SECRET = 'segredo-de-sessao-producao-aleatorio-123456789';
+    process.env.CSRF_SECRET = 'segredo-csrf-producao-aleatorio-123456789012';
+    process.env.EMAIL_MODE = 'smtp';
+    process.env.SMTP_HOST = 'smtp.example.com';
+    process.env.EMAIL_FROM = 'Lista <lista@example.com>';
+    process.env.RENDER_EXTERNAL_URL = 'https://todo-list-web.onrender.com';
+
+    expect(obterConfiguracao().urlPublica).toBe(process.env.RENDER_EXTERNAL_URL);
   });
 });

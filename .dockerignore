@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+render.yaml
 node_modules
 tests/*
 !tests/e2e/
@@ -14,3 +15,4 @@ playwright-report
 test-results
 coverage
 *.md
+render.yaml

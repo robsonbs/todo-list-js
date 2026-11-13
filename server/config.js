@@ -61,7 +61,7 @@ export function obterConfiguracao() {
   const hostEmail = process.env.SMTP_HOST;
   const portaEmail = Number(process.env.SMTP_PORT ?? 587);
   const remetenteEmail = process.env.EMAIL_FROM;
-  const urlPublica = process.env.PUBLIC_URL;
+  const urlPublica = process.env.PUBLIC_URL ?? process.env.RENDER_EXTERNAL_URL;
 
   if (modoEmail === 'smtp' && (!hostEmail || !remetenteEmail)) {
     throw new Error('SMTP_HOST e EMAIL_FROM são obrigatórios para EMAIL_MODE=smtp.');

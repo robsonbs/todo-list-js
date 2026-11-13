@@ -20,7 +20,7 @@ const app = criarAplicacao({
 
 await pool.query('SELECT 1');
 
-const servidor = app.listen(configuracao.porta, () => {
+const servidor = app.listen(configuracao.porta, '0.0.0.0', () => {
   console.log(`Lista Web disponível em http://localhost:${configuracao.porta}`);
 });
 

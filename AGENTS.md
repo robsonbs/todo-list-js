@@ -33,8 +33,9 @@ ser escolhido.
 | Argon2id          | Hash de senhas          | `argon2` v0.45.2; não armazenar senhas em texto                       |
 
 **Backend próprio, sem Supabase.** A interface online é servida pelo Express na
-mesma origem da API; a Vercel atual permanece somente para o site estático até
-que um provedor de containers/PostgreSQL seja escolhido.
+mesma origem da API. Render é o alvo preparado em `render.yaml`; o Blueprint tem
+planos pagos e não deve ser sincronizado/provisionado sem aceite explícito de
+custos. A Vercel atual continua publicando somente o site estático.
 
 ---
 
@@ -57,6 +58,7 @@ todo-list-js/
 ├── 📦 package.json            # Runtime/dev e scripts (E2E em lockfile separado)
 ├── 🐳 Dockerfile.web          # Imagem de runtime da edição online
 ├── 🐳 docker-compose.web.yml  # PostgreSQL local, backend e testes web
+├── 📄 render.yaml             # Blueprint Render; sincronização provisiona recursos
 ├── 📄 .dockerignore           # Contexto reduzido da imagem de runtime
 ├── 📄 .env.example            # Exemplo local sem credenciais de produção
 ├── ⚙️ eslint.config.js        # Configuração ESLint v10

@@ -54,9 +54,34 @@ confirmação e recuperação. Isso é exclusivo do laboratório. Para produçã
 `Dockerfile.web` e configure PostgreSQL, `NODE_ENV=production`, segredos novos
 `SESSION_SECRET`/`CSRF_SECRET`, `PUBLIC_URL` com HTTPS e SMTP. Os valores de
 `.env.example` nunca são credenciais de produção; arquivos `.env` não devem ser
-versionados. **Não usamos Supabase.** A Vercel existente publica o site estático;
-ela não publica automaticamente este backend nem o PostgreSQL. O provedor
-público ainda precisa ser escolhido/configurado.
+versionados. **Não usamos Supabase.** A Vercel existente continua publicando
+somente o site estático; não publica este backend nem o PostgreSQL.
+
+### Publicação no Render
+
+`render.yaml` define um Blueprint com web service Docker, health check em
+`/api/health`, migrações antes do deploy e PostgreSQL aceitando apenas conexões
+internas. O exemplo usa a região Ohio para ambos; revise a região conforme
+latência e localização desejadas.
+
+**Atenção a custos:** o Blueprint escolhe os menores planos pagos para evitar
+que o banco gratuito expire e perca dados. Sincronizar o Blueprint no Render
+provisiona recursos faturáveis. Revise os preços atuais e aprove isso na sua
+conta antes de sincronizar. O commit deste arquivo não cria serviços nem inicia
+cobranças. `autoDeployTrigger: off` evita deploy automático até alguém iniciá-lo.
+
+Para publicar depois de revisar os planos:
+
+1. Revise e integre esta branch em `main`; o serviço está configurado para
+   receber código de produção somente dessa branch.
+2. Conecte o repositório no Render e selecione o Blueprint `render.yaml`.
+3. Revise região e planos; só sincronize depois de aceitar os custos.
+4. Preencha `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` e `EMAIL_FROM` como segredos
+   no Dashboard do Render; não os coloque neste repositório.
+5. Faça o deploy manual. `PUBLIC_URL` usa `RENDER_EXTERNAL_URL` automaticamente;
+   ao configurar domínio próprio, defina `PUBLIC_URL` para a URL HTTPS dele.
+6. Confirme o envio de e-mail, cadastro, recuperação de senha, backup e
+   isolamento entre duas contas antes de compartilhar o site.
 
 Em um host atrás de proxy TLS, defina `TRUST_PROXY_HOPS` conforme o número real
 de proxies confiáveis para que cookies seguros e limites por IP usem a conexão
@@ -97,6 +122,7 @@ todo-list-js/
 ├── playwright.web.config.js # Configuração E2E da edição online
 ├── Dockerfile.web          # Imagem de produção da API e interface online
 ├── docker-compose.web.yml  # PostgreSQL local, desenvolvimento e testes web
+├── render.yaml             # Blueprint Render (não provisiona até sincronizar)
 ├── .dockerignore           # Arquivos excluídos da imagem web
 ├── .env.example            # Exemplo de configuração local (não é segredo)
 ├── commitlint.config.js    # Regras de mensagens Conventional Commits
