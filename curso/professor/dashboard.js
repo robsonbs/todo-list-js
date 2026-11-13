@@ -28,7 +28,7 @@ class TeacherDashboard {
                     name: "Maria João Santos",
                     email: "maria@email.com",
                     completedLessons: 8,
-                    totalLessons: 9,
+                    totalLessons: 10,
                     completedExercises: 12,
                     totalExercises: 15,
                     avgScore: 89,
@@ -40,7 +40,7 @@ class TeacherDashboard {
                     name: "Pedro Silva Costa",
                     email: "pedro@email.com",
                     completedLessons: 6,
-                    totalLessons: 9,
+                    totalLessons: 10,
                     completedExercises: 8,
                     totalExercises: 15,
                     avgScore: 67,
@@ -52,7 +52,7 @@ class TeacherDashboard {
                     name: "Ana Luiza Ferreira",
                     email: "ana@email.com",
                     completedLessons: 4,
-                    totalLessons: 9,
+                    totalLessons: 10,
                     completedExercises: 5,
                     totalExercises: 15,
                     avgScore: 44,
@@ -69,7 +69,8 @@ class TeacherDashboard {
                 { number: 6, title: "Programação Assíncrona", completionRate: 65, avgTime: 240, difficulty: "Alta" },
                 { number: 7, title: "APIs e AJAX", completionRate: 58, avgTime: 220, difficulty: "Alta" },
                 { number: 8, title: "DOM Avançado", completionRate: 42, avgTime: 280, difficulty: "Alta" },
-                { number: 9, title: "Web APIs Modernas", completionRate: 25, avgTime: 300, difficulty: "Alta" }
+                { number: 9, title: "Web APIs Modernas", completionRate: 25, avgTime: 300, difficulty: "Alta" },
+                { number: 10, title: "Missão: Lista na Nuvem", completionRate: 0, avgTime: 400, difficulty: "Alta" }
             ],
             exercises: [
                 { name: "Calculadora Básica", completionRate: 92, avgScore: 85 },

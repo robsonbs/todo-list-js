@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Módulo prático: evolua uma lista local para uma aplicação web com Express e PostgreSQL."
+    />
+    <title>Aula 10: Missão Lista na Nuvem</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+        --text-color: #334155;
+        --card-shadow: 0 8px 24px rgba(31, 41, 55, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 1.5rem 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: var(--text-color);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.65;
+      }
+
+      .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 1.25rem;
+        background: white;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.17);
+      }
+
+      .header {
+        padding: clamp(2rem, 6vw, 4rem) 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin-bottom: 0.75rem;
+        font-size: clamp(2rem, 5vw, 3.3rem);
+        font-weight: 800;
+      }
+
+      .header p {
+        max-width: 760px;
+        margin: 0 auto;
+        font-size: 1.15rem;
+      }
+
+      .mission-stamp {
+        display: inline-block;
+        margin-bottom: 1rem;
+        padding: 0.35rem 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        border-radius: 99rem;
+        background: rgba(255, 255, 255, 0.15);
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .lesson-content {
+        padding: clamp(1rem, 4vw, 2.5rem);
+      }
+
+      .lesson-nav {
+        position: sticky;
+        z-index: 5;
+        top: 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin: 0 0 2rem;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        background: rgba(248, 250, 252, 0.96);
+        box-shadow: var(--card-shadow);
+      }
+
+      .lesson-nav a {
+        padding: 0.4rem 0.7rem;
+        border-radius: 0.6rem;
+        color: #4338ca;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .lesson-nav a:hover,
+      .lesson-nav a:focus-visible {
+        outline: 3px solid rgba(99, 102, 241, 0.25);
+        background: #e0e7ff;
+      }
+
+      .mission-card,
+      .unit-card {
+        margin-bottom: 1.5rem;
+        padding: clamp(1rem, 3vw, 1.75rem);
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        background: white;
+        box-shadow: var(--card-shadow);
+      }
+
+      .mission-card {
+        border-left: 6px solid var(--info-color);
+        background: #f0f9ff;
+      }
+
+      .unit-card h2 {
+        margin-bottom: 1rem;
+        color: #4338ca;
+        font-size: clamp(1.35rem, 3vw, 1.8rem);
+      }
+
+      .unit-number {
+        display: inline-grid;
+        width: 2.2rem;
+        height: 2.2rem;
+        margin-right: 0.4rem;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        font-size: 1rem;
+        vertical-align: middle;
+      }
+
+      .objectives,
+      .interpretation {
+        padding: 1rem 1.1rem;
+        border-radius: 0.8rem;
+        background: var(--light-color);
+      }
+
+      .interpretation {
+        margin-top: 1rem;
+        border-left: 4px solid var(--success-color);
+      }
+
+      .interpretation h3 {
+        color: #047857;
+        font-size: 1.1rem;
+      }
+
+      .visual-frame {
+        margin: 1.25rem 0;
+        padding: 1rem;
+        overflow-x: auto;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.8rem;
+        background: #fff;
+      }
+
+      .visual-frame svg {
+        display: block;
+        width: min(100%, 780px);
+        height: auto;
+        margin: 0 auto;
+      }
+
+      .mermaid {
+        overflow-x: auto;
+        text-align: center;
+      }
+
+      .mermaid svg {
+        max-width: 100%;
+      }
+
+      .diagram-source {
+        margin-top: 0.75rem;
+      }
+
+      .diagram-source summary {
+        color: #4338ca;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      pre,
+      code {
+        color: #e2e8f0;
+      }
+
+      pre {
+        overflow-x: auto;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background: #172033;
+        font-size: 0.92rem;
+      }
+
+      .challenge {
+        padding: 1rem;
+        border: 1px dashed #a5b4fc;
+        border-radius: 0.8rem;
+        background: #eef2ff;
+      }
+
+      .demo-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin: 1rem 0;
+      }
+
+      .demo-button {
+        padding: 0.65rem 1rem;
+        border: 0;
+        border-radius: 0.65rem;
+        background: var(--primary-color);
+        color: white;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 700;
+      }
+
+      .demo-button:hover,
+      .demo-button:focus-visible {
+        outline: 3px solid rgba(99, 102, 241, 0.3);
+        background: #4f46e5;
+      }
+
+      .demo-output {
+        min-height: 8rem;
+        color: #e2e8f0;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 0.65rem;
+        padding-left: 0;
+        list-style: none;
+      }
+
+      .checklist label {
+        display: flex;
+        gap: 0.65rem;
+        align-items: flex-start;
+      }
+
+      .checklist input {
+        margin-top: 0.4rem;
+        accent-color: var(--primary-color);
+      }
+
+      .footer {
+        padding: 1.5rem;
+        background: #f8fafc;
+        color: #475569;
+        text-align: center;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 0;
+        }
+
+        .main-container {
+          border-radius: 0;
+        }
+
+        .lesson-nav {
+          position: static;
+          justify-content: flex-start;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main-container">
+      <header class="header">
+        <span class="mission-stamp">MÓDULO ESPECIAL · AULA 10</span>
+        <h1>🚀 Missão: Lista na Nuvem</h1>
+        <p>
+          Sua lista já sabe guardar tarefas no navegador. Agora vamos construir
+          o caminho para guardá-las com segurança na internet.
+        </p>
+      </header>
+
+      <div class="lesson-content">
+        <nav class="lesson-nav" aria-label="Unidades do módulo">
+          <a href="#missao">Missão</a>
+          <a href="#servidor">Servidor</a>
+          <a href="#http">HTTP</a>
+          <a href="#express">Express</a>
+          <a href="#banco">Banco de dados</a>
+          <a href="#postgres">PostgreSQL</a>
+          <a href="#seguranca">Segurança</a>
+          <a href="#integracao">Integração</a>
+          <a href="#publicacao">Publicação</a>
+        </nav>
+
+        <section id="missao" class="mission-card" aria-labelledby="titulo-missao">
+          <h2 id="titulo-missao">🧭 Briefing da missão</h2>
+          <p>
+            Imagine que o navegador é uma ilha: hoje, as tarefas ficam no
+            armazenamento daquele navegador. Para acessar a mesma lista em
+            outro aparelho, precisaremos de um servidor e de um banco de dados.
+          </p>
+          <div class="objectives">
+            <strong>Ao terminar, você conseguirá:</strong>
+            <ul class="mb-0">
+              <li>explicar como navegador, backend e banco conversam;</li>
+              <li>ler e montar requisições HTTP para uma API;</li>
+              <li>criar rotas com Express e persistir dados no PostgreSQL;</li>
+              <li>entender por que cada usuário deve acessar apenas suas tarefas;</li>
+              <li>acompanhar o caminho do desenvolvimento local até a publicação.</li>
+            </ul>
+          </div>
+          <p class="mt-3 mb-0">
+            <strong>Pré-requisito:</strong> conhecimentos do curso inicial de
+            JavaScript. Não é necessário já saber backend, Express ou banco de dados.
+          </p>
+        </section>
+
+        <section id="servidor" class="unit-card" aria-labelledby="titulo-servidor">
+          <h2 id="titulo-servidor"><span class="unit-number">1</span> A ilha, o servidor e o backend</h2>
+          <p>
+            O navegador executa a interface. O <strong>backend</strong> é o
+            programa que recebe pedidos, aplica regras e conversa com o banco.
+            Node.js permite executar JavaScript fora do navegador; Express ajuda
+            a organizar as rotas HTTP desse servidor.
+          </p>
+          <figure class="visual-frame">
+            <svg viewBox="0 0 820 210" role="img" aria-labelledby="svg-titulo svg-desc">
+              <title id="svg-titulo">Caminho de uma tarefa até o banco</title>
+              <desc id="svg-desc">
+                O navegador envia uma requisição ao backend Express. O backend
+                conversa com PostgreSQL e devolve uma resposta ao navegador.
+              </desc>
+              <defs>
+                <marker id="ponta-seta" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L9,3 z" fill="#6366f1" />
+                </marker>
+              </defs>
+              <rect x="20" y="55" width="190" height="90" rx="16" fill="#e0e7ff" stroke="#6366f1" stroke-width="3" />
+              <text x="115" y="94" text-anchor="middle" font-size="20" font-weight="700" fill="#312e81">Navegador</text>
+              <text x="115" y="120" text-anchor="middle" font-size="15" fill="#334155">tela + JavaScript</text>
+              <rect x="315" y="55" width="190" height="90" rx="16" fill="#ede9fe" stroke="#8b5cf6" stroke-width="3" />
+              <text x="410" y="94" text-anchor="middle" font-size="20" font-weight="700" fill="#5b21b6">Backend</text>
+              <text x="410" y="120" text-anchor="middle" font-size="15" fill="#334155">Node.js + Express</text>
+              <rect x="610" y="55" width="190" height="90" rx="16" fill="#d1fae5" stroke="#10b981" stroke-width="3" />
+              <text x="705" y="94" text-anchor="middle" font-size="20" font-weight="700" fill="#065f46">PostgreSQL</text>
+              <text x="705" y="120" text-anchor="middle" font-size="15" fill="#334155">dados persistentes</text>
+              <line x1="215" y1="82" x2="305" y2="82" stroke="#6366f1" stroke-width="4" marker-end="url(#ponta-seta)" />
+              <line x1="505" y1="82" x2="600" y2="82" stroke="#6366f1" stroke-width="4" marker-end="url(#ponta-seta)" />
+              <path d="M610 130 C520 190, 300 190, 210 130" fill="none" stroke="#06b6d4" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#ponta-seta)" />
+              <text x="410" y="192" text-anchor="middle" font-size="15" fill="#0e7490">a resposta volta pela rede</text>
+            </svg>
+            <figcaption class="text-center mt-2">
+              Ilustração: o backend é o intermediário entre a tela e os dados.
+            </figcaption>
+          </figure>
+          <div class="challenge">
+            <strong>Desafio relâmpago:</strong> se fechar o navegador, qual parte
+            continua disponível para atender outro aparelho? <em>Resposta:</em>
+            o servidor e o banco, se estiverem publicados e funcionando.
+          </div>
+        </section>
+
+        <section id="http" class="unit-card" aria-labelledby="titulo-http">
+          <h2 id="titulo-http"><span class="unit-number">2</span> HTTP: o correio da web</h2>
+          <p>
+            Uma <strong>requisição</strong> leva um pedido do cliente ao servidor;
+            uma <strong>resposta</strong> informa o resultado. O método descreve a
+            intenção: <code>GET</code> consulta, <code>POST</code> cria,
+            <code>PATCH</code> altera parcialmente e <code>DELETE</code> remove.
+            Cabeçalhos dão contexto, o corpo pode carregar JSON, e o status
+            resume o resultado (por exemplo, 200, 201, 400, 401, 404 ou 500).
+          </p>
+          <div class="demo-buttons" aria-label="Demonstração de requisições HTTP">
+            <button class="demo-button" type="button" data-exemplo-http="get">
+              📬 Consultar tarefas (GET)
+            </button>
+            <button class="demo-button" type="button" data-exemplo-http="post">
+              ✉️ Criar tarefa (POST)
+            </button>
+          </div>
+          <pre id="resultado-http" class="demo-output" aria-live="polite">Escolha uma missão HTTP para ver a requisição e a resposta.</pre>
+          <div class="mermaid" role="img" aria-label="Diagrama Mermaid do ciclo de uma requisição HTTP">
+sequenceDiagram
+    actor Pessoa as Pessoa
+    participant Navegador
+    participant API as Servidor Express
+    participant Dados as PostgreSQL
+    Pessoa->>Navegador: Clica em Adicionar
+    Navegador->>API: POST /api/tarefas + JSON
+    API->>Dados: INSERT com parâmetros
+    Dados-->>API: tarefa criada
+    API-->>Navegador: 201 Created + JSON
+    Navegador-->>Pessoa: Mostra a tarefa
+          </div>
+          <div class="interpretation">
+            <h3>🗺️ Como interpretar o Mermaid</h3>
+            <p class="mb-0">
+              As colunas são participantes; o tempo avança de cima para baixo.
+              Setas contínuas mostram pedidos e setas tracejadas mostram
+              respostas. O navegador não grava diretamente no banco: ele envia
+              HTTP à API, que decide se a operação é permitida.
+            </p>
+          </div>
+          <details class="diagram-source">
+            <summary>Ver o texto usado para desenhar o diagrama</summary>
+            <pre><code>sequenceDiagram
+    Navegador-&gt;&gt;API: POST /api/tarefas + JSON
+    API-&gt;&gt;PostgreSQL: INSERT com parâmetros
+    PostgreSQL--&gt;&gt;API: tarefa criada
+    API--&gt;&gt;Navegador: 201 Created + JSON</code></pre>
+          </details>
+        </section>
+
+        <section id="express" class="unit-card" aria-labelledby="titulo-express">
+          <h2 id="titulo-express"><span class="unit-number">3</span> Express: organizar as entregas</h2>
+          <p>
+            Uma rota combina método e endereço. Middleware é uma etapa que pode
+            inspecionar a requisição antes de chegar à rota — por exemplo,
+            conferir se existe uma sessão. O fluxo didático será:
+            <strong>receber → validar → autorizar → executar → responder</strong>.
+          </p>
+          <pre><code>// Exemplo de rota Express (a versão completa terá tratamento de erros)
+app.get('/api/tarefas', exigirLogin, async (req, res) =&gt; {
+  const resultado = await banco.query(
+    'SELECT id, texto, completa FROM tarefas WHERE usuario_id = $1',
+    [req.session.usuarioId]
+  );
+
+  res.status(200).json({ tarefas: resultado.rows });
+});</code></pre>
+          <div class="interpretation">
+            <h3>🔎 Leia a rota</h3>
+            <p class="mb-0">
+              <code>app.get</code> atende consultas GET. <code>exigirLogin</code>
+              roda antes da função principal. O valor <code>$1</code> é um
+              parâmetro SQL; o ID vem da sessão validada pelo servidor, não de
+              um campo escolhido pelo navegador.
+            </p>
+          </div>
+        </section>
+
+        <section id="banco" class="unit-card" aria-labelledby="titulo-banco">
+          <h2 id="titulo-banco"><span class="unit-number">4</span> Banco de dados: arquivo com regras</h2>
+          <p>
+            Um banco relacional organiza informações em tabelas. Colunas
+            descrevem propriedades; linhas representam registros. Uma chave
+            primária identifica cada registro. Uma chave estrangeira conecta
+            registros relacionados e ajuda a manter os dados consistentes.
+          </p>
+          <div class="mermaid" role="img" aria-label="Diagrama Mermaid de usuários, sessões e tarefas">
+erDiagram
+    USUARIOS ||--o{ TAREFAS : possui
+    USUARIOS ||--o{ SESSOES : inicia
+    USUARIOS {
+        uuid id PK
+        string email UK
+        string hash_senha
+    }
+    TAREFAS {
+        uuid id PK
+        uuid usuario_id FK
+        string texto
+        boolean completa
+    }
+    SESSOES {
+        string sid PK
+        uuid usuario_id FK
+        datetime expira_em
+    }
+          </div>
+          <div class="interpretation">
+            <h3>🗺️ Como interpretar o Mermaid</h3>
+            <p class="mb-0">
+              Cada caixa é uma tabela. <code>PK</code> identifica a chave
+              primária e <code>FK</code> uma referência a outra tabela. A
+              ligação <code>USUARIOS ||--o{ TAREFAS</code> significa: uma
+              tarefa pertence a um usuário; um usuário pode ter zero ou muitas
+              tarefas. Assim, o banco registra a propriedade dos dados.
+            </p>
+          </div>
+        </section>
+
+        <section id="postgres" class="unit-card" aria-labelledby="titulo-postgres">
+          <h2 id="titulo-postgres"><span class="unit-number">5</span> PostgreSQL e SQL</h2>
+          <p>
+            PostgreSQL é o sistema que mantém as tabelas e responde a consultas
+            SQL. As operações básicas são criar, ler, atualizar e remover
+            (CRUD). Migrações registram mudanças planejadas no formato do banco.
+          </p>
+          <pre><code>-- $1 recebe um valor enviado separadamente pelo driver pg
+SELECT id, texto, completa
+FROM tarefas
+WHERE usuario_id = $1
+ORDER BY criada_em DESC;
+
+INSERT INTO tarefas (usuario_id, texto)
+VALUES ($1, $2)
+RETURNING id, texto, completa;</code></pre>
+          <div class="challenge">
+            <strong>Desafio da bibliotecária:</strong> por que não escrever o ID
+            recebido do navegador diretamente dentro do texto SQL? Porque
+            parâmetros separam dados do comando e ajudam a prevenir SQL
+            injection. Além disso, a propriedade deve vir da sessão, não de um
+            ID arbitrário enviado pelo cliente.
+          </div>
+        </section>
+
+        <section id="seguranca" class="unit-card" aria-labelledby="titulo-seguranca">
+          <h2 id="titulo-seguranca"><span class="unit-number">6</span> Identidade, autorização e segurança</h2>
+          <p>
+            <strong>Autenticação</strong> responde “quem entrou?”;
+            <strong>autorização</strong> responde “o que essa pessoa pode
+            acessar?”. A senha nunca é salva em texto: é transformada em um hash
+            com Argon2id. Depois do login, o servidor mantém uma sessão e o
+            navegador recebe um cookie protegido.
+          </p>
+          <div class="mermaid" role="img" aria-label="Diagrama Mermaid de uma criação de tarefa autenticada">
+sequenceDiagram
+    actor Pessoa
+    participant Browser as Navegador
+    participant App as Express
+    participant DB as PostgreSQL
+    Pessoa->>Browser: Envia tarefa
+    Browser->>App: POST + cookie de sessão + token CSRF
+    App->>App: Valida sessão, CSRF e conteúdo
+    App->>DB: INSERT usando usuario_id da sessão
+    DB-->>App: Registro criado
+    App-->>Browser: 201 Created
+    Browser-->>Pessoa: Confirma a tarefa
+          </div>
+          <div class="interpretation">
+            <h3>🗺️ Como interpretar o Mermaid</h3>
+            <p class="mb-0">
+              A pessoa só inicia a ação. O navegador envia cookie e token CSRF;
+              o Express verifica a sessão e a requisição antes de gravar. O ID
+              usado na consulta é derivado da sessão, o que impede que trocar
+              um identificador na tela dê acesso às tarefas de outra pessoa.
+            </p>
+          </div>
+          <ul>
+            <li>Cookie `HttpOnly`: JavaScript da página não lê o cookie de sessão.</li>
+            <li>`Secure`: em produção, o cookie só viaja por HTTPS.</li>
+            <li>`SameSite` e token CSRF: ajudam a proteger ações iniciadas por outro site.</li>
+            <li>Helmet e limite de tentativas: adicionam cabeçalhos de segurança e reduzem abuso.</li>
+            <li>Saída segura: textos de tarefas são exibidos como texto, não como HTML executável.</li>
+          </ul>
+          <p class="mb-0">
+            <strong>Regra de ouro:</strong> esconder um botão não protege dados.
+            A verificação precisa acontecer no servidor em cada operação.
+          </p>
+        </section>
+
+        <section id="integracao" class="unit-card" aria-labelledby="titulo-integracao">
+          <h2 id="titulo-integracao"><span class="unit-number">7</span> O navegador conversa com a API</h2>
+          <p>
+            O frontend usa <code>fetch</code> para enviar HTTP. Enquanto espera,
+            mostra carregamento; depois verifica se houve sucesso e atualiza a
+            tela. Uma falha de rede não deve apagar o que a pessoa digitou nem
+            fingir que a tarefa foi salva.
+          </p>
+          <pre><code>const resposta = await fetch('/api/tarefas', {
+  method: 'GET',
+  headers: { Accept: 'application/json' },
+  credentials: 'same-origin'
+});
+
+if (!resposta.ok) {
+  throw new Error('Não foi possível carregar as tarefas.');
+}
+
+const dados = await resposta.json();</code></pre>
+          <div class="challenge">
+            <strong>Decisão de migração:</strong> a aplicação oferecerá importar
+            tarefas locais depois que a pessoa entrar. A importação será explícita
+            para não misturar dados por acidente entre contas.
+          </div>
+        </section>
+
+        <section id="publicacao" class="unit-card" aria-labelledby="titulo-publicacao">
+          <h2 id="titulo-publicacao"><span class="unit-number">8</span> Publicar a missão na internet</h2>
+          <p>
+            No computador, usamos serviços locais como <code>localhost</code>.
+            Para outras pessoas acessarem, precisamos publicar o backend e o
+            banco, configurar domínio e HTTPS e fornecer segredos por variáveis
+            de ambiente. Um arquivo `.env` local nunca deve ser enviado ao Git.
+          </p>
+          <ul class="checklist" aria-label="Checklist do lançamento">
+            <li><label><input type="checkbox" /> Banco de produção separado do banco de testes.</label></li>
+            <li><label><input type="checkbox" /> HTTPS ativo e cookies seguros em produção.</label></li>
+            <li><label><input type="checkbox" /> Segredos configurados no host, não no código.</label></li>
+            <li><label><input type="checkbox" /> Backup e restauração do banco documentados.</label></li>
+            <li><label><input type="checkbox" /> Teste com duas contas confirma isolamento das tarefas.</label></li>
+          </ul>
+          <div class="challenge">
+            <strong>Critério de sucesso:</strong> explicar o percurso
+            navegador → HTTP → Express → PostgreSQL e concluir uma tarefa pela
+            aplicação publicada.
+          </div>
+        </section>
+      </div>
+
+      <footer class="footer">
+        <p class="mb-0">🎓 Aula 10 · Projeto prático: Lista de Tarefas Web · Aprender construindo!</p>
+      </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js"></script>
+    <script src="./missao.js"></script>
+    <script src="../course-navigation.js"></script>
+  </body>
+</html>

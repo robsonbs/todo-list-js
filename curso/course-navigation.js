@@ -16,7 +16,8 @@ class CourseNavigation {
             { number: 6, title: 'Programação Assíncrona', path: '../aula-06/' },
             { number: 7, title: 'APIs e AJAX', path: '../aula-07/' },
             { number: 8, title: 'DOM Avançado', path: '../aula-08/' },
-            { number: 9, title: 'Web APIs Modernas', path: '../aula-09/' }
+            { number: 9, title: 'Web APIs Modernas', path: '../aula-09/' },
+            { number: 10, title: 'Missão: Lista na Nuvem', path: '../aula-10/' }
         ];
         
         this.currentLesson = this.detectCurrentLesson();
