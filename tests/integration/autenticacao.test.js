@@ -261,6 +261,10 @@ describe.skipIf(!poolBanco)('integração de autenticação com PostgreSQL', () 
   it('isola o CRUD por usuário e importa a lista local uma única vez', async () => {
     const ana = new ClienteAutenticacao(porta);
     const bia = new ClienteAutenticacao(porta);
+    const visitante = new ClienteAutenticacao(porta);
+    const acessoSemConta = await visitante.chamar('GET', '/api/tarefas');
+    expect(acessoSemConta.status).toBe(401);
+
     await criarContaConfirmada(ana, 'ana-tarefas@example.com');
     await criarContaConfirmada(bia, 'bia-tarefas@example.com');
 
@@ -298,6 +302,28 @@ describe.skipIf(!poolBanco)('integração de autenticação com PostgreSQL', () 
     const remocaoCruzada = await bia.chamar('DELETE', `/api/tarefas/${tarefaAna.corpo.tarefa.id}`);
     expect(alteracaoCruzada.status).toBe(404);
     expect(remocaoCruzada.status).toBe(404);
+
+    const alteracaoPropria = await ana.chamar(
+      'PATCH',
+      `/api/tarefas/${tarefaAna.corpo.tarefa.id}`,
+      { texto: 'Tarefa atualizada', completa: true }
+    );
+    expect(alteracaoPropria.status).toBe(200);
+    expect(alteracaoPropria.corpo.tarefa).toMatchObject({
+      texto: 'Tarefa atualizada',
+      completa: true,
+    });
+
+    const remocaoPropria = await ana.chamar('DELETE', `/api/tarefas/${tarefaAna.corpo.tarefa.id}`);
+    expect(remocaoPropria.status).toBe(204);
+
+    const importacaoInvalida = await ana.chamar('POST', '/api/tarefas/importar', {
+      tarefas: [
+        { texto: 'Tarefa válida', completa: false },
+        { texto: '   ', completa: false },
+      ],
+    });
+    expect(importacaoInvalida.status).toBe(400);
 
     const importacao = await ana.chamar('POST', '/api/tarefas/importar', {
       tarefas: [

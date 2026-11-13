@@ -44,6 +44,10 @@ describe('servidor web — estrutura inicial', () => {
     });
     expect(resposta.cabecalhos['x-powered-by']).toBeUndefined();
     expect(resposta.cabecalhos['content-security-policy']).toContain("default-src 'self'");
+    expect(resposta.cabecalhos['strict-transport-security']).toBeUndefined();
+    expect(resposta.cabecalhos['content-security-policy']).not.toContain(
+      'upgrade-insecure-requests'
+    );
   });
 
   it('serve a interface online em uma rota separada da API', async () => {

@@ -28,7 +28,13 @@ const servidor = app.listen(configuracao.porta, () => {
 for (const sinal of ['SIGINT', 'SIGTERM']) {
   process.on(sinal, () => {
     servidor.close(() => {
-      process.exit(0);
+      pool
+        .end()
+        .then(() => process.exit(0))
+        .catch((erro) => {
+          console.error('Erro ao fechar conexões do PostgreSQL:', erro);
+          process.exit(1);
+        });
     });
   });
 }

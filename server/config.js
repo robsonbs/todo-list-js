@@ -61,9 +61,39 @@ export function obterConfiguracao() {
   const hostEmail = process.env.SMTP_HOST;
   const portaEmail = Number(process.env.SMTP_PORT ?? 587);
   const remetenteEmail = process.env.EMAIL_FROM;
+  const urlPublica = process.env.PUBLIC_URL;
 
   if (modoEmail === 'smtp' && (!hostEmail || !remetenteEmail)) {
     throw new Error('SMTP_HOST e EMAIL_FROM são obrigatórios para EMAIL_MODE=smtp.');
+  }
+
+  if (Boolean(process.env.SMTP_USER) !== Boolean(process.env.SMTP_PASSWORD)) {
+    throw new Error('SMTP_USER e SMTP_PASSWORD devem ser configurados juntos.');
+  }
+
+  if (!Number.isInteger(portaEmail) || portaEmail < 1 || portaEmail > 65535) {
+    throw new Error('SMTP_PORT deve ser um número entre 1 e 65535.');
+  }
+
+  if (producao) {
+    if (!urlPublica) {
+      throw new Error('PUBLIC_URL HTTPS é obrigatória em produção.');
+    }
+
+    let urlPublicaValidada;
+    try {
+      urlPublicaValidada = new URL(urlPublica);
+    } catch {
+      throw new Error('PUBLIC_URL deve ser uma URL absoluta HTTPS em produção.');
+    }
+
+    if (
+      urlPublicaValidada.protocol !== 'https:' ||
+      urlPublicaValidada.username ||
+      urlPublicaValidada.password
+    ) {
+      throw new Error('PUBLIC_URL deve usar HTTPS em produção.');
+    }
   }
 
   return {
@@ -81,7 +111,7 @@ export function obterConfiguracao() {
     usuarioEmail: process.env.SMTP_USER,
     senhaEmail: process.env.SMTP_PASSWORD,
     remetenteEmail,
-    urlPublica: process.env.PUBLIC_URL ?? `http://localhost:${porta}`,
+    urlPublica: urlPublica ?? `http://localhost:${porta}`,
     quantidadeProxies,
   };
 }

@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 import connectPgSimple from 'connect-pg-simple';
 import { doubleCsrf } from 'csrf-csrf';
 import session from 'express-session';
+import { rateLimit } from 'express-rate-limit';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { criarRotasAutenticacao } from './routes/autenticacao.js';
@@ -26,23 +27,30 @@ const diretorioWeb = path.resolve(diretorioAtual, '../web');
  */
 export function criarAplicacao({ poolBanco, configuracao, enviarEmail } = {}) {
   const app = express();
+  const diretivasCsp = {
+    defaultSrc: ["'self'"],
+    baseUri: ["'self'"],
+    connectSrc: ["'self'"],
+    formAction: ["'self'"],
+    frameAncestors: ["'none'"],
+    imgSrc: ["'self'", 'data:'],
+    objectSrc: ["'none'"],
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'"],
+  };
+
+  // HSTS e upgrade-insecure-requests só fazem sentido quando já há HTTPS.
+  if (!configuracao?.producao) {
+    diretivasCsp.upgradeInsecureRequests = null;
+  }
 
   app.disable('x-powered-by');
   app.use(
     helmet({
       contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          baseUri: ["'self'"],
-          connectSrc: ["'self'"],
-          formAction: ["'self'"],
-          frameAncestors: ["'none'"],
-          imgSrc: ["'self'", 'data:'],
-          objectSrc: ["'none'"],
-          scriptSrc: ["'self'"],
-          styleSrc: ["'self'"],
-        },
+        directives: diretivasCsp,
       },
+      strictTransportSecurity: configuracao?.producao ? undefined : false,
     })
   );
   app.use(express.json({ limit: '10kb' }));
@@ -91,8 +99,14 @@ export function criarAplicacao({ poolBanco, configuracao, enviarEmail } = {}) {
       ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
       getCsrfTokenFromRequest: (requisicao) => requisicao.headers['x-csrf-token'],
     });
+    const limitarEmissaoCsrf = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 120,
+      standardHeaders: 'draft-8',
+      legacyHeaders: false,
+    });
 
-    app.get('/api/csrf-token', async (requisicao, resposta) => {
+    app.get('/api/csrf-token', limitarEmissaoCsrf, async (requisicao, resposta) => {
       // Criar sessão anônima mantém o token CSRF vinculado a um identificador de sessão.
       requisicao.session.iniciada = true;
       const token = csrf.generateCsrfToken(requisicao, resposta);
