@@ -19,6 +19,21 @@ desses temas.
    gabarito.
 4. Acompanhe cada unidade com a implementação correspondente do projeto.
 
+## Laboratório local do banco
+
+Na etapa de PostgreSQL, com Node.js 26.13.0 e Docker disponíveis:
+
+```bash
+cp .env.example .env
+docker compose --env-file .env.example -f docker-compose.web.yml up -d banco-web
+docker compose --env-file .env.example -f docker-compose.web.yml run --rm migrar
+npm run dev
+```
+
+O `docker-compose.web.yml` usa somente um PostgreSQL local de desenvolvimento.
+Os valores de `.env.example` são didáticos e não podem ser reaproveitados em
+produção. As migrações registram quais arquivos SQL já foram aplicados.
+
 Os diagramas Mermaid são renderizados pela biblioteca carregada pela página. O
 texto-fonte e uma interpretação em português acompanham cada diagrama. A
 ilustração SVG principal funciona sem JavaScript.
