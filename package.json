@@ -19,9 +19,11 @@
     "vitest": "5.1.0"
   },
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "node --watch server/index.js",
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "dev": "node --env-file-if-exists=.env --watch server/index.js",
+    "db:migrate": "node --env-file-if-exists=.env server/db/migrate.js",
     "test:server": "vitest run tests/server",
+    "db:migrate:docker": "docker compose --env-file .env.example -f docker-compose.web.yml run --rm migrar",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -34,6 +36,7 @@
   },
   "dependencies": {
     "express": "5.3.0",
-    "helmet": "8.3.0"
+    "helmet": "8.3.0",
+    "pg": "8.23.1"
   }
 }

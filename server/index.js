@@ -7,9 +7,14 @@
 // ============================================================
 
 import { criarAplicacao } from './app.js';
+import { obterConfiguracao } from './config.js';
+import { pool } from './db/pool.js';
 
-const porta = Number(process.env.PORT ?? 3000);
+const { porta } = obterConfiguracao();
 const app = criarAplicacao();
+
+await pool.query('SELECT 1');
+
 const servidor = app.listen(porta, () => {
   console.log(`Lista Web disponível em http://localhost:${porta}`);
 });

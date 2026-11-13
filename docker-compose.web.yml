@@ -1,0 +1,32 @@
+services:
+  banco-web:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-todo_web}
+      POSTGRES_USER: ${POSTGRES_USER:-todo_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todo_dev_local_only}
+    ports:
+      - '${POSTGRES_PORT:-5433}:5432'
+    volumes:
+      - dados-postgres-web:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-todo_dev} -d ${POSTGRES_DB:-todo_web}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrar:
+    image: node:26.13.0
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgres://todo_dev:todo_dev_local_only@banco-web:5432/todo_web
+    command: ['npm', 'run', 'db:migrate']
+    depends_on:
+      banco-web:
+        condition: service_healthy
+    profiles: ['ferramentas']
+
+volumes:
+  dados-postgres-web:
