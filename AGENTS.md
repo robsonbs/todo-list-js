@@ -9,9 +9,13 @@ Este arquivo fornece instruções e contexto para agentes de IA (IA agents) que 
 ## 📋 Visão Geral do Projeto
 
 **Nome:** todo-list-js  
-**Descrição:** Uma aplicação de Lista de Tarefas (To-Do List) construída com HTML, CSS e JavaScript puro, com foco educacional para iniciantes em desenvolvimento web frontend.  
-**Objetivo:** Ensinar conceitos fundamentais de JavaScript (DOM, eventos, arrays, objetos, localStorage) através de um projeto prático e funcional.  
-**Status:** Projeto completo e funcional, com material didático estruturado para diferentes níveis de aprendizado.
+**Descrição:** Projeto educacional com uma versão local em HTML/CSS/JavaScript
+puro e uma edição web com contas individuais, API Express e PostgreSQL.
+**Objetivo:** Ensinar fundamentos de frontend e, no módulo especial 10, HTTP,
+backend, Express, bancos relacionais, PostgreSQL e segurança web.
+**Status:** A versão local e o curso inicial permanecem disponíveis; a edição
+online é executada pelo backend e está pronta para implantação em um provedor a
+ser escolhido.
 
 ---
 
@@ -23,7 +27,14 @@ Este arquivo fornece instruções e contexto para agentes de IA (IA agents) que 
 | CSS3              | Estilização             | Custom Properties (variáveis CSS), Flexbox, Media Queries, Dark Theme |
 | JavaScript (ES6+) | Lógica e interatividade | Vanilla JS, sem frameworks, manipulação do DOM, localStorage          |
 | Navegador         | Runtime                 | Qualquer navegador moderno (Chrome, Firefox, Safari, Edge)            |
-| Node.js           | Ferramentas de dev      | 26.13.0 (fixado em `.nvmrc`); npm 11 ou superior                      |
+| Node.js           | Ferramentas e backend   | 26.13.0 (fixado em `.nvmrc`); npm 11 ou superior                      |
+| Express           | API web                 | v5.3.0; rotas, middleware e respostas HTTP                            |
+| PostgreSQL        | Persistência online     | 17.6 no Compose local; migrações em `server/db/migrations/`           |
+| Argon2id          | Hash de senhas          | `argon2` v0.45.2; não armazenar senhas em texto                       |
+
+**Backend próprio, sem Supabase.** A interface online é servida pelo Express na
+mesma origem da API; a Vercel atual permanece somente para o site estático até
+que um provedor de containers/PostgreSQL seja escolhido.
 
 ---
 
@@ -43,10 +54,15 @@ todo-list-js/
 ├── 🤖 AGENTS.md               # Este arquivo - instruções para agentes de IA
 ├── 📖 README.md               # Documentação completa do projeto
 ├── 📚 ARTIGO_DELEGACAO_DE_EVENTOS.md # Guia didático sobre eventos na lista
-├── 📦 package.json            # Scripts de desenvolvimento (sem dependências locais de E2E)
+├── 📦 package.json            # Runtime/dev e scripts (E2E em lockfile separado)
+├── 🐳 Dockerfile.web          # Imagem de runtime da edição online
+├── 🐳 docker-compose.web.yml  # PostgreSQL local, backend e testes web
+├── 📄 .dockerignore           # Contexto reduzido da imagem de runtime
+├── 📄 .env.example            # Exemplo local sem credenciais de produção
 ├── ⚙️ eslint.config.js        # Configuração ESLint v10
 ├── 📝 .prettierrc             # Configuração Prettier
-├── 🎭 playwright.config.js    # Configuração Playwright (apenas via Docker)
+├── 🎭 playwright.config.js    # Configuração E2E da versão local (via Docker)
+├── 🎭 playwright.web.config.js # Configuração E2E da edição online (via Docker)
 ├── 🐳 Dockerfile.playwright   # Imagem Docker para testes E2E
 ├── 🐳 docker-compose.yml      # Orquestração servidor + Playwright (Docker)
 ├── 📨 commitlint.config.js    # Regras para mensagens de commit
@@ -68,6 +84,19 @@ todo-list-js/
 │       ├── dom.js             # Listas aninhadas e formulários acessíveis
 │       └── main.js            # Delegação de eventos e coordenação
 │
+├── 📂 server/                 # Backend Express e persistência PostgreSQL
+│   ├── app.js                 # Middleware, rotas, sessões, CSRF e segurança HTTP
+│   ├── config.js              # Validação de configuração e segredos por ambiente
+│   ├── routes/                # Rotas de autenticação e tarefas
+│   ├── middleware/            # Autenticação de rotas privadas
+│   ├── domain/                # Validação pura dos dados da API
+│   ├── services/              # Entrega SMTP (ou console somente em dev)
+│   └── db/                    # Pool, migrações SQL e versão do esquema
+├── 📂 web/                    # Interface online vanilla servida pelo Express
+│   ├── index.html             # Cadastro/login e lista autenticada
+│   ├── app.js                 # Fetch, CSRF e renderização segura com textContent
+│   └── style.css              # Interface responsiva da edição web
+│
 ├── 🧪 tests/
 │   ├── helpers/fixtures.js    # DOM e dados reutilizáveis nos testes
 │   ├── helpers/aplicacao.js   # Inicialização e ações de usuário nos testes
@@ -81,6 +110,9 @@ todo-list-js/
 │   │   ├── state.test.js
 │   │   ├── dom.test.js
 │   │   └── storage.test.js
+│   ├── server/                # Testes unitários do backend
+│   ├── integration/           # Testes HTTP/PostgreSQL (Docker)
+│   ├── web-e2e.spec.ts        # Smoke E2E online com config própria
 │   └── e2e/                   # Playwright (APENAS via Docker)
 │       ├── fixtures.ts        # Contexto comum dos testes E2E
 │       ├── hierarquia.spec.ts # Jornadas da variante em camadas
@@ -91,6 +123,7 @@ todo-list-js/
 │       ├── validacao.spec.ts  # Limites, mensagens e proteção contra XSS
 │       ├── persistencia.spec.ts # Recarga, dados inválidos e falha ao salvar
 │       ├── acessibilidade-responsividade.spec.ts # Teclado e tamanhos de tela
+│       ├── aula-10.spec.ts      # SVG e Mermaid do módulo didático
 │       ├── visual.spec.ts     # Aparência e estados visuais
 │       └── screenshots/       # Capturas de tela em caso de falha
 │
@@ -98,12 +131,12 @@ todo-list-js/
 ├── 📖 PLANO_CURSO_JAVASCRIPT.md     # Plano de curso de 8 aulas de JavaScript
 ├── 📊 RESUMO_MELHORIAS.md             # Resumo das melhorias implementadas
 ├── 🎉 TRABALHO_CONTINUADO_SUCESSO.md  # Resumo do trabalho continuado (9 aulas+)
-├── 📂 curso/                  # Material do curso (9 aulas, exercícios, dashboard professor)
+├── 📂 curso/                  # Curso inicial e módulo especial aula-10
 │   ├── index.html             # Navegação principal do curso
 │   ├── course-navigation.js   # Sistema de navegação entre aulas
 │   ├── exercicios/            # Sistema de exercícios interativos
 │   ├── professor/             # Dashboard do professor (analytics, gestão)
-│   └── aula-01/ até aula-09/  # 9 aulas completas
+│   └── aula-01/ até aula-10/  # Curso inicial + módulo web especial
 └── 📂 iniciante/              # Versões simplificadas para iniciantes absolutos
     ├── index-iniciantes.html
     ├── style-iniciantes.css
@@ -203,7 +236,10 @@ todo-list-js/
 
 ## 🚀 Como Executar / Desenvolver
 
-Não há dependências de runtime (não usa frameworks, bundlers, etc.). As dependências de desenvolvimento (ESLint, Prettier, Vitest) só são necessárias para rodar as verificações:
+Abra `index.html` para trabalhar com a edição didática local, que usa
+JavaScript puro e `localStorage`. A edição online usa dependências de runtime
+travadas no `package-lock.json` (Express, PostgreSQL e autenticação). Para ambas
+as versões e ferramentas, use Node.js 26.13.0 e npm 11:
 
 ```bash
 nvm install   # instala a versão definida em .nvmrc (na primeira configuração)
@@ -215,6 +251,24 @@ npm ci        # instala exatamente as versões do package-lock.json
 # Abrir o index.html diretamente no navegador
 # Ou usar uma extensão como "Live Server" no VS Code
 ```
+
+**Executar a edição online com Docker:**
+
+```bash
+npm ci
+docker compose --env-file .env.example -f docker-compose.web.yml --profile aplicacao up app-web
+```
+
+Abra `http://localhost:3000`. O Compose inicia o PostgreSQL local, aplica as
+migrações e inicia Express. Para executar o servidor Node no host, copie
+`.env.example` para `.env`, inicie o banco (`docker compose --env-file
+.env.example -f docker-compose.web.yml up -d banco-web`), execute
+`npm run db:migrate` e `npm run dev`.
+
+O modo `EMAIL_MODE=console` imprime links de confirmação e recuperação no
+terminal **somente em desenvolvimento**. Produção exige SMTP, HTTPS,
+`PUBLIC_URL`, `SESSION_SECRET` e `CSRF_SECRET` fortes e únicos. Nunca versione
+`.env` nem reutilize os valores de exemplo.
 
 **Fluxo de desenvolvimento recomendado:**
 
@@ -234,6 +288,8 @@ npm ci        # instala exatamente as versões do package-lock.json
 npm test           # Executa todos os testes unitários
 npm run test:watch # Modo watch
 npm run verify     # Lint + formatação + testes
+npm run test:integration:docker # API e isolamento com PostgreSQL de teste
+npm run test:e2e:web            # Smoke da edição online via Playwright/Docker
 ```
 
 - `tests/validacao.test.js` — Regra única de validação (texto vazio, limite e normalização)
@@ -262,25 +318,36 @@ estilos. Cada caso deve ser independente; testes de recarga mantêm o mesmo
 contexto para verificar o `localStorage`. Regras puras e permutações extensas
 de dados continuam cobertas pelo Vitest, sem duplicar cada combinação no E2E.
 
+`npm run test:integration:docker` cria um banco de teste isolado, sem volume
+persistente, aplica as migrações e testa login, recuperação, CRUD e isolamento
+entre duas contas.
+`npm run test:e2e:web` executa o smoke test da edição online com Express e
+PostgreSQL em containers isolados.
+
 O Docker executa quatro workers por padrão (`fullyParallel`). Em máquinas com
 menos recursos, ajuste sem editar arquivos com `PLAYWRIGHT_WORKERS=2 npm run
 test:e2e`. O navegador usa Playwright `1.65.0` em imagem oficial fixada por
 digest; a versão do runner deve sempre coincidir com a versão da imagem para
 encontrar os navegadores corretos. A dependência E2E e sua árvore ficam travadas
 em `tests/e2e/package-lock.json` e são instaladas somente dentro do Docker.
-O servidor estático usa Python `3.15.2-slim-trixie`, também fixado por digest.
-A aplicação não carrega recursos externos; o primeiro build precisa acessar os
-registries para baixar imagens e dependências. O Dockerfile copia os manifests
-antes dos specs para preservar o cache ao editar testes.
+O servidor estático dos E2E da versão local usa Python `3.15.2-slim-trixie`,
+fixado por digest. A interface principal não carrega recursos externos; a Aula
+10 usa Mermaid e Bootstrap versionados para seus diagramas e estilo. O primeiro
+build precisa acessar os registries para baixar imagens e dependências. O
+Dockerfile copia os manifests antes dos specs para preservar o cache ao editar
+testes.
 
 O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright` e `docker-compose.yml`, mas **não é uma dependência local** do projeto.
 
 ### CI/CD do GitHub
 
 - `.github/workflows/ci.yml` roda `npm run verify`, valida Conventional Commits,
-  executa o E2E no Docker e valida o próprio YAML do workflow com actionlint.
-- O deploy Vercel de produção só acontece em `main` após os checks; previews
-  são limitados a PRs internos. Nunca expor secrets a PRs de forks.
+  testa API/PostgreSQL, executa E2E local e web no Docker, e valida o YAML com
+  actionlint.
+- O deploy Vercel de produção só publica o site estático em `main` após os
+  checks; previews são limitados a PRs internos. Nunca expor secrets a PRs de
+  forks. A API/PostgreSQL ainda precisam de um provedor configurado; não dizer
+  que a edição online está publicada até essa implantação existir.
 - Node.js 26.13.0 e npm 11 são os requisitos para as ferramentas locais; `.nvmrc`
   define a versão e `.npmrc` (`engine-strict=true`) rejeita versões incompatíveis.
 - A página hierárquica é independente da lista plana, usa `tarefas-hierarquicas`
@@ -310,7 +377,8 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 - Tratamento de erros com `try/catch` em operações de localStorage
 - Validação de entrada (não permitir texto vazio, trim de espaços)
 - Organização em seções com comentários em blocos (`// ========== SECAO ==========`)
-- Não adicionar dependências externas (manter como Vanilla JS/HTML/CSS puro)
+- A interface permanece Vanilla JS. Dependências do backend são permitidas
+  somente para a edição Express/PostgreSQL, com versões exatas e justificativa.
 - IDs únicos para tarefas (não confiar em índices do array)
 
 ### Comentários didáticos
@@ -353,6 +421,14 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 9. **Classes e seletores:** use `CLASSES` e `SELETORES` de `js/constants.js`; o teste de contrato falha se o HTML ou o CSS ficarem dessincronizados.
 10. **Playwright apenas via Docker:** Nunca instalar Playwright como dependência local.
 11. **Sem fontes externas:** a Inter fica em `assets/fonts/` e é carregada via `@font-face`. Não reintroduza `fonts.googleapis.com`/`fonts.gstatic.com`: o CSS externo bloqueia a renderização. O teste de contrato falha se a fonte externa voltar.
+12. **Isolamento online:** nunca aceite `usuario_id` do corpo/URL como autoridade.
+    Derive o proprietário da sessão e inclua-o em toda consulta/alteração de
+    tarefa. `404` é usado também para registros de outro usuário.
+13. **Segredos:** tokens de sessão/CSRF, SMTP e URLs de produção vêm do ambiente;
+    senhas são Argon2id e tokens de e-mail só são armazenados como hash.
+14. **Duas edições:** `index.html` continua sendo a versão local didática;
+    `web/` é servido pelo Express e usa `/api`. Não misture `localStorage` com a
+    sessão online; a importação é explícita e única por conta.
 
 ---
 
@@ -367,6 +443,10 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 5. Salve no `localStorage` via `storage.js` se houver mudança de dados
 6. Se criar classe/seletor novo, registre em `js/constants.js`
 7. Teste manualmente no navegador e rode `npm test`
+
+Para a edição online, mantenha a regra em `server/domain/`, a persistência em
+`server/routes/`/`server/db/` e a interface em `web/`. Cubra as rotas com teste de
+integração usando duas contas; não coloque regras de autorização apenas no DOM.
 
 ### Modificar estilos
 
@@ -395,7 +475,8 @@ O Playwright está configurado em `playwright.config.js`, `Dockerfile.playwright
 1. Mantenha o código em português (comentários, nomes, textos da UI)
 2. Siga as convenções de nomeação e organização existentes
 3. Adicione comentários explicativos (JSDoc em funções, comentários de bloco em seções)
-4. Não adicione dependências externas (manter como Vanilla JS/HTML/CSS puro)
+4. Mantenha a interface em Vanilla JS; dependências do backend precisam ser
+   justificadas, versionadas exatamente e testadas com `npm ci`.
 5. Não instale Playwright localmente — testes E2E via Docker apenas
 6. Execute `npm run verify` antes de commitar (lint + formatação + testes)
 7. Consulte `MELHORIAS_PARA_INICIANTES.md` para entender o foco educacional do projeto

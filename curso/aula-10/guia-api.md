@@ -61,7 +61,7 @@ evita tratar o texto da tarefa como código SQL.
 3. A consulta inclui `usuario_id = $1`? De onde o servidor obteve esse valor?
 4. Se alguém alterar o ID da tarefa no endereço, que resposta deve receber?
 
-Teste de isolamento somente com duas contas fictícias no banco descartável:
+Teste de isolamento somente com duas contas fictícias no banco de teste isolado:
 
 ```bash
 npm run test:integration:docker

@@ -1,10 +1,16 @@
 # todo-list-js
 
-Uma aplicação de Lista de Tarefas (To-Do List) construída com HTML, CSS e JavaScript puro, com foco educacional para iniciantes em desenvolvimento web frontend.
+Projeto didático de lista de tarefas em duas versões: a aplicação original,
+local e em JavaScript puro, e uma edição online com contas individuais, API
+Express e PostgreSQL.
 
 ## 🚀 Como executar
 
-Não há dependências de runtime. Basta abrir o arquivo `index.html` em qualquer navegador moderno:
+### Versão local (JavaScript puro)
+
+Abra `index.html` em qualquer navegador moderno ou use uma extensão como Live
+Server. Esta versão didática continua usando `localStorage` e não precisa de um
+backend:
 
 ```bash
 # Abrir diretamente no navegador
@@ -27,6 +33,39 @@ O `.nvmrc` fixa a versão do Node e o `.npmrc` faz o npm rejeitar versões
 incompatíveis e salvar novas dependências com versões exatas. O `package-lock.json`
 trava toda a árvore de dependências; após mudanças nas dependências, atualize-o
 deliberadamente e valide com `npm ci`.
+
+### Edição web com contas
+
+O backend Express serve a interface de `web/` na raiz e a API em `/api`; as
+tarefas ficam no PostgreSQL. Para desenvolver com Node.js 26.13.0 e Docker:
+
+```bash
+npm ci
+docker compose --env-file .env.example -f docker-compose.web.yml --profile aplicacao up app-web
+```
+
+Depois abra <http://localhost:3000>. O Compose inicia o PostgreSQL local, aplica
+as migrações e inicia o servidor. Para rodar o Node no host, copie
+`.env.example` para `.env`, inicie `banco-web`, aplique as migrações com
+`npm run db:migrate` e execute `npm run dev`.
+
+Em desenvolvimento, `EMAIL_MODE=console` imprime no terminal os links de
+confirmação e recuperação. Isso é exclusivo do laboratório. Para produção, use
+`Dockerfile.web` e configure PostgreSQL, `NODE_ENV=production`, segredos novos
+`SESSION_SECRET`/`CSRF_SECRET`, `PUBLIC_URL` com HTTPS e SMTP. Os valores de
+`.env.example` nunca são credenciais de produção; arquivos `.env` não devem ser
+versionados. **Não usamos Supabase.** A Vercel existente publica o site estático;
+ela não publica automaticamente este backend nem o PostgreSQL. O provedor
+público ainda precisa ser escolhido/configurado.
+
+Em um host atrás de proxy TLS, defina `TRUST_PROXY_HOPS` conforme o número real
+de proxies confiáveis para que cookies seguros e limites por IP usem a conexão
+correta. Execute as migrações como etapa de release antes de direcionar tráfego;
+configure backup e restauração do PostgreSQL no provedor escolhido.
+
+Após entrar, a pessoa pode importar uma vez as tarefas locais (`tarefas`) para a
+própria conta. O backend não aceita um proprietário enviado pelo navegador:
+cada consulta de tarefa é filtrada pelo usuário da sessão.
 
 ## 📁 Estrutura do projeto
 
@@ -55,6 +94,11 @@ todo-list-js/
 ├── .editorconfig           # Convenções de edição entre IDEs
 ├── vitest.config.js        # Configuração do Vitest
 ├── playwright.config.js    # Configuração do Playwright (via Docker)
+├── playwright.web.config.js # Configuração E2E da edição online
+├── Dockerfile.web          # Imagem de produção da API e interface online
+├── docker-compose.web.yml  # PostgreSQL local, desenvolvimento e testes web
+├── .dockerignore           # Arquivos excluídos da imagem web
+├── .env.example            # Exemplo de configuração local (não é segredo)
 ├── commitlint.config.js    # Regras de mensagens Conventional Commits
 ├── .vercelignore           # Arquivos internos excluídos do site publicado
 ├── .github/workflows/
@@ -68,6 +112,8 @@ todo-list-js/
 │   ├── dom.js              # Manipulação pura de DOM
 │   ├── main.js              # Orquestração e eventos
 │   └── hierarquia/          # Estado, DOM, storage e eventos da árvore
+├── server/                  # Express, autenticação, PostgreSQL e migrações
+├── web/                     # Interface vanilla da edição online
 ├── tests/
 │   ├── helpers/
 │   │   ├── fixtures.js     # DOM e dados reutilizáveis nos testes
@@ -79,6 +125,9 @@ todo-list-js/
 │   ├── dom.test.js         # Testes de estrutura e acessibilidade do DOM
 │   ├── main.test.js        # Testes de orquestração (fluxo completo)
 │   ├── hierarquia/          # Testes unitários da árvore, DOM e persistência
+│   ├── server/               # Testes unitários do backend
+│   ├── integration/          # API, sessões e isolamento no PostgreSQL
+│   ├── web-e2e.spec.ts      # Smoke E2E da edição online (Docker)
 │   └── e2e/
 │       ├── package.json                      # Runner Playwright (somente no Docker)
 │       ├── package-lock.json                 # Árvore E2E travada
@@ -89,8 +138,9 @@ todo-list-js/
 │       ├── validacao.spec.ts                # Limites, mensagens e conteúdo seguro
 │       ├── persistencia.spec.ts             # Recarga, dados inválidos e falha ao salvar
 │       ├── acessibilidade-responsividade.spec.ts # Teclado, rótulos e tamanhos de tela
+│       ├── aula-10.spec.ts                    # SVG e Mermaid do módulo didático
 │       └── visual.spec.ts                   # Estados e estilos visuais
-├── curso/                  # Material do curso (9 aulas)
+├── curso/                  # Material do curso (9 aulas + módulo especial aula 10)
 └── iniciante/              # Versões simplificadas para iniciantes
 ```
 
@@ -123,19 +173,34 @@ Docker com `npm run test:e2e`.
 
 ## 🛠️ Scripts disponíveis
 
-| Script                 | Descrição                                         |
-| ---------------------- | ------------------------------------------------- |
-| `npm run lint`         | Verifica todo o projeto com ESLint                |
-| `npm run lint:fix`     | Corrige problemas automaticamente com ESLint      |
-| `npm run format`       | Formata o projeto com Prettier                    |
-| `npm run format:check` | Verifica formatação com Prettier                  |
-| `npm test`             | Executa testes unitários com Vitest               |
-| `npm run test:watch`   | Executa testes em modo watch                      |
-| `npm run verify`       | Roda lint + formatação + testes (validação geral) |
-| `npm run test:e2e`     | Executa testes E2E via Docker Compose             |
+| Script                            | Descrição                                         |
+| --------------------------------- | ------------------------------------------------- |
+| `npm run lint`                    | Verifica todo o projeto com ESLint                |
+| `npm run lint:fix`                | Corrige problemas automaticamente com ESLint      |
+| `npm run format`                  | Formata o projeto com Prettier                    |
+| `npm run format:check`            | Verifica formatação com Prettier                  |
+| `npm test`                        | Executa testes unitários com Vitest               |
+| `npm run test:watch`              | Executa testes em modo watch                      |
+| `npm run verify`                  | Roda lint + formatação + testes (validação geral) |
+| `npm run test:e2e`                | Executa testes E2E via Docker Compose             |
+| `npm run test:e2e:web`            | Testa as telas online no navegador via Docker     |
+| `npm run db:migrate`              | Aplica migrações usando `.env` local              |
+| `npm run test:integration:docker` | Testa API e PostgreSQL no Docker                  |
 
 > **Playwright somente via Docker.** Nunca instale o Playwright localmente.
 > Use `npm run test:e2e` para subir o servidor e o navegador no container.
+
+## 🛡️ Segurança da edição web
+
+- Senhas com hash Argon2id; sessões mantidas no servidor/PostgreSQL e cookies
+  `HttpOnly`, `SameSite` e `Secure` em produção.
+- Proteção CSRF, limite de tentativas, cabeçalhos Helmet e validação no servidor.
+- Consultas SQL parametrizadas. Cada operação verifica a propriedade no backend;
+  tentar acessar tarefa alheia retorna `404`.
+- Tokens de confirmação/recuperação aleatórios, armazenados somente como hash,
+  com expiração e uso único.
+- `npm audit --omit=dev` verifica dependências de runtime; a imagem de produção
+  instala somente dependências necessárias ao servidor.
 
 ## 🧩 Arquitetura
 
@@ -185,6 +250,11 @@ Usuário → main.js → state.js → storage.js
 - **E2E (Playwright):** `tests/e2e/` organiza cenários por jornada; interações
   preferem rótulos e papéis acessíveis, enquanto seletores CSS ficam para
   verificações visuais. A suíte roda somente via Docker com `npm run test:e2e`.
+- **API/PostgreSQL:** `npm run test:integration:docker` aplica migrações num banco
+  de teste isolado, sem volume persistente, e testa autenticação, CRUD e
+  isolamento entre duas contas.
+- **Edição web:** `npm run test:e2e:web` testa telas públicas com o backend e
+  PostgreSQL isolados; Playwright continua somente dentro do Docker.
 - **Imagens E2E:** `Dockerfile.playwright` usa Playwright `1.65.0` com os
   navegadores correspondentes; o servidor usa Python `3.15.2-slim-trixie`.
   Ambas as imagens são fixadas por digest, e o runner tem lockfile próprio em
@@ -203,18 +273,20 @@ Usuário → main.js → state.js → storage.js
 O workflow `.github/workflows/ci.yml` roda em pushes e PRs para `main`:
 
 - `workflows`: valida a sintaxe do GitHub Actions com actionlint.
-- `qualidade`: instala pelo `npm ci`, executa `npm run verify` e valida todas
-  as mensagens novas com Commitlint (Conventional Commits).
-- `e2e`: roda os testes Playwright usando Docker Compose e envia traces/screenshots
-  como artefatos quando falham.
+- `qualidade`: instala pelo `npm ci`, executa `npm run verify`, testa a API com
+  PostgreSQL no Docker e valida mensagens com Commitlint.
+- `e2e`: roda os testes Playwright local e web usando Docker Compose e envia
+  traces/screenshots como artefatos quando falham.
 - PRs internos recebem deploy de preview no Vercel depois de todos os checks;
   pushes para `main` publicam produção. PRs de forks não recebem secrets.
 
 ### Configuração inicial do Vercel
 
 1. Configure o projeto Vercel como **Other**, sem build command, servindo a raiz
-   estática do repositório. `.vercelignore` exclui testes, configuração e
-   documentação interna, preservando a aplicação, `curso/` e `iniciante/`.
+   estática do repositório. `.vercelignore` exclui backend, interface online,
+   testes, configuração e documentação interna, preservando o site estático,
+   `curso/` e `iniciante/`. A API/PostgreSQL precisam de hospedagem de containers
+   configurada separadamente antes de a edição online estar pública.
 2. Crie os ambientes GitHub `preview` e `production` e configure em ambos os
    secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID`.
 3. No ambiente `production`, restrinja deployments à branch `main`; configure

@@ -44,7 +44,8 @@ produção. As migrações registram quais arquivos SQL já foram aplicados. No 
 local, `EMAIL_MODE=console` mostra o link de confirmação no terminal do servidor;
 isso existe apenas para o laboratório. Produção exige SMTP e segredos novos.
 
-Os testes de integração usam um banco descartável dentro do Docker Compose:
+Os testes de integração usam um banco isolado, sem volume persistente, dentro do
+Docker Compose:
 
 ```bash
 npm run test:integration:docker
