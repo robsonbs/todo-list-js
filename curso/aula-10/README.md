@@ -17,7 +17,9 @@ desses temas.
    sugerida.
 3. Faça os desafios de [`exercicios.md`](exercicios.md) antes de consultar o
    gabarito.
-4. Acompanhe cada unidade com a implementação correspondente do projeto.
+4. Consulte [`guia-api.md`](guia-api.md) para relacionar verbos HTTP, rotas,
+   respostas e consultas ao banco.
+5. Acompanhe cada unidade com a implementação correspondente do projeto.
 
 ## Laboratório local do banco
 
