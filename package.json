@@ -19,6 +19,9 @@
     "vitest": "5.1.0"
   },
   "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test:server": "vitest run tests/server",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -28,5 +31,9 @@
     "test:e2e": "docker compose up --build --abort-on-container-exit --exit-code-from playwright playwright",
     "test:e2e:headed": "docker compose run --rm --service-ports playwright npx playwright test --project=chromium --headed",
     "verify": "npm run lint && npm run format:check && npm test"
+  },
+  "dependencies": {
+    "express": "5.3.0",
+    "helmet": "8.3.0"
   }
 }

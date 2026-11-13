@@ -34,6 +34,47 @@ export default [
     },
   },
 
+  // Backend Node.js (Express); roda no servidor, não no navegador.
+  {
+    files: ['server/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      indent: ['error', 2],
+      quotes: ['error', 'single', { avoidEscape: true }],
+      semi: ['error', 'always'],
+      'no-console': 'warn',
+      'no-unused-vars': 'warn',
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
+    },
+  },
+
+  // Código da interface online executado no navegador.
+  {
+    files: ['web/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+      },
+    },
+    rules: {
+      indent: ['error', 2],
+      quotes: ['error', 'single'],
+      semi: ['error', 'always'],
+      'no-unused-vars': 'warn',
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
+    },
+  },
+
   // Testes unitários (Vitest + happy-dom).
   {
     files: ['tests/**/*.js'],
@@ -55,7 +96,7 @@ export default [
     },
     rules: {
       indent: ['error', 2],
-      quotes: ['error', 'single'],
+      quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],
       'no-console': 'off',
       'no-unused-vars': 'warn',

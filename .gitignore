@@ -1,6 +1,11 @@
 # Dependências
 node_modules/
 
+# Configuração local (o exemplo versionado é seguro)
+.env
+.env.*
+!.env.example
+
 # Build / output
 dist/
 build/

@@ -1,0 +1,66 @@
+/* Estilos iniciais da edição online; mantém as cores roxas do curso. */
+:root {
+  color-scheme: light;
+  font-family: Inter, 'Segoe UI', sans-serif;
+  color: #1f2937;
+  background: #f8fafc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.cabecalho {
+  padding: 3rem 1.5rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  text-align: center;
+}
+
+.cabecalho h1 {
+  margin: 0.5rem 0;
+  font-size: clamp(2rem, 6vw, 3rem);
+}
+
+.selo {
+  display: inline-block;
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.conteudo {
+  width: min(100% - 2rem, 760px);
+  margin: 2rem auto;
+}
+
+.cartao {
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 8px 24px rgba(31, 41, 55, 0.08);
+}
+
+.cartao h2 {
+  margin-top: 0;
+  color: #4338ca;
+}
+
+.rodape {
+  padding: 1rem;
+  color: #64748b;
+  text-align: center;
+}
