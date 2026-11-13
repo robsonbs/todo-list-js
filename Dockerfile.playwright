@@ -6,6 +6,8 @@ WORKDIR /app
 
 # Copia a configuração e os testes E2E.
 COPY playwright.config.js ./
+COPY playwright.web.config.js ./
+COPY tests/web-e2e.spec.ts ./tests/web-e2e.spec.ts
 
 # O container instala somente o runner E2E, a partir de um lockfile próprio.
 # O pacote Playwright precisa corresponder à versão dos navegadores da imagem.

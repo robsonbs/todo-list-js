@@ -48,6 +48,15 @@ jobs:
       - name: Validar sintaxe, estilo e testes unitários
         run: npm run verify
 
+      - name: Testar API, autenticação e isolamento no PostgreSQL
+        run: npm run test:integration:docker
+
+      - name: Encerrar banco de integração
+        if: always()
+        run: >-
+          docker compose -p todo-list-integration
+          -f docker-compose.web.yml down --remove-orphans
+
       - name: Validar mensagens de commit
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -87,6 +96,15 @@ jobs:
 
       - name: Executar E2E pelo Docker Compose
         run: npm run test:e2e
+
+      - name: Testar telas da edição web pelo Docker
+        run: npm run test:e2e:web
+
+      - name: Encerrar serviços E2E da edição web
+        if: always()
+        run: >-
+          docker compose -p todo-list-web-e2e
+          -f docker-compose.web.yml down --remove-orphans
 
       - name: Encerrar serviços do Compose
         if: always()
