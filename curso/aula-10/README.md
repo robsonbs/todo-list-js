@@ -32,7 +32,15 @@ npm run dev
 
 O `docker-compose.web.yml` usa somente um PostgreSQL local de desenvolvimento.
 Os valores de `.env.example` são didáticos e não podem ser reaproveitados em
-produção. As migrações registram quais arquivos SQL já foram aplicados.
+produção. As migrações registram quais arquivos SQL já foram aplicados. No modo
+local, `EMAIL_MODE=console` mostra o link de confirmação no terminal do servidor;
+isso existe apenas para o laboratório. Produção exige SMTP e segredos novos.
+
+Os testes de integração usam um banco descartável dentro do Docker Compose:
+
+```bash
+npm run test:integration:docker
+```
 
 Os diagramas Mermaid são renderizados pela biblioteca carregada pela página. O
 texto-fonte e uma interpretação em português acompanham cada diagrama. A

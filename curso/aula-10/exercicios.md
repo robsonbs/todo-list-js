@@ -60,6 +60,12 @@ O navegador chama `GET /api/tarefas`, mas a sessão expirou. Qual status HTTP é
 adequado para informar que é necessário autenticar novamente? O que a interface
 deve mostrar para a pessoa?
 
+## 7. Laboratório de contas
+
+No banco de teste local, crie duas contas fictícias, confirme os e-mails pelos
+links impressos no terminal e crie uma tarefa para cada uma. Descreva o que o
+servidor verifica antes de listar as tarefas. Não use contas ou senhas reais.
+
 <details>
   <summary>Gabarito comentado</summary>
 
@@ -74,5 +80,8 @@ deve mostrar para a pessoa?
    autenticado. A decisão é no backend, em toda operação, nunca apenas na tela.
 6. `401 Unauthorized` para sessão ausente/expirada; a interface explica que a
    sessão terminou e oferece entrar novamente, preservando uma mensagem clara.
+7. O servidor lê o usuário da sessão e acrescenta esse identificador à consulta.
+   O navegador não escolhe o dono da tarefa; a interface também não substitui a
+   autorização no backend.
 
 </details>
