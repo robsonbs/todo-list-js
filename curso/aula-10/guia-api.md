@@ -6,22 +6,22 @@ gravada ou captura de tela.
 
 ## Mapa das rotas
 
-| Método e caminho | Exige conta? | Resultado principal | Ideia HTTP |
-| --- | --- | --- | --- |
-| `GET /api/health` | Não | Estado do processo | Consulta sem alterar dados |
-| `GET /api/csrf-token` | Não | Token CSRF e cookies locais | Prepara uma sessão segura para formulários |
-| `POST /api/auth/registrar` | Não | Instrução de confirmação | Recebe dados para criar uma conta |
-| `POST /api/auth/confirmar-email` | Não | Confirmação de e-mail | Token é de uso único e tem validade limitada |
-| `POST /api/auth/login` | Não | Sessão de usuário | O servidor renova o identificador da sessão |
-| `GET /api/auth/me` | Não | Estado da sessão atual | Consulta quem está autenticado |
-| `POST /api/auth/logout` | Sessão atual | Encerra a sessão | A sessão do servidor é removida |
-| `POST /api/auth/esqueci-senha` | Não | Mensagem genérica | Não revela se o e-mail está cadastrado |
-| `POST /api/auth/redefinir-senha` | Não | Confirmação de troca | Usa token de uso único e revoga sessões anteriores |
-| `GET /api/tarefas` | Sim | Tarefas da sessão | O servidor filtra pela pessoa autenticada |
-| `POST /api/tarefas` | Sim | Nova tarefa (`201`) | Criação de um recurso |
-| `PATCH /api/tarefas/:id` | Sim | Tarefa atualizada | Alteração parcial |
-| `DELETE /api/tarefas/:id` | Sim | Sem corpo (`204`) | Remoção do recurso próprio |
-| `POST /api/tarefas/importar` | Sim | Quantidade importada | Importação local única por conta |
+| Método e caminho                 | Exige conta? | Resultado principal         | Ideia HTTP                                         |
+| -------------------------------- | ------------ | --------------------------- | -------------------------------------------------- |
+| `GET /api/health`                | Não          | Estado do processo          | Consulta sem alterar dados                         |
+| `GET /api/csrf-token`            | Não          | Token CSRF e cookies locais | Prepara uma sessão segura para formulários         |
+| `POST /api/auth/registrar`       | Não          | Instrução de confirmação    | Recebe dados para criar uma conta                  |
+| `POST /api/auth/confirmar-email` | Não          | Confirmação de e-mail       | Token é de uso único e tem validade limitada       |
+| `POST /api/auth/login`           | Não          | Sessão de usuário           | O servidor renova o identificador da sessão        |
+| `GET /api/auth/me`               | Não          | Estado da sessão atual      | Consulta quem está autenticado                     |
+| `POST /api/auth/logout`          | Sessão atual | Encerra a sessão            | A sessão do servidor é removida                    |
+| `POST /api/auth/esqueci-senha`   | Não          | Mensagem genérica           | Não revela se o e-mail está cadastrado             |
+| `POST /api/auth/redefinir-senha` | Não          | Confirmação de troca        | Usa token de uso único e revoga sessões anteriores |
+| `GET /api/tarefas`               | Sim          | Tarefas da sessão           | O servidor filtra pela pessoa autenticada          |
+| `POST /api/tarefas`              | Sim          | Nova tarefa (`201`)         | Criação de um recurso                              |
+| `PATCH /api/tarefas/:id`         | Sim          | Tarefa atualizada           | Alteração parcial                                  |
+| `DELETE /api/tarefas/:id`        | Sim          | Sem corpo (`204`)           | Remoção do recurso próprio                         |
+| `POST /api/tarefas/importar`     | Sim          | Quantidade importada        | Importação local única por conta                   |
 
 Toda alteração enviada pelo navegador inclui o token CSRF no cabeçalho
 `X-CSRF-Token`. A sessão viaja em cookie `HttpOnly`; o JavaScript não lê nem

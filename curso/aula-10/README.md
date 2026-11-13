@@ -5,9 +5,10 @@ aplicação web com backend Express, contas individuais e PostgreSQL.
 
 ## Para quem é
 
-Para quem concluiu o curso inicial de JavaScript. As atividades começam do zero
-em backend, HTTP, Express e banco de dados; não pressupõem conhecimento prévio
-desses temas.
+Para quem concluiu o curso inicial de JavaScript. Só pressupomos contato com
+variáveis, funções, DOM, eventos e persistência local. HTTP é revisado com
+detalhes e nenhum conhecimento de backend, Express, SQL ou banco de dados é
+exigido.
 
 ## Como usar
 
@@ -55,16 +56,18 @@ Os diagramas Mermaid são renderizados pela biblioteca carregada pela página. O
 texto-fonte e uma interpretação em português acompanham cada diagrama. A
 ilustração SVG principal funciona sem JavaScript.
 
-## Unidades
+## Trilha de dez unidades
 
-1. Navegador, Node.js, servidor e backend.
-2. Requisições e respostas HTTP.
-3. Rotas, middleware e erros com Express.
-4. Tabelas, registros, chaves e relações.
-5. SQL, PostgreSQL e migrações.
-6. Autenticação, autorização e segurança.
-7. Integração do frontend usando `fetch`.
-8. Testes, ambientes e publicação.
+1. Navegador, Node.js, terminal, servidor e backend.
+2. Anatomia de requisições e respostas HTTP.
+3. Express: servidor, rotas, middleware, validação e erros.
+4. Tabelas, registros, chaves, relações e restrições.
+5. PostgreSQL, consultas SQL e operações CRUD.
+6. API, driver `pg`, pool de conexões, migrações e transações.
+7. Cadastro, hash de senha, sessão e cookies.
+8. Autorização, CSRF, XSS, SQL injection e HTTPS.
+9. `fetch`, estados de tela, sessão expirada e importação local.
+10. Testes, Docker e checklist de produção.
 
 ## Segurança no laboratório
 

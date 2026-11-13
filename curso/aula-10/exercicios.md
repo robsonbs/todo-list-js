@@ -1,87 +1,192 @@
-# Exercícios — Missão: Lista na Nuvem
+# Caderno de missões — Aula 10
 
-Tente resolver cada desafio antes de abrir o gabarito. Use somente dados de
-teste e o ambiente local do projeto.
+Resolva na ordem: cada desafio usa o vocabulário da unidade anterior. Tente
+responder antes de abrir a dica e o gabarito. Use somente dados fictícios e o
+banco local de testes.
 
-## 1. Detetive de HTTP
+## Missão 1 — Ache o servidor
 
-Leia a requisição:
+Associe cada peça ao lugar onde roda:
+
+- HTML que mostra o formulário;
+- JavaScript que atualiza a página;
+- processo Express que recebe `POST /api/tarefas`;
+- PostgreSQL que conserva os registros.
+
+Depois responda: se a aba fecha, qual processo deixa de existir? Qual ainda
+pode atender outro computador quando estiver publicado?
+
+<details><summary>Dica</summary>Separe a máquina da pessoa dos processos que rodam no host remoto.</details>
+
+## Missão 2 — Monte o envelope HTTP
+
+Leia o pedido:
 
 ```http
-POST /api/tarefas HTTP/1.1
+POST /api/tarefas?origem=curso HTTP/1.1
 Content-Type: application/json
+Accept: application/json
+Cookie: tarefas.sid=...
+X-CSRF-Token: ...
 
 {"texto":"Revisar HTTP"}
 ```
 
-1. Qual é o método?
-2. Qual caminho foi solicitado?
-3. Para que serve `Content-Type`?
-4. Qual status indicaria que uma tarefa foi criada?
+Identifique método, caminho, query, dois cabeçalhos e corpo. Qual informação
+**não** deve ser adicionada ao corpo para escolher o proprietário da tarefa?
 
-## 2. Rota ou middleware?
+## Missão 3 — O status não é uma falha de rede
 
-Coloque estas etapas na ordem mais segura:
+`fetch()` recebe uma resposta `401` do servidor. O código entrou no `catch`?
+Qual propriedade deve ser conferida para saber se o status HTTP foi sucesso?
+Qual mensagem é melhor para a pessoa: “servidor offline” ou “entre novamente”?
 
-- gravar a tarefa no PostgreSQL;
-- verificar a sessão;
-- validar o texto recebido;
-- responder com JSON e status;
-- receber a requisição.
+## Missão 4 — Endereço, query, cabeçalho ou corpo?
 
-## 3. Modelagem de dados
+Na requisição da missão 2, classifique `POST`, `/api/tarefas`,
+`?origem=curso`, `Content-Type` e `{"texto":"Revisar HTTP"}`. Qual desses
+valores o servidor deve usar para descobrir a pessoa dona da tarefa?
 
-Uma pessoa pode ter muitas tarefas. Desenhe as tabelas `usuarios` e `tarefas`.
-Marque a chave primária de cada tabela e a chave estrangeira que liga cada
-tarefa à pessoa dona dela.
+## Missão 5 — Ordene a central Express
 
-## 4. Complete a consulta
+Coloque na ordem e explique por que:
 
-Complete a condição para retornar somente as tarefas do usuário autenticado:
+- conferir a sessão;
+- receber a requisição;
+- responder com JSON;
+- interpretar o corpo JSON;
+- validar o texto;
+- consultar o banco.
 
-```sql
-SELECT id, texto, completa
-FROM tarefas
-WHERE usuario_id = $1;
+Complete o papel de cada objeto na rota:
+
+```js
+app.post('/api/tarefas', async (__________, __________) => {
+  const texto = requisicao.body.texto;
+  resposta.status(201).json({ texto });
+});
 ```
 
-De onde deve vir o valor passado como `$1`: do campo oculto da página ou da
-sessão verificada no servidor? Explique.
+## Missão 6 — Desenhe o fichário PostgreSQL
 
-## 5. Cenário de segurança
+Uma pessoa tem muitas tarefas. Proponha as tabelas `usuarios` e `tarefas` e
+marque:
 
-Ana está autenticada e troca o identificador de uma tarefa na URL para tentar
-abrir uma tarefa de Bruno. O que a API deve fazer? Em que camada deve ocorrer a
-verificação?
+1. a chave primária de cada tabela;
+2. a chave estrangeira que liga a tarefa à pessoa;
+3. uma regra para impedir e-mails repetidos;
+4. uma regra para impedir tarefas vazias.
 
-## 6. Fluxo de erro
+Explique com palavras como ler `USUARIOS ||--o{ TAREFAS` no Mermaid: o que é um
+nó/caixa e o que a relação diz sobre a quantidade?
 
-O navegador chama `GET /api/tarefas`, mas a sessão expirou. Qual status HTTP é
-adequado para informar que é necessário autenticar novamente? O que a interface
-deve mostrar para a pessoa?
+## Missão 7 — Faça CRUD sem furar o banco
 
-## 7. Laboratório de contas
+Associe cada operação SQL à intenção:
 
-No banco de teste local, crie duas contas fictícias, confirme os e-mails pelos
-links impressos no terminal e crie uma tarefa para cada uma. Descreva o que o
-servidor verifica antes de listar as tarefas. Não use contas ou senhas reais.
+```sql
+SELECT ... FROM tarefas WHERE usuario_id = $1;
+INSERT INTO tarefas (usuario_id, texto) VALUES ($1, $2);
+UPDATE tarefas SET completa = true WHERE id = $1 AND usuario_id = $2;
+DELETE FROM tarefas WHERE id = $1 AND usuario_id = $2;
+```
+
+1. Qual comando lê, cria, atualiza e remove?
+2. Por que os valores usam `$1` e `$2` em vez de concatenar texto no SQL?
+3. Na transação da importação, o que ocorre se o terceiro `INSERT` falhar depois
+   de dois terem passado: `COMMIT` ou `ROLLBACK`?
+4. Para que serve uma migração e por que não executar o mesmo arquivo toda vez?
+
+## Missão 8 — Quem entrou e o que pode fazer?
+
+Classifique cada pergunta como **autenticação** ou **autorização**:
+
+- “Quem é a conta desta sessão?”
+- “Esta conta pode remover a tarefa 81?”
+
+Explique por que o banco guarda o hash da senha e não o texto original. O que o
+navegador guarda depois do login: a senha, os dados da sessão ou um identificador
+de cookie que aponta para a sessão do servidor?
+
+## Missão 9 — Defesa em camadas
+
+Associe risco e defesa:
+
+| Risco                                                     | Defesa disponível |
+| --------------------------------------------------------- | ----------------- |
+| Texto de tarefa vira HTML executável                      | ?                 |
+| Site externo tenta enviar um formulário usando sua sessão | ?                 |
+| Ana tenta alterar tarefa de Bruno trocando o ID           | ?                 |
+| Texto malicioso muda o comando SQL                        | ?                 |
+| Cookie de sessão viaja sem HTTPS                          | ?                 |
+
+Use as opções: filtrar pelo usuário da sessão; placeholders SQL; `textContent` e
+CSP; token CSRF e `SameSite`; cookie `Secure` em HTTPS.
+
+## Missão 10 — Despache com `fetch`
+
+Qual informação precisa acompanhar um `POST /api/tarefas` além do texto? Escreva
+os nomes de dois cabeçalhos e explique o que significam. Depois organize o fluxo:
+
+1. mostrar a mensagem de erro quando `resposta.ok` é falso;
+2. esperar a resposta;
+3. enviar método `POST`, corpo JSON, cookie same-origin e token CSRF;
+4. converter JSON de sucesso e atualizar a lista.
+
+Por fim, explique por que a importação do `localStorage` pede uma ação explícita.
+Esta aplicação serve tela e API na mesma origem; se fossem domínios diferentes,
+que regra do navegador entraríamos para estudar? Por que liberar qualquer origem
+com cookies não seria uma boa correção?
+
+## Missão 11 — Pronto para o lançamento?
+
+Classifique cada verificação como **unitária**, **integração** ou **E2E**:
+
+- validar uma função que conta até 100 caracteres;
+- provar que Ana não lê tarefa de Bruno via API/PostgreSQL;
+- abrir a interface no Chromium e verificar que o formulário aparece.
+
+Marque os itens que faltam antes de produção: HTTPS, SMTP real, segredos novos,
+banco separado de testes, migrações aplicadas, backups com restauração ensaiada,
+domínio e provedor de hospedagem. O curso usa um provedor específico? (Não: essa
+decisão ainda deve ser feita.)
 
 <details>
   <summary>Gabarito comentado</summary>
 
-1. `POST`; `/api/tarefas`; o cabeçalho diz que o corpo está em JSON; `201 Created`.
-2. Receber → verificar sessão → validar entrada → gravar → responder. Rotas
-   públicas, como cadastro/login, terão fluxo próprio.
-3. `usuarios.id` é chave primária; `tarefas.id` também. `tarefas.usuario_id`
-   referencia `usuarios.id`.
-4. `$1` recebe o identificador derivado da sessão autenticada. Um campo enviado
-   pela página pode ser alterado pela pessoa cliente e não é autoridade.
-5. A API deve responder sem revelar o conteúdo e restringir a consulta ao usuário
-   autenticado. A decisão é no backend, em toda operação, nunca apenas na tela.
-6. `401 Unauthorized` para sessão ausente/expirada; a interface explica que a
-   sessão terminou e oferece entrar novamente, preservando uma mensagem clara.
-7. O servidor lê o usuário da sessão e acrescenta esse identificador à consulta.
-   O navegador não escolhe o dono da tarefa; a interface também não substitui a
-   autorização no backend.
+1. HTML/JS rodam no navegador; Express é o processo backend; PostgreSQL é o
+   serviço que conserva dados. Fechar a aba encerra o cliente; não encerra um
+   servidor remoto publicado.
+2. Método `POST`; caminho `/api/tarefas`; query `origem=curso`; cabeçalhos
+   `Content-Type`, `Accept`, `Cookie` e `X-CSRF-Token`; o texto está no corpo.
+   O corpo não escolhe o usuário dono. O backend deriva esse ID da sessão.
+3. `fetch` recebe a resposta normalmente; `resposta.ok` é falso para 401. A tela
+   deve dizer que é preciso entrar novamente, não que a rede caiu.
+4. Método `POST`; caminho, query, cabeçalhos e corpo têm funções diferentes.
+   O backend obtém o proprietário da sessão, não do corpo ou query.
+5. Receber → interpretar JSON → conferir sessão → validar → consultar → responder.
+   Os argumentos são `requisicao` e `resposta`. Em código real, as rotas públicas
+   de cadastro/login têm outro fluxo.
+6. `usuarios.id` e `tarefas.id` são PK; `tarefas.usuario_id` é FK; `email UNIQUE`
+   impede repetição; `CHECK` impede texto vazio. No Mermaid, caixas são tabelas,
+   linhas são registros e `||--o{` indica uma conta com zero ou muitas tarefas.
+7. `SELECT` lê, `INSERT` cria, `UPDATE` altera, `DELETE` remove. Placeholders
+   separam dados de código e ajudam a impedir SQL injection. Em falha, a
+   transação usa `ROLLBACK`; migração versionada registra mudança uma vez e
+   permite que ambientes compartilhem o mesmo esquema.
+8. A primeira pergunta é autenticação; a segunda é autorização. Argon2id permite
+   comparar senhas sem guardar o texto original. O navegador recebe o cookie
+   identificador; a sessão e o usuário ficam no servidor.
+9. XSS → `textContent`/CSP; CSRF → token e `SameSite`; acesso cruzado → filtro
+   pela sessão; SQL injection → parâmetros; tráfego → cookie `Secure` e HTTPS.
+   Defesa em uma camada não substitui as demais.
+10. `Content-Type: application/json` descreve o corpo; `X-CSRF-Token` prova que a
+    ação veio da página legítima. Ordem: 3 → 2 → 1 → 4. Importar explicitamente
+    evita misturar dados locais com a conta errada sem a pessoa saber. Como a tela
+    e a API têm a mesma origem, CORS não precisa ser aberto; liberar qualquer
+    origem com credenciais seria arriscado.
+11. Função de validação é unitária; API e banco são integração; navegador é E2E.
+    Antes da publicação, configurar e verificar os itens de produção. O curso
+    não escolhe nem configura uma hospedagem real automaticamente.
 
 </details>
